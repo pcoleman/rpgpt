@@ -26,7 +26,7 @@ $(document).ready(function() {
     
     $( "#new-character-button" ).click(function(){
       var sessionName = localStorage.getItem("currentSession");
-      localStorage.set(sessionName + ".player-creation-stage", 1);
+      localStorage.setItem(sessionName + ".player-creation-stage", 1);
       localStorage.removeItem(sessionName + ".player-creation-decisions");
       initializeNewCharacterCreation(sessionName);
     });
@@ -207,7 +207,7 @@ function nextPlayerCreationStage() {
   var mechanics = localStorage.getItem(sessionName + ".mechanics");
 
   // Get the current player creation stage
-  var stage = localStorage.get(sessionName + ".player-creation-stage");
+  var stage = localStorage.getItem(sessionName + ".player-creation-stage");
   
   // Increment the stage to pull in the prompt for the second stage.
   stage = stage + 1;
@@ -218,7 +218,7 @@ function nextPlayerCreationStage() {
   if (stage <= character_creation_stages) {
   
     // Save the new stage number
-    localStorage.set(sessionName + ".player-creation-stage", stage);
+    localStorage.setItem(sessionName + ".player-creation-stage", stage);
   
     // Get the stage text for the next stage
     var stageText = character_creation_stages[stage];
