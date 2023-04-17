@@ -1,4 +1,12 @@
 $(document).ready(function() {
+    // Disable pressing enter on text boxes
+    $(window).keydown(function(event){
+      if(event.keyCode == 13) {
+        event.preventDefault();
+        return false;
+      }
+    });
+	
     var sessionArray = JSON.parse(localStorage.getItem("sessions"));
     var sessionSelect = document.querySelector('#session-selection');
     
@@ -249,23 +257,51 @@ function nextPlayerCreationStage() {
     
     //save the update character decision array
     localStorage.setItem(sessionName + ".player-creation-decisions", JSON.stringify(characterDecisions));
-    
-    // Append all the decisions so far
-    var characterString = characterDecisions.join();
-    
-    // Create new message to send to chatGPT
-    var message = [{"role":"user", "content": "I am " + characterString + ". With that in mind, provide a detailed description of this next step of character creation: " + stageText + ", using the " + mechanics + " rules in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
-    
-    console.log(JSON.stringify(message));
-    // Send prompt
-    prompt(message, function(msg) {
-      var nextStep = msg.choices[0].message.content;
-      console.log(JSON.stringify(msg));
-      console.log(nextStep);
-      
-      $("#new-player-text").html(nextStep);
-    });
-  }
+	  
+    if (stage < (character_creation_steps.length - 1)) {
+	    // Append all the decisions so far
+	    var characterString = characterDecisions.join();
+
+	    // Create new message to send to chatGPT
+	    var message = [{"role":"user", "content": "I am " + characterString + ". With that in mind, provide a detailed description of this next step of character creation: " + stageText + ", using the " + mechanics + " rules in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
+
+	    console.log(JSON.stringify(message));
+	    // Send prompt
+	    prompt(message, function(msg) {
+	      var nextStep = msg.choices[0].message.content;
+	      console.log(JSON.stringify(msg));
+	      console.log(nextStep);
+
+	      $("#new-player-text").html(nextStep);
+	    });
+    } else if (stage < (character_creation_steps.length - 1){
+	   $("#new-player-text").html("<h2>What is your character's name?</h2>"); 
+    } else {
+	    // Append all the decisions so far
+	    var characterString = characterDecisions.join();
+	    
+	    // Create new message to send to chatGPT
+	    var message = [{"role":"user", "content": "create a " + mechanics + " character sheet for: " + characterString + ". Include anything that is expendable, and everything in the inventory has a count, include any additional fields and expendable slots not specified."}];
+            prompt(message, function(msg) {
+	      var characterSheet = msg.choices[0].message.content;
+	      console.log(JSON.stringify(msg));
+	      console.log(characterSheet);
+		    
+	      var csmessage = [{"role":"user", "content": "convert this character sheet to a JSON object: " + characterSheet}];
+            
+	      prompt(csmessage, function(msg) {
+	      	var characterSheet = msg.choices[0].message.content;
+	      	console.log(JSON.stringify(msg));
+	      	console.log(characterSheet);
+		
+		      
+		$("#new-player-text").html(characterSheet);
+                // Save the player JSON
+                localStorage.setItem(sessionName + ".player-creation-json", characterSheet);
+	    });
+	 });
+    }
+  } 
 }
 
 function prompt(messages, successMethod) {
