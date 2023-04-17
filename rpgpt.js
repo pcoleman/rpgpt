@@ -26,7 +26,7 @@ $(document).ready(function() {
     
     $( "#new-character-button" ).click(function(){
       var sessionName = localStorage.getItem("currentSession");
-      localStorage.setItem(sessionName + ".player-creation-stage", 1);
+      localStorage.setItem(sessionName + ".player-creation-stage", 0);
       localStorage.removeItem(sessionName + ".player-creation-decisions");
       initializeNewCharacterCreation(sessionName);
     });
@@ -232,6 +232,9 @@ function nextPlayerCreationStage() {
     
     // Get the decision that was just made
     var input = document.querySelector('#character-creation-text').value;
+	  
+    // Set the input to empty for the next stage
+    document.querySelector('#character-creation-text').value = "";
     
     // Add that decision to the array
     if (!characterDecisions) {
