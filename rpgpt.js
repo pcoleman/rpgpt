@@ -175,7 +175,7 @@ function changeSession(sessionName) {
 }
 
 function initializeNewCharacterCreation(sessionName) {
-	var characterCreationSteps = localStorage.getItem(sessionName + ".character-creation-steps");
+  var characterCreationSteps = localStorage.getItem(sessionName + ".character-creation-steps");
   if (!characterCreationSteps) {
      var setting = localStorage.getItem(sessionName + ".setting");
      var mechanics = localStorage.getItem(sessionName + ".mechanics");
@@ -213,6 +213,10 @@ function nextPlayerCreationStage() {
   stage = stage + 1;
   
   var character_creation_steps = JSON.parse(localStorage.getItem(sessionName + ".character-creation-steps"));
+
+  console.log(JSON.stringify(character_creation_steps);
+  console.log(stage);
+  console.log(character_creation_steps.length);
 
   // Only do something if we haven't reached the end of the stages.
   if (stage <= character_creation_steps.length) {
