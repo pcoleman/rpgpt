@@ -207,7 +207,7 @@ function nextPlayerCreationStage() {
   var mechanics = localStorage.getItem(sessionName + ".mechanics");
 
   // Get the current player creation stage
-  var stage = localStorage.getItem(sessionName + ".player-creation-stage");
+  var stage = Number(localStorage.getItem(sessionName + ".player-creation-stage"));
   
   // Increment the stage to pull in the prompt for the second stage.
   stage = stage + 1;
