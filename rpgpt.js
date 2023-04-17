@@ -246,9 +246,11 @@ function nextPlayerCreationStage() {
     // Create new message to send to chatGPT
     var message = [{"role":"user", "content": "Provide a detailed description of this next step of character creation: " + stageText + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Here are the choices I've made so far: " + characterString + "Format everything using html code."}];
     
+    console.log(JSON.stringify(message);
     // Send prompt
     prompt(message, function(msg) {
       var nextStep = msg.choices[0].message.content;
+      console.log(JSON.stringify(msg));
       console.log(nextStep);
       
       $("#new-player-text").html(nextStep);
