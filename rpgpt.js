@@ -230,7 +230,7 @@ function nextPlayerCreationStage() {
   console.log(character_creation_steps.length);
 
   // Only do something if we haven't reached the end of the stages.
-  if (stage < character_creation_steps.length) {
+  if (stage < character_creation_steps.length + 2) {
   
     // Save the new stage number
     localStorage.setItem(sessionName + ".player-creation-stage", stage);
@@ -258,7 +258,7 @@ function nextPlayerCreationStage() {
     //save the update character decision array
     localStorage.setItem(sessionName + ".player-creation-decisions", JSON.stringify(characterDecisions));
 	  
-    if (stage < (character_creation_steps.length - 1)) {
+    if (stage < character_creation_steps.length) {
 	    // Append all the decisions so far
 	    var characterString = characterDecisions.join();
 
@@ -274,12 +274,13 @@ function nextPlayerCreationStage() {
 
 	      $("#new-player-text").html(nextStep);
 	    });
-    } else if (stage < character_creation_steps.length){
+    } else if (stage == character_creation_steps.length){
 	   $("#new-player-text").html("<h2>What is your character's name?</h2>"); 
     } else {
 	    // Append all the decisions so far
 	    var characterString = characterDecisions.join();
 	    
+	    console.log(characterString);
 	    // Create new message to send to chatGPT
 	    var message = [{"role":"user", "content": "create a " + mechanics + " character sheet for: " + characterString + ". Include anything that is expendable, and everything in the inventory has a count, include any additional fields and expendable slots not specified."}];
             prompt(message, function(msg) {
