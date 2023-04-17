@@ -36,6 +36,8 @@ $(document).ready(function() {
       var sessionName = localStorage.getItem("currentSession");
       localStorage.setItem(sessionName + ".player-creation-stage", 0);
       localStorage.removeItem(sessionName + ".player-creation-decisions");
+      $( "#new-player-submit-button" ).show();
+      $( "#new-player-save-button" ).hide(); 
       initializeNewCharacterCreation(sessionName);
     });
     
@@ -299,6 +301,9 @@ function nextPlayerCreationStage() {
 		$("#new-player-text").html(characterSheet);
                 // Save the player JSON
                 localStorage.setItem(sessionName + ".player-creation-json", characterSheet);
+		      
+		$( "#new-player-submit-button" ).hide();
+		$( "#new-player-save-button" ).show();      
 	    });
 	 });
     }
