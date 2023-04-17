@@ -1,7 +1,4 @@
 $(document).ready(function() {
-
-    localStorage.setItem("openai-key", "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");
-   
     var sessionArray = JSON.parse(localStorage.getItem("sessions"));
     var sessionSelect = document.querySelector('#session-selection');
     
