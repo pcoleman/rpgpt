@@ -212,16 +212,16 @@ function nextPlayerCreationStage() {
   // Increment the stage to pull in the prompt for the second stage.
   stage = stage + 1;
   
-  var character_creation_stages = localStorage.getItem(sessionName + ".character-creation-steps");
-  
+  var character_creation_steps = JSON.parse(localStorage.getItem(sessionName + ".character-creation-steps"));
+
   // Only do something if we haven't reached the end of the stages.
-  if (stage <= character_creation_stages) {
+  if (stage <= character_creation_steps.length) {
   
     // Save the new stage number
     localStorage.setItem(sessionName + ".player-creation-stage", stage);
   
     // Get the stage text for the next stage
-    var stageText = character_creation_stages[stage];
+    var stageText = character_creation_steps[stage];
     
     // Get the decisions made so far during player creation
     var characterDecisions = localStorage.getItem(sessionName + ".player-creation-decisions");
@@ -244,7 +244,7 @@ function nextPlayerCreationStage() {
     var characterString = characterDecisions.join();
     
     // Create new message to send to chatGPT
-    var message = [{"role":"user", "content": "Provide a detailed description of this next step of character creation: " + stageText + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Here are the choices I've made so far: " + characterString + "Format everything using html code."}];
+    var message = [{"role":"user", "content": "Here are the choices I've made so far: " + characterString + ". Provide a detailed description of this next step of character creation: " + stageText + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
     
     console.log(JSON.stringify(message));
     // Send prompt
