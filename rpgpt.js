@@ -166,12 +166,15 @@ function removeSession() {
 }
 
 function changeSession(sessionName) {
-   // Change the dropdown menu to the selected session
-   var sessionSelect = document.querySelector('#session-selection');
-   sessionSelect.value = sessionName
+   // Check to make sure sessionName is not empty
+   if (sessionName) {
+     // Change the dropdown menu to the selected session
+     var sessionSelect = document.querySelector('#session-selection');
+     sessionSelect.value = sessionName
    
-   // Initialize player creation for the session
-   initializeNewCharacterCreation(sessionName);
+     // Initialize player creation for the session
+     initializeNewCharacterCreation(sessionName);
+   }
 }
 
 function initializeNewCharacterCreation(sessionName) {
@@ -238,7 +241,7 @@ function nextPlayerCreationStage() {
     
     // Add that decision to the array
     if (!characterDecisions) {
-      characterDecisions = [input];
+      characterDecisions = ["1st level", input];
     } else {
       characterDecisions = JSON.parse(characterDecisions);
       characterDecisions.push(input);
