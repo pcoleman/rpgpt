@@ -214,7 +214,7 @@ function nextPlayerCreationStage() {
   
   var character_creation_steps = JSON.parse(localStorage.getItem(sessionName + ".character-creation-steps"));
 
-  console.log(JSON.stringify(character_creation_steps);
+  console.log(JSON.stringify(character_creation_steps));
   console.log(stage);
   console.log(character_creation_steps.length);
 
