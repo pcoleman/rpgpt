@@ -247,7 +247,7 @@ function nextPlayerCreationStage() {
     var characterString = characterDecisions.join();
     
     // Create new message to send to chatGPT
-    var message = [{"role":"user", "content": "content": "Provide a detail  + description of this first step of character creation: " + stageText + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Here are the choices I've made so far: " + characterString + "Format everything using html code."}];
+    var message = [{"role":"user", "content": "Provide a detail  + description of this next step of character creation: " + stageText + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Here are the choices I've made so far: " + characterString + "Format everything using html code."}];
     
     // Send prompt
     prompt(message, function(msg) {
