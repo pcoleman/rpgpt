@@ -189,7 +189,7 @@ function initializeNewCharacterCreation(sessionName) {
             console.log(characterCreationSteps);
             localStorage.setItem(sessionName + ".character-creation-steps", JSON.stringify(characterCreationSteps));
             var firstStep = characterCreationSteps[0];
-            var firstStepMessage = [{"role":"user", "content": "Provide a detail  + description of the first step of character creation, " + firstStep + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
+            var firstStepMessage = [{"role":"user", "content": "Provide a detailed description of the first step of character creation, " + firstStep + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
             prompt(firstStepMessage, function(msg) {
               var firstStep = msg.choices[0].message.content;
               console.log(firstStep);
@@ -247,7 +247,7 @@ function nextPlayerCreationStage() {
     var characterString = characterDecisions.join();
     
     // Create new message to send to chatGPT
-    var message = [{"role":"user", "content": "Provide a detail  + description of this next step of character creation: " + stageText + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Here are the choices I've made so far: " + characterString + "Format everything using html code."}];
+    var message = [{"role":"user", "content": "Provide a detailed description of this next step of character creation: " + stageText + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Here are the choices I've made so far: " + characterString + "Format everything using html code."}];
     
     // Send prompt
     prompt(message, function(msg) {
