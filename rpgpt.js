@@ -274,7 +274,7 @@ function nextPlayerCreationStage() {
 
 	      $("#new-player-text").html(nextStep);
 	    });
-    } else if (stage < (character_creation_steps.length - 1){
+    } else if (stage < character_creation_steps.length){
 	   $("#new-player-text").html("<h2>What is your character's name?</h2>"); 
     } else {
 	    // Append all the decisions so far
