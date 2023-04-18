@@ -280,7 +280,7 @@ function nextPlayerCreationStage() {
 	   $("#new-player-text").html("<h2>What is your character's name?</h2>"); 
     } else if (stage > character_creation_steps.length) {
 	   // Save the character name in a temporary variable
-	   localStorage.setItem((sessionName + ".player-creation-name", input);
+	   localStorage.setItem(sessionName + ".player-creation-name", input);
            $("#new-player-text").html("<h2>What is your character's background?</h2>"); 
     } else {
 	   // Save the character background in a temporary variable
