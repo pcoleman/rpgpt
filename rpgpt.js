@@ -301,6 +301,7 @@ if (stage != character_creation_steps.length + 1) {
     if (!characterDecisions) {
       characterDecisions = ["1st level", input];
     } else {
+      console.log(characterDecisions);
       characterDecisions = JSON.parse(characterDecisions);
       characterDecisions.push(input);
     }
