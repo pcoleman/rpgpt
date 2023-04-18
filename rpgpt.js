@@ -297,7 +297,6 @@ function nextPlayerCreationStage() {
     document.querySelector('#character-creation-text').value = "";
     
     // Add that decision to the array
-if (stage != character_creation_steps.length + 1) {
     if (!characterDecisions) {
       characterDecisions = ["1st level", input];
     } else {
@@ -305,7 +304,6 @@ if (stage != character_creation_steps.length + 1) {
       characterDecisions = JSON.parse(characterDecisions);
       characterDecisions.push(input);
     }
-}
     
     //save the update character decision array
     localStorage.setItem(sessionName + ".player-creation-decisions", JSON.stringify(characterDecisions));
