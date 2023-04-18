@@ -284,7 +284,7 @@ function nextPlayerCreationStage() {
            $("#new-player-text").html("<h2>What is your character's background?</h2>"); 
     } else {
 	   // Save the character background in a temporary variable
-	   localStorage.setItem((sessionName + ".player-creation-background", input);
+	   localStorage.setItem(sessionName + ".player-creation-background", input);
 	    
 	    // Append all the decisions so far
 	    var characterString = characterDecisions.join();
