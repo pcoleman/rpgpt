@@ -232,7 +232,7 @@ function nextPlayerCreationStage() {
   console.log(character_creation_steps.length);
 
   // Only do something if we haven't reached the end of the stages.
-  if (stage < character_creation_steps.length + 2) {
+  if (stage <= character_creation_steps.length + 2) {
   
     // Save the new stage number
     localStorage.setItem(sessionName + ".player-creation-stage", stage);
