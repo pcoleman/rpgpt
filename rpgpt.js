@@ -40,7 +40,7 @@ $(document).ready(function() {
     }
 	
     // Select the current player
-    var currentPlayerName = localStorage.getItem(sessionName + ".current-player"));
+    var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
 
     if (currentPlayerName) {
     	changePlayer(currentPlayerName);
