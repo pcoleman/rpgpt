@@ -428,9 +428,9 @@ function removePlayer(sessionName, playerName) {
 	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
 
 	// Remove player from the list on the page
-	var player-list = document.getElementById("player-list");
-	var player-element = document.getElementById(playerName + "-list-item");
-	player-list.removeChild(player-element);
+	var playerList = document.getElementById("player-list");
+	var playerElement = document.getElementById(playerName + "-list-item");
+	playerList.removeChild(playerElement);
 }
 
 function prompt(messages, successMethod) {
