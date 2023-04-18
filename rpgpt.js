@@ -43,7 +43,7 @@ $(document).ready(function() {
     
     $( "#new-player-submit-button" ).click(nextPlayerCreationStage);
     
-    //$( "#new-character-button" ).click(initializeNewCharacterCreation);
+    $( "#new-player-save-button" ).click(saveNewPlayer);
 
 });
 
@@ -250,12 +250,14 @@ function nextPlayerCreationStage() {
     document.querySelector('#character-creation-text').value = "";
     
     // Add that decision to the array
+if (stage <= character_creation_steps.length + 1) {
     if (!characterDecisions) {
       characterDecisions = ["1st level", input];
     } else {
       characterDecisions = JSON.parse(characterDecisions);
       characterDecisions.push(input);
     }
+}
     
     //save the update character decision array
     localStorage.setItem(sessionName + ".player-creation-decisions", JSON.stringify(characterDecisions));
@@ -315,6 +317,39 @@ function nextPlayerCreationStage() {
 	 });
     }
   } 
+}
+
+function saveNewPlayer() {
+	// Get all the information about the player character
+	var name = localStorage.getItem(sessionName + ".player-creation-name");
+	var background = localStorage.getItem(sessionName + ".player-creation-background");
+	var json = localStorage.getItem(sessionName + ".player-creation-json");
+	
+	// Create the player character object
+	var playerObject = {"background":background, "json":JSON.parse(json)};
+	
+	// Save the player character object
+	localStorage.setItem(sessionName + "." + name, JSON.stringify(playerObject));
+	
+	// Add the player character to the list of available player characters
+	var playerCharacters = localStorage.getItem(sessionName + ".playerCharacters");
+	
+	if (!playerCharacters) {
+		playerCharacters = [name];	
+	} else {
+		playerCharacters = JSON.parse(playerCharacters);
+		playerCharacters.push(name);
+	}
+	
+	// Save the new list of player characters
+	localStorage.setItem(sessionName + ".playerCharacters", JSON.stringify(playerCharacters));
+	
+	// Update everything with the newly selected character.
+	changePlayer(name);
+}
+
+function changePlayer(playerName) {
+	
 }
 
 function prompt(messages, successMethod) {
