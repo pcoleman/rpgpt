@@ -7,6 +7,7 @@ $(document).ready(function() {
       }
     });
 	
+    // load session array
     var sessionArray = JSON.parse(localStorage.getItem("sessions"));
     var sessionSelect = document.querySelector('#session-selection');
     
@@ -14,6 +15,35 @@ $(document).ready(function() {
         let newSession = document.createElement('option');
         newSession.text = newSession.value = sessionArray[i];
         sessionSelect.add(newSession);
+    }
+    
+    var sessionName = localStorage.getItem("currentSession");
+    
+    if (sessionName) {
+        changeSession(sessionName);
+    }
+    
+    $("#session-selection").change(function () {
+        if (this.value) {
+            changeSession(this.value);
+        }
+    });
+	
+    // load player array
+   
+    var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
+    var playerList = $("#player-list")
+    
+    for (i in playerArray) {
+	var player = createPlayerElement(playerArray[i]);
+	playerList.append(player);
+    }
+	
+    // Select the current player
+    var currentPlayerName = localStorage.getItem(sessionName + ".current-player"));
+
+    if (currentPlayerName) {
+    	changePlayer(currentPlayerName);
     }
     
     var sessionName = localStorage.getItem("currentSession");
@@ -185,6 +215,23 @@ function changeSession(sessionName) {
      // Initialize player creation for the session
      initializeNewCharacterCreation(sessionName);
    }
+	
+   // Update the player list
+   $("#player-list").empty();
+    var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
+    var playerList = $("#player-list")
+    
+    for (i in playerArray) {
+	var player = createPlayerElement(playerArray[i]);
+	playerList.append(player);
+    }
+	
+    // Select the current player
+    var currentPlayerName = localStorage.getItem(sessionName + ".current-player"));
+
+    if (currentPlayerName) {
+    	changePlayer(currentPlayerName);
+    }
 }
 
 function initializeNewCharacterCreation(sessionName) {
@@ -332,7 +379,7 @@ function saveNewPlayer() {
 	localStorage.setItem(sessionName + "." + name, JSON.stringify(playerObject));
 	
 	// Add the player character to the list of available player characters
-	var playerCharacters = localStorage.getItem(sessionName + ".playerCharacters");
+	var playerCharacters = localStorage.getItem(sessionName + ".player-characters");
 	
 	if (!playerCharacters) {
 		playerCharacters = [name];	
@@ -342,14 +389,48 @@ function saveNewPlayer() {
 	}
 	
 	// Save the new list of player characters
-	localStorage.setItem(sessionName + ".playerCharacters", JSON.stringify(playerCharacters));
+	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
+	
+	// Set the new player as the current player
+	localStorage.setItem(sessionName + ".current-player", name);
+	
+	// Create a new player element to add to the list on the site
+	var player = createPlayerElement(sessionName, name);
+	
+	$("#player-list").append(player);
 	
 	// Update everything with the newly selected character.
 	changePlayer(name);
 }
 
+function createPlayerElement(sessionName, name) {
+        return "<li class=\"player-container player-selected\" onclick=\"changePlayer(" + name + ")\" id=\"" + name + "-list-item\"><h5>Player Name</h5><div class=\"player-edit-buttons wf-section\" hidden id=\""+ name + "-edit-buttons\"><div class=\"player-edit-button\" onclick=\"editPlayer(" + sessionName + "," + name + ")\"></div><div class=\"player-remove-button\" onclick=\"removePlayer(" + sessionName + "," + name + ")\"></div></div></li>
+}
+
 function changePlayer(playerName) {
+	var playerList = $("#player-list li");
+	listItems.each(function(idx, li) {
+    		var player = $(li);
+                player.removeClass("player-container player-selected");
+		player.addClass("player-container");
+		player.find(".player-edit-buttons").hide();
+	});
+	$("#" + playerName + "-list-item").removeClass("player-container");
+	$("#" + playerName + "-list-item").addClass("player-container player-selected");
+	$("#" + playerName + "-edit-buttons").show();
 	
+}
+
+function removePlayer(sessionName, playerName) {
+	// Add the player character to the list of available player characters
+	var playerCharacters = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
+	playerCharacters.splice(playerCharacters.indexOf(playerName), 1);
+	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
+
+	// Remove player from the list on the page
+	var player-list = document.getElementById("player-list");
+	var player-element = document.getElementById(playerName + "-list-item");
+	player-list.removeChild(player-element);
 }
 
 function prompt(messages, successMethod) {
