@@ -284,7 +284,7 @@ function nextPlayerCreationStage() {
 	    
 	    console.log(characterString);
 	    // Create new message to send to chatGPT
-	    var message = [{"role":"user", "content": "create a " + mechanics + " character sheet for: " + characterString + ". Include anything that is expendable, and everything in the inventory has a count, include any additional fields and expendable slots not specified."}];
+	    var message = [{"role":"user", "content": "create a " + mechanics + " character sheet for: " + characterString + ". Provide counts for inventory items. Include the number of expendable slots, for example spell slots or skills that have a limited number of uses. Include other features or attributes commonly associated with this type of character that was not listed above, assign values to these."}];
             prompt(message, function(msg) {
 	      var characterSheet = msg.choices[0].message.content;
 	      console.log(JSON.stringify(msg));
