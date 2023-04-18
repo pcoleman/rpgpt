@@ -404,7 +404,7 @@ function saveNewPlayer() {
 }
 
 function createPlayerElement(sessionName, name) {
-        return "<li class=\"player-container player-selected\" onclick=\"changePlayer(" + name + ")\" id=\"" + name + "-list-item\"><h5>Player Name</h5><div class=\"player-edit-buttons wf-section\" hidden id=\""+ name + "-edit-buttons\"><div class=\"player-edit-button\" onclick=\"editPlayer(" + sessionName + "," + name + ")\"></div><div class=\"player-remove-button\" onclick=\"removePlayer(" + sessionName + "," + name + ")\"></div></div></li>
+        return "<li class=\"player-container player-selected\" onclick=\"changePlayer(" + name + ")\" id=\"" + name + "-list-item\"><h5>Player Name</h5><div class=\"player-edit-buttons wf-section\" hidden id=\""+ name + "-edit-buttons\"><div class=\"player-edit-button\" onclick=\"editPlayer(" + sessionName + "," + name + ")\"></div><div class=\"player-remove-button\" onclick=\"removePlayer(" + sessionName + "," + name + ")\"></div></div></li>"
 }
 
 function changePlayer(playerName) {
