@@ -234,6 +234,7 @@ function initializeNewCharacterCreation(sessionName) {
 }
 
 function nextPlayerCreationStage() {
+	console.log("next player creation stage");
   var sessionName = localStorage.getItem("currentSession");
 
   var setting = localStorage.getItem(sessionName + ".setting");
