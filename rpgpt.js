@@ -28,26 +28,6 @@ $(document).ready(function() {
             changeSession(this.value);
         }
     });
-	
-    // load player array
-   
-    var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
-    var playerList = $("#player-list");
-	console.log(JSON.stringify(playerArray));
-	console.log(playerList);
-	playerList.empty();
-    
-    for (i in playerArray) {
-	var player = createPlayerElement(playerArray[i]);
-	playerList.append(player);
-    }
-	
-    // Select the current player
-    var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
-
-    if (currentPlayerName) {
-    	changePlayer(currentPlayerName);
-    }
     
     var sessionName = localStorage.getItem("currentSession");
     
