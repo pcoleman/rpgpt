@@ -392,14 +392,16 @@ function createPlayerElement(sessionName, name) {
 	buttonContainer.addClass("player-edit-buttons wf-section");
 	buttonContainer.attr('id', name + "-edit-buttons");
 	
-	var editButton = $('<div></div>');
+	var editButton = $('<a></a>);
 	editButton.addClass("player-edit-button");
-	playerLi.click({sessionName:sessionName, playerName: name}, editPlayer);
+	editButton.attr('id', name + "-edit-button");
+	editButton.click({sessionName:sessionName, playerName: name}, editPlayer);
 	buttonContainer.append(editButton);
 	
-        var removeButton = $('<div></div>');
-	editButton.addClass("player-remove-button");
-	playerLi.click({sessionName:sessionName, playerName: name}, removePlayer);
+	var removeButton = $('<a></a>');
+	removeButton.addClass("player-remove-button");
+	removeButton.click({sessionName:sessionName, playerName: name}, removePlayer);
+	removeButton.attr('id', name + "-remove-button");
 	buttonContainer.append(editButton);
 	
 	buttonContainer.hide();
@@ -423,6 +425,8 @@ function changePlayer(event) {
 	$("#" + playerName + "-list-item").removeClass("player-container");
 	$("#" + playerName + "-list-item").addClass("player-container player-selected");
 	$("#" + playerName + "-edit-buttons").show();
+	$("#" + playerName + "-edit-button").attr('href', '#');
+	$("#" + playerName + "-remove-button").attr('href', '#');
 	
 	// Set the new player as the current player
 	localStorage.setItem(sessionName + ".current-player", playerName);
