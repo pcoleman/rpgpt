@@ -442,10 +442,14 @@ function removePlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
 	console.log("removing players");
-	// Add the player character to the list of available player characters
+	
+	// Remove the player character from the list of available player characters
 	var playerCharacters = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
 	playerCharacters.splice(playerCharacters.indexOf(playerName), 1);
 	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
+	
+	// Remove the player objct
+	localStorage.removeItem(sessionName + "." + playerName);
 
 	// Remove player from the list on the page
 	$("#" + playerName.replace(/\s+/g, '') + "-list-item").remove();
