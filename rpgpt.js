@@ -431,6 +431,15 @@ function changePlayer(event) {
 	
 	// Set the new player as the current player
 	localStorage.setItem(sessionName + ".current-player", playerName);
+	
+	// Enable the player tree
+	var playerObject = JSON.parse(localStorage.getItem(sessionName + "." + playerName));
+	
+	// create json tree object
+	const tree = jsonview.create(playerObject);
+	
+	// render tree into dom element
+	jsonview.render(tree, document.querySelector('#player-tree'));
 }
 
 function editPlayer(event) {
