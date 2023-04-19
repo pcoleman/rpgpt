@@ -1,3 +1,5 @@
+let currentPlayerTree = null;
+
 $(document).ready(function() {
     // Disable pressing enter on text boxes
     $(window).keydown(function(event){
@@ -435,11 +437,19 @@ function changePlayer(event) {
 	// Enable the player tree
 	var playerObject = JSON.parse(localStorage.getItem(sessionName + "." + playerName));
 	
+	// remove the current player tree
+	if (currentPlayerTree) {
+		jsonview.destroy(currentPlayerTree);	
+	}
+	
 	// create json tree object
 	const tree = jsonview.create(playerObject);
 	
 	// render tree into dom element
 	jsonview.render(tree, document.querySelector('#player-tree'));
+	
+	// set the new tree as the current player tree
+	currentPlayerTree = tree;
 }
 
 function editPlayer(event) {
