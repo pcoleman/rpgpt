@@ -44,7 +44,7 @@ $(document).ready(function() {
     
     $( "#new-player-submit-button" ).click(nextPlayerCreationStage);
     
-    $( "#new-player-save-button" ).click(saveNewPlayer(sessionName));
+    $( "#new-player-save-button" ).click({session: sessionName}, saveNewPlayer);
 
 });
 
@@ -339,7 +339,8 @@ function nextPlayerCreationStage() {
   } 
 }
 
-function saveNewPlayer(sessionName) {
+function saveNewPlayer(event) {
+	sessionName = event.data.session;
 	console.log("saving new player");
 	// Get all the information about the player character
 	var name = localStorage.getItem(sessionName + ".player-creation-name");
