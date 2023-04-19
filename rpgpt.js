@@ -205,7 +205,7 @@ function changeSession(sessionName) {
     var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
 
     if (currentPlayerName) {
-    	changePlayer(currentPlayerName);
+	changePlayer({data:{sessionName:sessionName, currentPlayerName, name}});
     }
 }
 
@@ -368,16 +368,13 @@ function saveNewPlayer(event) {
 	// Save the new list of player characters
 	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
 	
-	// Set the new player as the current player
-	localStorage.setItem(sessionName + ".current-player", name);
-	
 	// Create a new player element to add to the list on the site
 	var player = createPlayerElement(sessionName, name);
 	
 	$("#player-list").append(player);
 	
 	// Update everything with the newly selected character.
-	changePlayer(name);
+	changePlayer({data:{sessionName:sessionName, playerName, name}});
 }
 
 function createPlayerElement(sessionName, name) {
@@ -412,6 +409,7 @@ function createPlayerElement(sessionName, name) {
 }
 
 function changePlayer(event) {
+	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
 	console.log("changing players " + playerName);
 	var playerList = $("#player-list li");
@@ -425,6 +423,13 @@ function changePlayer(event) {
 	$("#" + playerName + "-list-item").addClass("player-container player-selected");
 	$("#" + playerName + "-edit-buttons").show();
 	
+	// Set the new player as the current player
+	localStorage.setItem(sessionName + ".current-player", playerName);
+}
+
+function editPlayer(event) {
+	var sessionName = event.data.sessionName;
+	var playerName = event.data.playerName;
 }
 
 function removePlayer(event) {
