@@ -427,7 +427,9 @@ function changePlayer(event) {
 	
 }
 
-function removePlayer(sessionName, playerName) {
+function removePlayer(event) {
+	var sessionName = event.data.sessionName;
+	var playerName = event.data.playerName;
 	console.log("removing players");
 	// Add the player character to the list of available player characters
 	var playerCharacters = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
