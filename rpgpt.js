@@ -402,7 +402,7 @@ function createPlayerElement(sessionName, name) {
 	removeButton.addClass("player-remove-button");
 	removeButton.click({sessionName:sessionName, playerName: name}, removePlayer);
 	removeButton.attr({'id': name.replace(/\s+/g, '') + "-remove-button", "href":"#"});
-	buttonContainer.append(editButton);
+	buttonContainer.append(removeButton);
 	
 	buttonContainer.hide();
 	
