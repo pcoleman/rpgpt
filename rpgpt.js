@@ -32,7 +32,8 @@ $(document).ready(function() {
     // load player array
    
     var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
-    var playerList = $("#player-list")
+    var playerList = $("#player-list");
+	playerList.empty();
     
     for (i in playerArray) {
 	var player = createPlayerElement(playerArray[i]);
