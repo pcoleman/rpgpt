@@ -408,7 +408,7 @@ function createPlayerElement(sessionName, name) {
 
 function changePlayer(playerName) {
 	var playerList = $("#player-list li");
-	listItems.each(function(idx, li) {
+	playerList.each(function(idx, li) {
     		var player = $(li);
                 player.removeClass("player-container player-selected");
 		player.addClass("player-container");
