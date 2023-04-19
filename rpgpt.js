@@ -381,7 +381,7 @@ function saveNewPlayer(event) {
 function createPlayerElement(sessionName, name) {
 	var playerLi = $('<li></li>');
 	playerLi.addClass("player-container");
-	playerLi.click({playerName: name}, changePlayer);
+	playerLi.click({sessionName: sessionName, playerName: name}, changePlayer);
 	playerLi.attr({'id': name.replace(/\s+/g, '') + "-list-item"});
 	
 	var text = $('<h5></h5>');
