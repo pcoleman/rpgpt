@@ -202,6 +202,7 @@ function changeSession(sessionName) {
     }
 	
     // Select the current player
+	console.log(sessionName + ".current-player");
     var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
 
     if (currentPlayerName) {
