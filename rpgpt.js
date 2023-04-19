@@ -195,7 +195,7 @@ function changeSession(sessionName) {
     var playerList = $("#player-list")
     
     for (i in playerArray) {
-	console.log(JSON.stringify(playerArray);
+	console.log(JSON.stringify(playerArray));
 	console.log(playerArray[i]);
 	var player = createPlayerElement(playerArray[i]);
 	playerList.append(player);
