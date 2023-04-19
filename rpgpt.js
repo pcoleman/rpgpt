@@ -381,10 +381,38 @@ function saveNewPlayer(event) {
 }
 
 function createPlayerElement(sessionName, name) {
-        return "<li class=\"player-container player-selected\" onclick=\"changePlayer(" + name + ")\" id=\"" + name + "-list-item\"><h5>Player Name</h5><div class=\"player-edit-buttons wf-section\" hidden id=\""+ name + "-edit-buttons\"><div class=\"player-edit-button\" onclick=\"editPlayer(" + sessionName + "," + name + ")\"></div><div class=\"player-remove-button\" onclick=\"removePlayer(" + sessionName + "," + name + ")\"></div></div></li>"
+	var playerLi = $('<li></li>');
+	playerLi.addClass("player-container");
+	playerLi.click({playerName: name}, changePlayer);
+	playerLi.attr('id', name + "-list-item");
+	
+	var text = $('<h5></h5>');
+	text.text(name);
+	playerLi.append(text);
+	
+	var buttonContainer = $('<div></div>');
+	buttonContainer.addClass("player-edit-buttons wf-section");
+	buttonContainer.attr('id', name + "-edit-buttons");
+	
+	var editButton = $('<div></div>');
+	editButton.addClass("player-edit-button");
+	playerLi.click({sessionName:sessionName, playerName: name}, editPlayer);
+	buttonContainer.append(editButton);
+	
+        var removeButton = $('<div></div>');
+	editButton.addClass("player-remove-button");
+	playerLi.click({sessionName:sessionName, playerName: name}, removePlayer);
+	buttonContainer.append(editButton);
+	
+	buttonContainer.hide();
+	
+	playerLi.append(buttonContainer);
+	
+	return playerLi;
 }
 
-function changePlayer(playerName) {
+function changePlayer(event) {
+	var playerName = event.data.playerName;
 	console.log("changing players " + playerName);
 	var playerList = $("#player-list li");
 	playerList.each(function(idx, li) {
