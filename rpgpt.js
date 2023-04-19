@@ -375,7 +375,7 @@ function saveNewPlayer(event) {
 	$("#player-list").append(player);
 	
 	// Update everything with the newly selected character.
-	changePlayer({data:{sessionName:sessionName, playerName, name}});
+	changePlayer({data:{sessionName:sessionName, playerName: name}});
 }
 
 function createPlayerElement(sessionName, name) {
