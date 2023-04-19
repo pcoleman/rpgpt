@@ -205,7 +205,7 @@ function changeSession(sessionName) {
     var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
 
     if (currentPlayerName) {
-	changePlayer({data:{sessionName:sessionName, currentPlayerName, name}});
+	changePlayer({data:{sessionName:sessionName, currentPlayerName: name}});
     }
 }
 
