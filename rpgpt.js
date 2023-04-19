@@ -382,7 +382,7 @@ function createPlayerElement(sessionName, name) {
 	var playerLi = $('<li></li>');
 	playerLi.addClass("player-container");
 	playerLi.click({playerName: name}, changePlayer);
-	playerLi.attr({'id', name.replace(/\s+/g, '') + "-list-item"});
+	playerLi.attr({'id': name.replace(/\s+/g, '') + "-list-item"});
 	
 	var text = $('<h5></h5>');
 	text.text(name);
@@ -390,18 +390,18 @@ function createPlayerElement(sessionName, name) {
 	
 	var buttonContainer = $('<div></div>');
 	buttonContainer.addClass("player-edit-buttons wf-section");
-	buttonContainer.attr({'id', name.replace(/\s+/g, '') + "-edit-buttons"});
+	buttonContainer.attr({'id': name.replace(/\s+/g, '') + "-edit-buttons"});
 	
 	var editButton = $('<a></a>');
 	editButton.addClass("player-edit-button");
-	editButton.attr({'id', name.replace(/\s+/g, '') + "-edit-button", "href":"#"});
+	editButton.attr({'id': name.replace(/\s+/g, '') + "-edit-button", "href":"#"});
 	editButton.click({sessionName:sessionName, playerName: name}, editPlayer);
 	buttonContainer.append(editButton);
 	
 	var removeButton = $('<a></a>');
 	removeButton.addClass("player-remove-button");
 	removeButton.click({sessionName:sessionName, playerName: name}, removePlayer);
-	removeButton.attr({'id', name.replace(/\s+/g, '') + "-remove-button", "href":"#"});
+	removeButton.attr({'id': name.replace(/\s+/g, '') + "-remove-button", "href":"#"});
 	buttonContainer.append(editButton);
 	
 	buttonContainer.hide();
