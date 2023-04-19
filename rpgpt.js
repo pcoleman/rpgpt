@@ -186,7 +186,8 @@ function changeSession(sessionName) {
      // Initialize player creation for the session
      initializeNewCharacterCreation(sessionName);
    }
-	
+
+	console.log(sessionName);
    // Update the player list
    $("#player-list").empty();
     var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
