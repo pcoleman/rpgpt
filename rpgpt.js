@@ -1,3 +1,5 @@
+import jsonview from '@pgrabovets/json-view';
+
 $(document).ready(function() {
     // Disable pressing enter on text boxes
     $(window).keydown(function(event){
