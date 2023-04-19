@@ -392,7 +392,7 @@ function createPlayerElement(sessionName, name) {
 	buttonContainer.addClass("player-edit-buttons wf-section");
 	buttonContainer.attr('id', name + "-edit-buttons");
 	
-	var editButton = $('<a></a>);
+	var editButton = $('<a></a>');
 	editButton.addClass("player-edit-button");
 	editButton.attr('id', name + "-edit-button");
 	editButton.click({sessionName:sessionName, playerName: name}, editPlayer);
