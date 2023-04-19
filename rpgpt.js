@@ -414,7 +414,7 @@ function createPlayerElement(sessionName, name) {
 function changePlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
-	console.log("changing players " + playerName);
+	console.log("changing players " + playerName + " " + sessionName);
 	var playerList = $("#player-list li");
 	playerList.each(function(idx, li) {
     		var player = $(li);
