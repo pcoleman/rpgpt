@@ -177,6 +177,7 @@ function removeSession() {
 }
 
 function changeSession(sessionName) {
+	console.log("changing session");
    // Check to make sure sessionName is not empty
    if (sessionName) {
      // Change the dropdown menu to the selected session
@@ -338,6 +339,7 @@ function nextPlayerCreationStage() {
 }
 
 function saveNewPlayer(sessionName) {
+	console.log("saving new player");
 	// Get all the information about the player character
 	var name = localStorage.getItem(sessionName + ".player-creation-name");
 	var background = localStorage.getItem(sessionName + ".player-creation-background");
@@ -379,6 +381,7 @@ function createPlayerElement(sessionName, name) {
 }
 
 function changePlayer(playerName) {
+	console.log("changing players");
 	var playerList = $("#player-list li");
 	playerList.each(function(idx, li) {
     		var player = $(li);
@@ -393,9 +396,10 @@ function changePlayer(playerName) {
 }
 
 function removePlayer(sessionName, playerName) {
+	console.log("removing players");
 	// Add the player character to the list of available player characters
 	var playerCharacters = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
-	playerCharacters.splice(playerCharacters.indexOf(playerName), 1);
+	playerCharacters = playerCharacters.splice(playerCharacters.indexOf(playerName), 1);
 	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
 
 	// Remove player from the list on the page
