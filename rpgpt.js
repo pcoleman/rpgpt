@@ -444,13 +444,11 @@ function removePlayer(event) {
 	console.log("removing players");
 	// Add the player character to the list of available player characters
 	var playerCharacters = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
-	playerCharacters = playerCharacters.splice(playerCharacters.indexOf(playerName), 1);
+	playerCharacters.splice(playerCharacters.indexOf(playerName), 1);
 	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
 
 	// Remove player from the list on the page
-	var playerList = document.getElementById("player-list");
-	var playerElement = document.getElementById(playerName + "-list-item");
-	playerList.removeChild(playerElement);
+	$("#" + playerName.replace(/\s+/g, '') + "-list-item").remove();
 }
 
 function prompt(messages, successMethod) {
