@@ -73,7 +73,7 @@ $(document).ready(function() {
     
     $( "#new-player-submit-button" ).click(nextPlayerCreationStage);
     
-    $( "#new-player-save-button" ).click(saveNewPlayer);
+    $( "#new-player-save-button" ).click(saveNewPlayer(sessionName));
 
 });
 
@@ -365,7 +365,7 @@ function nextPlayerCreationStage() {
   } 
 }
 
-function saveNewPlayer() {
+function saveNewPlayer(sessionName) {
 	// Get all the information about the player character
 	var name = localStorage.getItem(sessionName + ".player-creation-name");
 	var background = localStorage.getItem(sessionName + ".player-creation-background");
