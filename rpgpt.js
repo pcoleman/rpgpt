@@ -28,18 +28,6 @@ $(document).ready(function() {
             changeSession(this.value);
         }
     });
-    
-    var sessionName = localStorage.getItem("currentSession");
-    
-    if (sessionName) {
-        changeSession(sessionName);
-    }
-    
-    $("#session-selection").change(function () {
-        if (this.value) {
-            changeSession(this.value);
-        }
-    });
 		
     $( "#session-creation-save-button" ).click(saveSession);
     
