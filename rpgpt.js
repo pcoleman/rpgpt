@@ -398,14 +398,14 @@ function createPlayerElement(sessionName, name) {
 	
 	var editButton = $('<a></a>');
 	editButton.addClass("player-edit-button");
-	editButton.attr({'id': name.replace(/\s+/g, '') + "-edit-button", "href":"#", "data-w-id":"06af924b-1232-cf5c-790a-2108ca4fe008", "data-wf-id":"[\"06af924b-1232-cf5c-790a-2108ca4fe008\"]"});
+	editButton.attr({'id': name.replace(/\s+/g, '') + "-edit-button", "href":"#"});
 	editButton.click({sessionName:sessionName, playerName: name}, editPlayer);
 	buttonContainer.append(editButton);
 	
 	var removeButton = $('<a></a>');
 	removeButton.addClass("player-remove-button");
 	removeButton.click({sessionName:sessionName, playerName: name}, removePlayer);
-	removeButton.attr({'id': name.replace(/\s+/g, '') + "-remove-button", "href":"#", "data-w-id":"7e605f07-a2d2-bdf5-160f-aafddbdb46a0", "data-wf-id":"[\"7e605f07-a2d2-bdf5-160f-aafddbdb46a0\"]"});
+	removeButton.attr({'id': name.replace(/\s+/g, '') + "-remove-button", "href":"#"});
 	buttonContainer.append(removeButton);
 	
 	buttonContainer.hide();
