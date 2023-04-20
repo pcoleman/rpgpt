@@ -50,7 +50,7 @@ $(document).ready(function() {
 	
 	$( "#player-removal-confirmation" ).click(removePlayerButton);
 	
-	$( "#player-edit-confirmation" ).click(removeEditButton);
+	$( "#player-edit-confirmation" ).click(editPlayerButton);
 
 });
 
