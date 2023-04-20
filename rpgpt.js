@@ -49,6 +49,8 @@ $(document).ready(function() {
     $( "#new-player-save-button" ).click({session: sessionName}, saveNewPlayer);
 	
 	$( "#player-removal-confirmation" ).click(removePlayerButton);
+	
+	$( "#player-edit-confirmation" ).click(removeEditButton);
 
 });
 
@@ -463,6 +465,17 @@ function changePlayer(event) {
 function editPlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
+	localStorage.setItem(sessionName + ".editPlayer", playerName);
+	
+	// Populate the edit field
+	var playerObject = JSON.parse(localStorage.getItem(sessionName + "." + playerName));
+	
+	var playerString = JSON.stringify(playerObject, null, 4);
+	$("#player-edit-text-area").text(playerString);
+	
+	
+	// Show player edit modal
+	$("#player-edit-modal").show();
 }
 
 function removePlayer(event) {
@@ -497,6 +510,22 @@ function removePlayerButton() {
 	
 	// reset remove player field
 	localStorage.setItem(sessionName + ".removePlayer", "");
+}
+
+function editPlayerButton() {
+	var sessionName = localStorage.getItem("currentSession");
+	var playerName = localStorage.getItem(sessionName + ".editPlayer");
+	console.log("editing player " + playerName);
+	
+	// Get the modified player text
+	var modifiedPlayer = $("#player-edit-text-area").val();
+	
+	var modifiedPlayerObject = JSON.parse(modifiedPlayer);
+	
+	// Save modified player
+	localStorage.setItem(sessionName + "." + playerName, JSON.stringify(modifiedPlayerObject));
+	
+	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
 }
 
 function prompt(messages, successMethod) {
