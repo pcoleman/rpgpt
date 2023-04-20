@@ -449,7 +449,9 @@ function changePlayer(event) {
 	}
 	
 	// create json tree object
-	const tree = jsonview.create([playerObject.json]);
+	var partyObject = {};
+	partyObject[playerName] = playerObject.json;
+	const tree = jsonview.create(partyObject);
 	
 	// render tree into dom element
 	jsonview.render(tree, document.querySelector('#player-tree'));
