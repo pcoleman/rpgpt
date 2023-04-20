@@ -425,10 +425,12 @@ function changePlayer(event) {
                 player.removeClass("player-container player-selected");
 		player.addClass("player-container");
 		player.find(".player-edit-buttons").hide();
+		player.on('click');
 	});
 	var playerListItem = $("#" + playerName.replace(/\s+/g, '') + "-list-item");
 	playerListItem.removeClass("player-container");
 	playerListItem.addClass("player-container player-selected");
+	playerListItem.off('click');
 	
 	var playerEditButtonContainer = $("#" + playerName.replace(/\s+/g, '') + "-edit-buttons");
 	playerEditButtonContainer.show();
