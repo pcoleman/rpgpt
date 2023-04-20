@@ -467,6 +467,14 @@ function removePlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
 	localStorage.setItem(sessionName + ".removePlayer", playerName);
+	
+	// Show player removal modal
+	$("#player-removal-modal").show();
+	$("#player-removal-modal").css('opacity', '1.0');
+	
+	$("#player-removal-form").show();
+	$("#player-removal-form").css('opacity', '1.0');
+	$("#player-removal-form").css('scale', '1.0');
 }
 
 function removePlayerButton() {
