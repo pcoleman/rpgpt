@@ -47,6 +47,8 @@ $(document).ready(function() {
     $( "#new-player-submit-button" ).click(nextPlayerCreationStage);
     
     $( "#new-player-save-button" ).click({session: sessionName}, saveNewPlayer);
+	
+	$( "#player-removal-confirmation" ).click(removePlayerButton);
 
 });
 
@@ -460,6 +462,12 @@ function editPlayer(event) {
 function removePlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
+	localStorage.setItem(sessionName + ".removePlayer", playerName);
+}
+
+function removePlayerButton() {
+	var sessionName = localStorage.getItem("currentSession");
+	var playerName = localStorage.getItem(sessionName + ".removePlayer");
 	console.log("removing players");
 	
 	// Remove the player character from the list of available player characters
@@ -472,6 +480,9 @@ function removePlayer(event) {
 
 	// Remove player from the list on the page
 	$("#" + playerName.replace(/\s+/g, '') + "-list-item").remove();
+	
+	// reset remove player field
+	localStorage.setItem(sessionName + ".removePlayer", "");
 }
 
 function prompt(messages, successMethod) {
