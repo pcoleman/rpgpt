@@ -422,6 +422,7 @@ function changePlayer(event) {
 	var playerList = $("#player-list li");
 	playerList.each(function(idx, li) {
     		var player = $(li);
+		player.off('click');
                 player.removeClass("player-container player-selected");
 		player.addClass("player-container");
 		player.find(".player-edit-buttons").hide();
