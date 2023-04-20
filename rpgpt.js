@@ -425,7 +425,7 @@ function changePlayer(event) {
                 player.removeClass("player-container player-selected");
 		player.addClass("player-container");
 		player.find(".player-edit-buttons").hide();
-		var tempName = player.children('h5')[0].text();
+		var tempName = player.find('h5').text();
 		player.click({sessionName: sessionName, playerName: tempName}, changePlayer);
 	});
 	var playerListItem = $("#" + playerName.replace(/\s+/g, '') + "-list-item");
