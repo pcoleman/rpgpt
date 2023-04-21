@@ -235,9 +235,12 @@ function changeSession(sessionName) {
     if (currentPlayerName) {
 	changePlayer({data:{sessionName:sessionName, playerName: currentPlayerName}});
     }
+	
+	prepAdventure(sessionName);
 }
 
 function prepAdventure(sessionName) {
+	console.log("preparing adventure");
 	var chatlog = localStorage.getItem(sessionName + ".chat-log");
 	if (chatlog) {
 		$( "#text-response-field" ).text(chatlog);
