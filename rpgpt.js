@@ -51,6 +51,8 @@ $(document).ready(function() {
 	$( "#player-removal-confirmation" ).click(removePlayerButton);
 	
 	$( "#player-edit-confirmation" ).click(editPlayerButton);
+	
+	$( "#start-adventure-button" ).click(startAdventure);
 });
 
 function startAdventure(event) {
