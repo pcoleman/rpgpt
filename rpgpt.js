@@ -81,9 +81,10 @@ function startAdventure(event) {
 	    });
 }
 
-function processResponse(response) {
+function processResponse(message) {
 	console.log("processing response");
 	
+	var response = JSON.parse(message);
 	console.log(response);
 	// Pull out the turn number
 	var turnNumber = response["turn_number"];
