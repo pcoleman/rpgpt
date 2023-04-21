@@ -58,7 +58,7 @@ $(document).ready(function() {
 function startAdventure(event) {
 	var sessionName = localStorage.getItem("currentSession");
 	var playerName = localStorage.getItem(sessionName + ".current-player");
-	var playerObject = localStorage.getItem(sessionName + "." + playerName);
+	var playerObject = JSON.parse(localStorage.getItem(sessionName + "." + playerName));
 	var mechanics = localStorage.getItem(sessionName+".mechanics");
 	var setting = "The setting is " + localStorage.getItem(sessionName+".setting");
 	var character = "My character is " + playerName + "." + playerObject.backgrount + ". This is their character sheet: " + playerObject.json;
