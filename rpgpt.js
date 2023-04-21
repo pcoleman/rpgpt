@@ -128,6 +128,10 @@ function processResponse(sessionName, message) {
 		mainResponse = mainResponse + "\nRoll: " + roll;	
 	}
 	
+	if (description) {
+		mainResponse = mainResponse + "\n" + description;	
+	}
+	
 	var story = response["story"];
 	console.log("story: " + story);
 	if (story) {
