@@ -125,21 +125,21 @@ function processResponse(sessionName, message) {
 	var roll = response["roll"];
 	console.log("roll: " + roll);
 	if (roll) {
-		mainResponse = mainResponse + "\nRoll: " + roll;	
+		mainResponse = mainResponse + "<br><br>Roll: " + roll;	
 	}
 	
 	if (description) {
-		mainResponse = mainResponse + "\n" + description;	
+		mainResponse = mainResponse + "<br><br>" + description;	
 	}
 	
 	var story = response["story"];
 	console.log("story: " + story);
 	if (story) {
-		mainResponse = mainResponse + "\n" + story;	
+		mainResponse = mainResponse + "<br><br>" + story;	
 	}
 	
 	if (mainResponse) {
-		$( "#text-response-field" ).text(mainResponse);
+		$( "#text-response-field" ).html(mainResponse);
 	}
 }
 
