@@ -72,6 +72,9 @@ function startAdventure(event) {
 	      var response = msg.choices[0].message.content;
 	      console.log(JSON.stringify(msg));
 		$( "#text-response-field" ).text(response);
+		$( "#text-submit-area" ).show();
+		$( "#text-submit-button" ).show();
+		$( "#start-adventure-button" ).hide();
 	    });
 }
 
@@ -244,10 +247,14 @@ function prepAdventure(sessionName) {
 	var chatlog = localStorage.getItem(sessionName + ".chat-log");
 	if (chatlog) {
 		$( "#text-response-field" ).text(chatlog);
+		$( "#text-submit-area" ).show();
+		$( "#text-submit-button" ).show();
+		$( "#start-adventure-button" ).hide();
+	} else {
+		$( "#text-submit-area" ).hide();
+		$( "#text-submit-button" ).hide();
+		$( "#start-adventure-button" ).show();
 	}
-	$( "#text-submit-area" ).show();
-	$( "#text-submit-button" ).show();
-	$( "#start-adventure-button" ).hide();
 }
 
 function initializeNewCharacterCreation(sessionName) {
