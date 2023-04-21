@@ -82,30 +82,38 @@ function startAdventure(event) {
 }
 
 function processResponse(response) {
+	console.log("processing response");
+	
+	console.log(response);
 	// Pull out the turn number
 	var turnNumber = response.turn_number;
+	console.log("turn: " + turnNumber);
 	if (turnNumber) {
 		$( "#turn-number" ).text(turnNumber);
 	}
 	
 	// Pull out the location
 	var location = response.location;
+	console.log("location: " + location);
 	if (location) {
 		$( "#location-field" ).text(location);
 	}
 	
         var description = response.description;
+	console.log("description: " + description);
 	if (description) {
 		$( "#description-field" ).text(description);
 	}
 	
 	var poi = response.points_of_interest;
+	console.log("poi: " + poi);
 	if (poi) {
 		var poilocations = poi.join('\r\n');
 		$( "#poi-field" ).text(poilocations);
 	}
 	
 	var summary = response.summary;
+	console.log("summary: " + summary);
 	if (summary) {
 		var hotsummary = localStorage.getItem(sessionName + ".hot-summary");
 		hotsummary = hotsummary + summary;
@@ -114,11 +122,13 @@ function processResponse(response) {
 	
 	var mainResponse = ""
 	var roll = response.roll;
+	console.log("roll: " + roll);
 	if (roll) {
 		mainResponse = mainResponse + "\nRoll: " + roll;	
 	}
 	
 	var story = response.story;
+	console.log("story: " + story);
 	if (story) {
 		mainResponse = mainResponse + "\n" + story;	
 	}
