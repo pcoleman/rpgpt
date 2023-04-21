@@ -101,7 +101,7 @@ function processResponse(response) {
 	
 	var poi = response.points_of_interest;
 	if (poi) {
-		String poilocations = poi.join('\r\n');
+		var poilocations = poi.join('\r\n');
 		$( "#poi-field" ).text(poilocations);
 	}
 	
@@ -109,6 +109,7 @@ function processResponse(response) {
 	if (summary) {
 		var hotsummary = localStorage.getItem(sessionName + ".hot-summary");
 		hotsummary = hotsummary + summary;
+		localStorage.setItem(sessionName + ".hot-summary", hotsummary);
 	}
 	
 	var mainResponse = ""
