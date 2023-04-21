@@ -73,12 +73,58 @@ function startAdventure(event) {
 
         prompt(message, function(msg) {
 	      var response = msg.choices[0].message.content;
+	      processResponse(response);
 	      console.log(JSON.stringify(msg));
-		$( "#text-response-field" ).text(response);
 		$( "#text-submit-area" ).show();
 		$( "#text-submit-button" ).show();
 		$( "#start-adventure-button" ).hide();
 	    });
+}
+
+function processResponse(response) {
+	// Pull out the turn number
+	var turnNumber = response.turn_number;
+	if (turnNumber) {
+		$( "#turn-number" ).text(turnNumber);
+	}
+	
+	// Pull out the location
+	var location = response.location;
+	if (location) {
+		$( "#location-field" ).text(location);
+	}
+	
+        var description = response.description;
+	if (description) {
+		$( "#description-field" ).text(description);
+	}
+	
+	var poi = response.points_of_interest;
+	if (poi) {
+		String poilocations = poi.join('\r\n');
+		$( "#poi-field" ).text(poilocations);
+	}
+	
+	var summary = response.summary;
+	if (summary) {
+		var hotsummary = localStorage.getItem(sessionName + ".hot-summary");
+		hotsummary = hotsummary + summary;
+	}
+	
+	var mainResponse = ""
+	var roll = response.roll;
+	if (roll) {
+		mainResponse = mainResponse + "\nRoll: " + roll;	
+	}
+	
+	var story = response.story;
+	if (story) {
+		mainResponse = mainResponse + "\n" + story;	
+	}
+	
+	if (mainResponse) {
+		$( "#text-response-field" ).text(mainResponse);
+	}
 }
 
 function saveSession() {
