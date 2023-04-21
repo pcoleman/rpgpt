@@ -109,7 +109,7 @@ function processResponse(sessionName, message) {
 	var poi = response["points_of_interest"];
 	console.log("poi: " + poi);
 	if (poi) {
-		var poilocations = poi.join('\r\n');
+		var poilocations = poi.join('<br>');
 		$( "#poi-field" ).text(poilocations);
 	}
 	
