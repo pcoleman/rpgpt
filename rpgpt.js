@@ -73,7 +73,7 @@ function startAdventure(event) {
 
         prompt(message, function(msg) {
 	      var response = msg.choices[0].message.content;
-	      processResponse(response);
+	      processResponse(sessionName, response);
 	      console.log(JSON.stringify(msg));
 		$( "#text-submit-area" ).show();
 		$( "#text-submit-button" ).show();
@@ -81,7 +81,7 @@ function startAdventure(event) {
 	    });
 }
 
-function processResponse(message) {
+function processResponse(sessionName, message) {
 	console.log("processing response");
 	
 	var response = JSON.parse(message);
