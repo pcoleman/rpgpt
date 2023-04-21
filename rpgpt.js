@@ -67,6 +67,8 @@ function startAdventure(event) {
 	
 	
 	var message = [{"role":"system", "content": "You are a text adventure game, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting}, {"role":"assistant", "content": character}, {"role":"user", "content": gamePrompt}];
+	
+	console.log(JSON.stringify(message));
 
         prompt(message, function(msg) {
 	      var response = msg.choices[0].message.content;
