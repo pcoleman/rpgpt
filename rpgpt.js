@@ -66,7 +66,7 @@ function startAdventure(event) {
 	var setting = localStorage.getItem(sessionName+".setting");
 	
 	
-	var message = [{"role":"system", "content": "You are a text adventure game, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting), {"role":"assistant", "content": character), {"role":"user", "content": gamePrompt}];
+	var message = [{"role":"system", "content": "You are a text adventure game, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting}, {"role":"assistant", "content": character}, {"role":"user", "content": gamePrompt}];
 
         prompt(message, function(msg) {
 	      var response = msg.choices[0].message.content;
