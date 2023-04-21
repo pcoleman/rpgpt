@@ -93,7 +93,7 @@ function processResponse(response) {
 	}
 	
 	// Pull out the location
-	var location = response.["location"];
+	var location = response["location"];
 	console.log("location: " + location);
 	if (location) {
 		$( "#location-field" ).text(location);
