@@ -53,6 +53,8 @@ $(document).ready(function() {
 	$( "#player-edit-confirmation" ).click(editPlayerButton);
 	
 	$( "#start-adventure-button" ).click(startAdventure);
+	
+	$( "#text-submit-button" ).click(submitAction);
 });
 
 function startAdventure(event) {
@@ -71,6 +73,23 @@ function startAdventure(event) {
 		$( "#text-submit-area" ).show();
 		$( "#text-submit-button" ).show();
 		$( "#start-adventure-button" ).hide();
+	    });
+}
+
+
+function submitAction(event) {
+	var sessionName = localStorage.getItem("currentSession");
+	var playerName = localStorage.getItem(sessionName + ".current-player");
+	var action = $( "text-submit-area" ).text();
+	
+	var message = craftMessage(sessionName, playerName, action);
+	
+	console.log(JSON.stringify(message));
+
+        prompt(message, function(msg) {
+	      var response = msg.choices[0].message.content;
+	      processResponse(sessionName, response);
+	      console.log(JSON.stringify(msg));
 	    });
 }
 
