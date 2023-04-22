@@ -103,7 +103,7 @@ function processResponse(sessionName, message) {
         var description = response["description"];
 	console.log("description: " + description);
 	if (description) {
-		var descriptionsCombined = poi.join('<br><br>');
+		var descriptionsCombined = description.join('<br><br>');
 		$( "#description-field" ).text(descriptionsCombined);
 	}
 	
