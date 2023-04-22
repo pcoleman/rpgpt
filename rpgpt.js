@@ -133,7 +133,7 @@ function processResponse(sessionName, message) {
 	console.log("description: " + description);
 	if (description) {
 		var descriptionsCombined = description.join('<br><br>');
-		$( "#description-field" ).text(descriptionsCombined);
+		$( "#description-field" ).html(descriptionsCombined);
 	}
 	
 	var poi = response["points_of_interest"];
