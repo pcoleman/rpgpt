@@ -58,6 +58,7 @@ $(document).ready(function() {
 function startAdventure(event) {
 	var sessionName = localStorage.getItem("currentSession");
 	var playerName = localStorage.getItem(sessionName + ".current-player");
+	localStorage.setItem(sessionName + ".hot-summary", "");
 	
 	var message = craftMessage(sessionName, playerName, "introduce the game, it will be written as narrator of a story. This introduction will consist of the following parts, an overview of the game world and setting, an introduction to the main character, an original expository event that starts the story off.");
 	
