@@ -103,7 +103,8 @@ function processResponse(sessionName, message) {
         var description = response["description"];
 	console.log("description: " + description);
 	if (description) {
-		$( "#description-field" ).text(description);
+		var descriptionsCombined = poi.join('<br><br>');
+		$( "#description-field" ).text(descriptionsCombined);
 	}
 	
 	var poi = response["points_of_interest"];
@@ -126,10 +127,6 @@ function processResponse(sessionName, message) {
 	console.log("roll: " + roll);
 	if (roll) {
 		mainResponse = mainResponse + "<br><br>Roll: " + roll;	
-	}
-	
-	if (description) {
-		mainResponse = mainResponse + "<br><br>" + description;	
 	}
 	
 	var story = response["story"];
