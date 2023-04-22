@@ -80,7 +80,9 @@ function startAdventure(event) {
 function submitAction(event) {
 	var sessionName = localStorage.getItem("currentSession");
 	var playerName = localStorage.getItem(sessionName + ".current-player");
-	var action = $( "text-submit-area" ).value;
+	var action = $("text-submit-area").val();
+	
+	console.log(action);
 	
 	var message = craftMessage(sessionName, playerName, action);
 	
