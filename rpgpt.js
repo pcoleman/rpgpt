@@ -117,8 +117,6 @@ function submitAction(event) {
 	
 	$( "#text-response-field" ).html(log);
 	
-	document.querySelector('#text-submit-area').value = log;
-	
 	console.log(action);
 	
 	var message = craftMessage(sessionName, playerName, action);
