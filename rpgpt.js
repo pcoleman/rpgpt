@@ -215,6 +215,7 @@ function processResponse(sessionName, message) {
 	var story = response["story"];
 	console.log("story: " + story);
 	if (story) {
+		story = story.replace(/(?:\r\n|\r|\n)/g, '<br>');
 		mainResponse = mainResponse + story;	
 		
 		// add story to the last turn object
