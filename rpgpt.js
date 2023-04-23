@@ -53,6 +53,16 @@ $(document).ready(function() {
 		$( "#text-submit-button" ).show();
 		$( "#start-adventure-button" ).hide();
     }
+	
+    // Load last turn
+    var lastTurn  = localStorage.getItem(sessionName+".last-turn");
+	
+	if (lastTurn) {
+		var lastTurnObject = JSON.parse(lastTurn);
+		$( "#turn-number" ).text(lastTurnObject["turn"]);
+		$( "#location-field" ).text(lastTurnObject["location"]);
+		$( "#description-field" ).html(lastTurn["description"]);
+    	}
     
     $( "#new-player-submit-button" ).click(nextPlayerCreationStage);
     
@@ -117,7 +127,7 @@ function craftMessage(sessionName, playerName, message) {
 	var setting = "The setting for this role playing game is " + localStorage.getItem(sessionName+".setting");
 	var character = "My character is " + playerName + "." + playerObject.background + ". This is my character sheet: " + JSON.stringify(playerObject.json);
 	var summary = "These are the events that have happened so far in the game: " + hotSummary;
-	var lastLine =  "This was the last part of the story: " + localStorage.getItem(sessionName+".last-line");
+	var lastTurn =  "This was the last turn in the game: " + localStorage.getItem(sessionName+".last-turn");
 	var gamePrompt = "You are a game master running a game using the rules of " + mechanics + "\n\nThis is a JSON template for the game output:\n{\n\"turn_number\": <TURN>,\n\"roll\" <ROLL>,\"player\": <PLAYER>,\n\"location\":  <LOCATION>,\n\"story\": <STORY>,\n\"description\", <DESCRIPTION>,\n\"summary\": <SUMMARY>,\n\"location_interations\": <LOCATION_INTERACTIONS>,\n\"npc_interactions\": <NPC_INTERACIONS>,\n\"points_of_interest\": <POI>\n}\n\nIn the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below:\n• <TURN>\n		○ The current turn number. Increment it each turn.\n    • <ROLL>\n		○ Any dice rolls that were required to resolve an action. Return a null if no dice rolls were done\n	• <PLAYER>\n		○ A JSON object representing the changes made to the previously provided players character sheet, for example if the player had 10 health and lost 2 the object would be {\"hit points\": 8}. If there have been no changes return a null \n	• <LOCATION>\n		○ The current location as understood by the main character.\n	• <DESCRIPTION>\n		○ An array containing descriptions of the appearance of the <LOCATION>, and the appearance of any NPCs, this should not contain any actions relevant to the story e.g. [\"the coobles stone streets are filled with shops\"]\n	• <STORY>\n		○ A description of the results of my last action using one or more paragraphs. It will use a Erin Morgenstern-esque second person, present tense writing style.\n			  * <SUMMARY>\n    ○ A concise minmimal third person, summary of <STORY>, the player character should be referred to by name.\n  * <LOCATION_INTERACIONS>\n    ○ A JSON object that looks like this\n{<The Name of the location>: [<An array of summaries of the players interactions with the location}]\n  * <NPC_INTERACTIONS>\n    ○ A JSON array that looks like this\n[{\"name\": <The Name of the NPC>, \"interaction\": [<A summary of the players interaction with the NPC}] \n  * <POI>\n    ○ A JSON array that contains the names of at least 3 nearby locations, looks like [\"location1\", \"location2\", \"location3\"]\n\nThere are some special commands I can issue. These result of the command will replace [story] in the game output. The special commands are issued with one of the words below and has the listed result.\n	• hint\n		○ You will give a small hint to point me an interesting direction for the story.\n\nThe following rules are central to the game logic and must always be followed:\n	1. Use the rules for " + mechanics + "\n        1. After you output the template, that ends one turn. Wait for my response to start the next turn.  2. The output should always be valid JSON and nothing else\n\n\nSettings: " + setting + "\nPlayer:" + playerName;
 	var userMessage = gamePrompt + ", Action: " + message;
 	
@@ -129,11 +139,17 @@ function processResponse(sessionName, message) {
 	console.log(message);
 	var response = JSON.parse(message);
 	console.log(response);
+	// initialize the last turn object
+	var lastTurn = {};
+	
 	// Pull out the turn number
 	var turnNumber = response["turn_number"];
 	console.log("turn: " + turnNumber);
 	if (turnNumber) {
 		$( "#turn-number" ).text(turnNumber);
+		
+		// Add turn number to the last turn object
+		lastTurn["turn"] = turnNumber;
 	}
 	
 	// Pull out the location
@@ -141,6 +157,9 @@ function processResponse(sessionName, message) {
 	console.log("location: " + location);
 	if (location) {
 		$( "#location-field" ).text(location);
+		
+		// Add location to the last turn object
+		lastTurn["location"] = location;
 	}
 	
         var description = response["description"];
@@ -148,6 +167,9 @@ function processResponse(sessionName, message) {
 	if (description) {
 		var descriptionsCombined = description.join('<br><br>');
 		$( "#description-field" ).html(descriptionsCombined);
+		
+		// Add description to the last turn
+		lastTurn["description"] = descriptionsCombined;
 	}
 	
 	var poi = response["points_of_interest"];
@@ -177,8 +199,11 @@ function processResponse(sessionName, message) {
 	if (story) {
 		mainResponse = mainResponse + "<br><br>" + story;	
 		
-		// Set the last line
-		localStorage.setItem(sessionName+".last-line", story);
+		// add story to the last turn object
+		lastTurn["story"] = story;
+		
+		// Set the last turn
+		localStorage.setItem(sessionName+".last-turn", JSON.stringify(lastTurn));
 		
 		// Set the running log
 		var log = localStorage.getItem(sessionName+".log");
