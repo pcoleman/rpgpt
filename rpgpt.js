@@ -103,6 +103,22 @@ function submitAction(event) {
 	var action = document.querySelector('#text-submit-area').value;
 	document.querySelector('#text-submit-area').value = "";
 	
+	// Add action to the log
+
+	// Set the running log
+	var log = localStorage.getItem(sessionName+".log");
+	if (!log) {
+		log = action;
+	} else {
+		log = log + "<br>" + action;
+	}
+		
+	localStorage.setItem(sessionName+".log", log);
+	
+	$( "#text-response-field" ).html(log);
+	
+	document.querySelector('#text-submit-area').value = log;
+	
 	console.log(action);
 	
 	var message = craftMessage(sessionName, playerName, action);
@@ -214,10 +230,10 @@ function processResponse(sessionName, message) {
 		if (!log) {
 			log = mainResponse;
 		} else {
-			log = log + "<br><br>" + mainResponse;
+			log = log + "<br>" + mainResponse;
 		}
 		
-		localStorage.setItem(sessionName+".log", mainResponse);
+		localStorage.setItem(sessionName+".log", log);
 	}
 	
 	if (mainResponse) {
