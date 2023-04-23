@@ -185,7 +185,7 @@ function processResponse(sessionName, message) {
 		if (!log) {
 			log = mainResponse;
 		} else {
-			log = log + <br><br> + mainResponse;
+			log = log + "<br><br>" + mainResponse;
 		}
 		
 		localStorage.setItem(sessionName+".log", mainResponse);
