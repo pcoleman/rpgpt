@@ -110,7 +110,7 @@ function submitAction(event) {
 	if (!log) {
 		log = action;
 	} else {
-		log = log + "<br>" + action;
+		log = log + "<br><br>" + action;
 	}
 		
 	localStorage.setItem(sessionName+".log", log);
@@ -209,13 +209,13 @@ function processResponse(sessionName, message) {
 	var roll = response["roll"];
 	console.log("roll: " + roll);
 	if (roll) {
-		mainResponse = mainResponse + "<br><br>Roll: " + roll;	
+		mainResponse = mainResponse + "<br><br>Roll: " + roll + "<br><br>";	
 	}
 	
 	var story = response["story"];
 	console.log("story: " + story);
 	if (story) {
-		mainResponse = mainResponse + "<br><br>" + story;	
+		mainResponse = mainResponse + story;	
 		
 		// add story to the last turn object
 		lastTurn["story"] = story;
@@ -228,7 +228,7 @@ function processResponse(sessionName, message) {
 		if (!log) {
 			log = mainResponse;
 		} else {
-			log = log + "<br>" + mainResponse;
+			log = log + "<br><br>" + mainResponse;
 		}
 		
 		localStorage.setItem(sessionName+".log", log);
