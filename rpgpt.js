@@ -85,11 +85,11 @@ $(document).ready(function() {
      */
     function pdfToText(data) {
 
-        PDFJS.workerSrc = 'js/vendor/pdf.worker.js';
-        PDFJS.cMapUrl = 'js/vendor/pdfjs/cmaps/';
-        PDFJS.cMapPacked = true;
+        pdfjsLib.workerSrc = 'js/vendor/pdf.worker.js';
+        pdfjsLib.cMapUrl = 'js/vendor/pdfjs/cmaps/';
+        pdfjsLib.cMapPacked = true;
 
-        return PDFJS.getDocument(data).then(function(pdf) {
+        return pdfjsLib.getDocument(data).then(function(pdf) {
             var pages = [];
             for (var i = 0; i < pdf.numPages; i++) {
                 pages.push(i);
