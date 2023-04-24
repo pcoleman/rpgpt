@@ -81,6 +81,7 @@ $(document).ready(function() {
 
 function selectImportFiles(event) {
 	var sessionName = event.data.sessionName;
+	var input = document.createElement('input');
 	
 	input.type = 'file';
 
