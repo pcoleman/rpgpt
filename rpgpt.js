@@ -79,6 +79,35 @@ $(document).ready(function() {
 	$( "#import-button" ).click({session: sessionName}, selectImportFiles);
 });
 
+    /**
+     * Extract text from PDFs with PDF.js
+     * Uses the demo pdf.js from https://mozilla.github.io/pdf.js/getting_started/
+     */
+    function pdfToText(data) {
+
+        PDFJS.workerSrc = 'js/vendor/pdf.worker.js';
+        PDFJS.cMapUrl = 'js/vendor/pdfjs/cmaps/';
+        PDFJS.cMapPacked = true;
+
+        return PDFJS.getDocument(data).then(function(pdf) {
+            var pages = [];
+            for (var i = 0; i < pdf.numPages; i++) {
+                pages.push(i);
+            }
+            return Promise.all(pages.map(function(pageNumber) {
+                return pdf.getPage(pageNumber + 1).then(function(page) {
+                    return page.getTextContent().then(function(textContent) {
+                        return textContent.items.map(function(item) {
+                            return item.str;
+                        }).join(' ');
+                    });
+                });
+            })).then(function(pages) {
+                return pages.join("\r\n");
+            });
+        });
+    }
+
 function selectImportFiles(event) {
 	var sessionName = event.data.sessionName;
 	var input = document.createElement('input');
@@ -86,18 +115,9 @@ function selectImportFiles(event) {
 	input.type = 'file';
 
 	input.onchange = e => { 
-  	    // getting a hold of the file reference
-	   var file = e.target.files[0]; 
-
-	   // setting up the reader
-	   var reader = new FileReader();
-	   reader.readAsText(file,'UTF-8');
-
-	   // here we tell the reader what to do when it's done reading...
-	   reader.onload = readerEvent => {
-	      var content = readerEvent.target.result; // this is the content!
-	      console.log( content );
-	   } 
+		pdfToText(e.target.files[0].path).then(function(result) {
+      			console.log("PDF done!", result);
+	 	})
 	}
 
 	input.click();
