@@ -76,7 +76,7 @@ $(document).ready(function() {
 	
 	$( "#text-submit-button" ).click(submitAction);
 	
-	$( "#import-button" ).click({session: sessionName}, select-import-files);
+	$( "#import-button" ).click({session: sessionName}, selectImportFiles);
 });
 
 function selectImportFiles(event) {
