@@ -117,10 +117,22 @@ function selectImportFiles(event) {
 	input.type = 'file';
 
 	input.onchange = e => { 
-		console.log(JSON.stringify(document.getElementById('input').files[0]));
-		pdfToText(e.target.files[0].path).then(function(result) {
-      			console.log("PDF done!", result);
-	 	})
+		//console.log(JSON.stringify(document.getElementById('input').files[0]));
+		   // getting a hold of the file reference
+		   var file = e.target.files[0]; 
+
+		   // setting up the reader
+		   var reader = new FileReader();
+		   reader.readAsText(file,'UTF-8');
+
+		   // here we tell the reader what to do when it's done reading...
+		   reader.onload = readerEvent => {
+		      var content = readerEvent.target.result; // this is the content!
+		      console.log( content );
+		   }
+		//pdfToText(e.target.files[0].path).then(function(result) {
+      		//	console.log("PDF done!", result);
+	 	//})
 	}
 
 	input.click();
