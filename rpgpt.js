@@ -84,6 +84,8 @@ $(document).ready(function() {
      * Uses the demo pdf.js from https://mozilla.github.io/pdf.js/getting_started/
      */
     function pdfToText(data) {
+	    
+	    console.log(data);
 
         pdfjsLib.workerSrc = 'js/vendor/pdf.worker.js';
         pdfjsLib.cMapUrl = 'js/vendor/pdfjs/cmaps/';
