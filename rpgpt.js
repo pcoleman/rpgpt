@@ -85,29 +85,26 @@ $(document).ready(function() {
      */
     function pdfToText(data) {
 	    
-	    console.log(data);
+	var pdf = pdfjsLib.getDocument(data);
+	return pdf.then(function(pdf) { // get all pages text
+	    var maxPages = pdf.pdfInfo.numPages;
+	    var countPromises = []; // collecting all page promises
+	    for (var j = 1; j <= maxPages; j++) {
+	      var page = pdf.getPage(j);
 
-        pdfjsLib.workerSrc = 'js/vendor/pdf.worker.js';
-        pdfjsLib.cMapUrl = 'js/vendor/pdfjs/cmaps/';
-        pdfjsLib.cMapPacked = true;
-
-        return pdfjsLib.getDocument(data).then(function(pdf) {
-            var pages = [];
-            for (var i = 0; i < pdf.numPages; i++) {
-                pages.push(i);
-            }
-            return Promise.all(pages.map(function(pageNumber) {
-                return pdf.getPage(pageNumber + 1).then(function(page) {
-                    return page.getTextContent().then(function(textContent) {
-                        return textContent.items.map(function(item) {
-                            return item.str;
-                        }).join(' ');
-                    });
-                });
-            })).then(function(pages) {
-                return pages.join("\r\n");
-            });
-        });
+	      var txt = "";
+	      countPromises.push(page.then(function(page) { // add page promise
+		var textContent = page.getTextContent();
+		return textContent.then(function(text){ // return content promise
+		  return text.items.map(function (s) { return s.str; }).join(''); // value page text 
+		});
+	      }));
+	    }
+	    // Wait for all pages and join text
+	    return Promise.all(countPromises).then(function (texts) {
+	      return texts.join('');
+	    });
+	 });
     }
 
 function selectImportFiles(event) {
