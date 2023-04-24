@@ -128,7 +128,7 @@ function selectImportFiles(event) {
 		var typedarray = new Uint8Array(this.result);
 
 		//Step 5:pdfjs should be able to read this
-		pdfToText(event.target.files[0]).then(function(result) {
+		pdfToText(typedarray).then(function(result) {
       			console.log("PDF done!", result);
 	 	})
 	    };
