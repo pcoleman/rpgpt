@@ -97,14 +97,14 @@ $(document).ready(function() {
 	      countPromises.push(page.then(function(page) { // add page promise
 		var textContent = page.getTextContent();
 		return textContent.then(function(text){ // return content promise
-		  return text.items.map(function (s) { return s.str; }).join(''); // value page text 
+		  return text.items.map(function (s) { return s.str; }).join(' '); // value page text 
 		});
 	      }));
 	    }
 	    // Wait for all pages and join text
 	    return Promise.all(countPromises).then(function (texts) {
 	      console.log(texts);
-	      return texts.join('');
+	      return texts.join(' ');
 	    });
 	 });
     }
