@@ -116,23 +116,25 @@ function selectImportFiles(event) {
 	
 	input.type = 'file';
 
-	input.onchange = e => { 
-		//console.log(JSON.stringify(document.getElementById('input').files[0]));
-		   // getting a hold of the file reference
-		   var file = e.target.files[0];
+	input.onchange = event => { 
+	  var file = event.target.files[0];
 
-		   // setting up the reader
-		   var reader = new FileReader();
-		   reader.readAsText(file,'UTF-8');
+	    //Step 2: Read the file using file reader
+	    var fileReader = new FileReader();  
 
-		   // here we tell the reader what to do when it's done reading...
-		   reader.onload = readerEvent => {
-		      var content = readerEvent.target.result; // this is the content!
-		      console.log( content );
-		   }
+	    fileReader.onload = function() {
+
+		//Step 4:turn array buffer into typed array
+		var typedarray = new Uint8Array(this.result);
+
+		//Step 5:pdfjs should be able to read this
 		pdfToText(e.target.files[0]).then(function(result) {
       			console.log("PDF done!", result);
 	 	})
+	    };
+	    //Step 3:Read the file as ArrayBuffer
+	    fileReader.readAsArrayBuffer(file);
+
 	}
 
 	input.click();
