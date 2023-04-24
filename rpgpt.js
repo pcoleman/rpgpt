@@ -117,7 +117,7 @@ function selectImportFiles(event) {
 	input.type = 'file';
 
 	input.onchange = e => { 
-		console.log(JSON.stringify(e.target.files);
+		console.log(JSON.stringify(e.target.files));
 		pdfToText(e.target.files[0].path).then(function(result) {
       			console.log("PDF done!", result);
 	 	})
