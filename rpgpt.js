@@ -75,7 +75,32 @@ $(document).ready(function() {
 	$( "#start-adventure-button" ).click(startAdventure);
 	
 	$( "#text-submit-button" ).click(submitAction);
+	
+	$( "#import-button" ).click({session: sessionName}, select-import-files);
 });
+
+function selectImportFiles(event) {
+	var sessionName = event.data.sessionName;
+	
+	input.type = 'file';
+
+	input.onchange = e => { 
+  	    // getting a hold of the file reference
+	   var file = e.target.files[0]; 
+
+	   // setting up the reader
+	   var reader = new FileReader();
+	   reader.readAsText(file,'UTF-8');
+
+	   // here we tell the reader what to do when it's done reading...
+	   reader.onload = readerEvent => {
+	      var content = readerEvent.target.result; // this is the content!
+	      console.log( content );
+	   } 
+	}
+
+	input.click();
+}
 
 function startAdventure(event) {
 	var sessionName = localStorage.getItem("currentSession");
