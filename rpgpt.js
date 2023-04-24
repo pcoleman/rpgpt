@@ -85,8 +85,8 @@ $(document).ready(function() {
      */
     function pdfToText(data) {
 	    
-	var pdf = pdfjsLib.getDocument(data);
-	return pdf.then(function(pdf) { // get all pages text
+	var loadingTask = pdfjsLib.getDocument(data);
+	return  loadingTask.promise.then(function(pdf) { // get all pages text
 	    var maxPages = pdf.pdfInfo.numPages;
 	    var countPromises = []; // collecting all page promises
 	    for (var j = 1; j <= maxPages; j++) {
