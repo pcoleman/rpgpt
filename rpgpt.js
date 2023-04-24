@@ -103,7 +103,6 @@ $(document).ready(function() {
 	    }
 	    // Wait for all pages and join text
 	    return Promise.all(countPromises).then(function (texts) {
-	      console.log(texts);
 	      return texts.join(' ');
 	    });
 	 });
