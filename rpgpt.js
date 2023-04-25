@@ -627,14 +627,45 @@ function prepAdventure(sessionName) {
 	console.log("preparing adventure");
 	var chatlog = localStorage.getItem(sessionName + ".chat-log");
 	if (chatlog) {
-		$( "#text-response-field" ).text(chatlog);
+		$( "#text-response-field" ).html(chatlog);
 		$( "#text-submit-area" ).show();
 		$( "#text-submit-button" ).show();
 		$( "#start-adventure-button" ).hide();
+		
+		if (turnNumber) {
+		$( "#turn-number" ).text(turnNumber);
+		
+		// Add turn number to the last turn object
+		lastTurn["turn"] = turnNumber;
+	
+		// Pull out the location
+		response = localStorage.getItem(sessionName + ".last-turn");
+		var location = response["location"];
+		if (location)
+			$( "#location-field" ).text(location);
+		}
+
+		var description = response["description"];
+		
+		if (description) {
+			var descriptionsCombined = description.join('<br><br>');
+			$( "#description-field" ).html(descriptionsCombined);
+		}
+
+		console.log("poi: " + poi);
+		if (poi) {
+			$( "#poi-field" ).html("");
+		}
 	} else {
+		$( "#text-response-field" ).html("Press the button below to begin your adventure");
 		$( "#text-submit-area" ).hide();
 		$( "#text-submit-button" ).hide();
 		$( "#start-adventure-button" ).show();
+		
+		$( "#poi-field" ).html("");
+		$( "#description-field" ).html("");
+		$( "#location-field" ).text("");
+		$( "#turn-number" ).text("0");
 	}
 }
 
