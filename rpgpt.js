@@ -640,13 +640,6 @@ function prepAdventure(sessionName) {
 		if (location) {
 			$( "#location-field" ).text(location);
 		}
-
-		var description = response["description"];
-		
-		if (description) {
-			var descriptionsCombined = description.join('<br><br>');
-			$( "#description-field" ).html(descriptionsCombined);
-		}
 	} else {
 		$( "#text-response-field" ).html("Press the button below to begin your adventure");
 		$( "#text-submit-area" ).hide();
@@ -654,7 +647,6 @@ function prepAdventure(sessionName) {
 		$( "#start-adventure-button" ).show();
 		
 		$( "#poi-field" ).html("");
-		$( "#description-field" ).html("");
 		$( "#location-field" ).text("");
 		$( "#turn-number" ).text("0");
 	}
