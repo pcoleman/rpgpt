@@ -267,7 +267,7 @@ function compareNames(string1, string2) {
 	var cleaned1 = string1.replace(regex, subst).toLowerCase();;	
 	var cleaned2 = string2.replace(regex, subst).toLowerCase();;
 	
-	return (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1);
+	return (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1));
 }
 
 function startAdventure(event) {
