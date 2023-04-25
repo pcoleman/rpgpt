@@ -636,7 +636,7 @@ function prepAdventure(sessionName) {
 		$( "#turn-number" ).text(response["turn-number"]);
 	
 		var location = response["location"];
-		if (location)
+		if (location) {
 			$( "#location-field" ).text(location);
 		}
 
