@@ -127,6 +127,7 @@ function selectImportFiles(event) {
 
 		//Step 5:pdfjs should be able to read this
 		pdfToText(typedarray).then(function(result) {
+			console.log(result);
 			var promptPromises = []; // collecting all prompt promises
 			var pageSize = 5000
 			var finalLength = result.length - pageSize - 1;
