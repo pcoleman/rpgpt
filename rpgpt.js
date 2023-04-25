@@ -127,14 +127,130 @@ function selectImportFiles(event) {
 
 		//Step 5:pdfjs should be able to read this
 		pdfToText(typedarray).then(function(result) {
+			var promptPromises = []; // collecting all prompt promises
+			var pageSize = 5000
+			var finalLength = result.length - pageSize - 1;
 			
 			var userMessage = "I want you to pull detailed information out of the passage below. This is a template for your response:{\"setting\": <setting>,\"locations\": <locations>,\"groups\": <groups>,\"races\": <races>,\"npcs\": <npcs>,\"events\": <events>}, I the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with these specifications:<setting>: This should be a valid JSON object that looks like {\"name\": <name of the setting>, \"description\": <description of the setting>, \"history\":<history of the setting>}. Here is an example {\"name\": \"Forgotten Realms\", \"description\": \"The forgotten realms is a fantastical land of magic and danger. It has a multitude of races including, humans, halflings, dragons and elves. It is a mideivel setting with lots of magic and fantastical creatures\", \"history\": \"In 978 there was the war of the races between the city state of waterdeep and baldur's gate. In 1087, The lich king rose to power enslaving the people\"}<locations>: This should be a valid JSON object that looks like {\"name\": <The name of the location>, \"description\": <A description of the location, including appearance, function and mood>, \"groups\": <a json array of strings containing the groups associated with the location>, \"npcs\": <a json array of strings containing npcs currently in this location>, \"history\": <any history of this specific location>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player visits this location, and their requirements>, \"nearby-locations\": <a json array of strings containing any relevant nearby locations>}. Here is an example of the JSON object {\"name\": \"The Yawning Portal\", \"description\": \"The yawning portal is a very popular tavern in waterdeep. It is several hundred years old which can be seen in the weather worn wood construction. The inside is illuminated by fire light and and the ethereal light coming from a portal in the center of the building. The portal leads to an endless underground labyrinth.\", \"groups\": [\"harpers\", \"city guard\"], npcs: [\"joe, the bartender\", \"captain rex\", \"john smith\"], \"history\": \"The yawning portal was first constructed 300 years ago around a mysterious portal on a hill side. 200 years ago it was burnt down and rebuilt.\", \"events\" : [{\"event\": \"Joe the bartender gives the player a mysterious letter\", \"condition\": \"the player must have already talked to the mystic\"}, {\"event\": \"A bar fight breaks out\", \"condition\": \"the player brings up the topic of the mysterious letter\"}], \"nearby-locations:[\"The portal\", \"the bar\", \"the waterdeep keep\"]}<groups>: This should be a valid JSON object that looks like {\"name\": <the name of the group>, \"description\": <a description of the group>, \"history\": <a history of the group>, \"notable-npcs\": <a json array of string containing the names of notable npcs related to this group>}. Here is an example: {\"name\":\"harpers\", \"description\": \"The Harpers, or Those Who Harp, was a semi-secret organization dedicated to preserving historical lore, maintaining the balance between nature and civilization,and defending the innocent from the forces of evil across the Realms.The Harpers involved themselves in many world-changing events that helped shaped the course of Faerûn's destiny. Their power and influence waxed and waned over the years, as their order underwent a series of collapses and reformations.[Their reputation amongst the people of the Realms just as varied wildly. They were just as often seen seen as wild-eyed idealists as they were insufferable meddlers who could not keep their business to themselves.\", \"history\": \"On the 27th of Flamerule in the Year of the Dawn Rose, 720 DR, a large congregation of dryads arrived at the Dancing Place druid grove in High Dale. Their arrival occurred at a time when dusk fell earlier than it should have and a bright moon shone when no moon should have been visible. The dryads bid the druids welcome the prizests of many different gods who started to arrive before finally Elminster appeared to explain why they had all been called.\", \"notable-npcs\":[\"Arilyn Moonblade\", \"Arrant Quill\"]}<races>: This should be a valid JSON object that looks like {\"name\": <The name of the race or species or creature>, \"description: <A description of the race>, \"appearance\": <Common defining features for appearance>, \"customs\": <a description of any customs specific to this race>}. Here is an example: {\"name\": \"orc\", \"description\": \"Orcs were a race of humanoids that had been a threat to the civilized cultures of Toril, particularly Faerûn, for as long as any could remember. This changed somewhat in the years preceding and immediately after the Spellplague, when a horde of mountain orcs under the command of King Obould Many-Arrows unified into a single kingdom, one that was remarkably civilized.\", \"appearance\": \"Orcs varied in appearance, based on region and subrace, but all shared certain physical qualities. Orcs of all kinds usually had grayish skin, coarse hair, stooped postures, low foreheads, large muscular bodies, and porcine faces that featured lower canines that resembled boar tusks.\", \"customs\": Traditional orcish culture was extremely warlike and when not at war the race was usually planning for it. Most orcs approached life with the belief that to survive, one had to subjugate potential enemies and control as many resources as possible, which put them naturally at odds with other races as well as each other.\"} <npcs>: This should be a valid JSON object that looks like {\"name\":<The name of the NPC>, \"description\": <A description of the NPC>, \"history\": <A history of the npc>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player talks to this npc, and their requirements>}. Here is an example: {\"name\":\"Joe Smith\", \"description\": \"joe smith is a tall elf with long flowing white hair. He is blunt and lacks a sense of humor. he works as a carpenter\", \"history\": \"Joe smith grew up in waterdeep, he attended the university there\", \"events\": [{\"event\": \"Joe smith gives the player a chair\", \"condition\": \"the player found joe smith's lost tools\"}]} <events>: These are events not tied to a location or NPC, This should be a valid JSON array that looks like [{\"event\": <the event that will happen>, \"condition\": <the required conditions necessary for the event to happen>}]. Here is an example: [{\"event\": \"A courier arrives and gives the player a mysterious message\", \"condition\": \"the player had taken the treasure from the under dark\"}]";
-			var userMessage = userMessage + "\n\n" + result.slice(0,6000);
-			var messages = [{"role":"user", "content": userMessage}];
-			prompt(messages).then(function(msg) {	
-      				console.log(msg);
+			
+			for (let i = 0; i < 15000; i+pageSize) {
+				var tempMessage = userMessage + "\n\n" + result.slice(i,pageSize);
+				var messages = [{"role":"user", "content": tempMessage}];
+				promptPromises.push(prompt(messages));
+			}
+			
+			Promise.all(promptPromises).then(fuction(promptMessages) {
+				var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[]};
+				for (const msg in promptMessages) {
+					console.log(JSON.stringify(combinedObject, null, 4);
+					var parsedMsg = JSON.parse(msg);
+			                
+					if ("setting" in parsedMsg) {
+						var merged = false;
+						var settingName = parsedMsg["setting"]["name"];
+						for (var combinedSetting in combinedObject["setting"]) {
+							if (compareNames(settingName, combinedSetting["name"])) {
+								combinedSetting["description"] = combinedSetting["description"] + parsedMsg["setting"]["description"];
+								combinedSetting["history"] = combinedSetting["history"] + parsedMsg["setting"]["history"];
+								merged = true;
+							}
+						}
+						
+						if (!merged) {
+							combinedObject["setting"].push(parsedMsg["setting"]);
+						}
+					}
+			
+					if ("locations" in parsedMsg) {
+						for (const parsedLocation in parsedMsg["locations"]) {
+							var merged = false;
+							var locationName = parsedLocation["name"];
+							for (var combinedLocation in combinedObject["locations"]) {
+								if (compareNames(locationName, combinedLocation["name"])) {
+									combinedLocation["description"] = combinedLocation["description"] + parsedLocation["description"];
+									combinedLocation["history"] = combinedLocation["history"] + parsedLocation["history"];
+									combinedLocation["groups"] = [...new Set(combinedLocation["groups"].concat(parsedLocation["groups"]))];
+									combinedLocation["npcs"] = [...new Set(combinedLocation["npcs"].concat(parsedLocation["npcs"]))];
+									combinedLocation["events"] = [...new Set(combinedLocation["events"].concat(parsedLocation["events"]))];
+									combinedLocation["nearby-locations"] = [...new Set(combinedLocation["nearby-locations"].concat(parsedLocation["nearby-locations"]))];
+									merged = true;
+								}
+							}
+
+							if (!merged) {
+								combinedObject["locations"].push(parsedLocation);
+							}
+						}
+					}
+			
+					if ("groups" in parsedMsg) {
+						for (const parsedGroup in parsedMsg["groups"]) {
+							var merged = false;
+						
+							var groupName = parsedGroup["name"];
+							for (var combinedGroup in combinedObject["groups"]) {
+								if (compareNames(groupName, combinedGroup["name"])) {
+									combinedGroup["description"] = combinedGroup["description"] + parsedGroup["description"];
+									combinedGroup["history"] = combinedGroup["history"] + parsedGroup["history"];
+									combinedGroup["notable-npcs"] = [...new Set(combinedGroup["notable-npcs"].concat(parsedGroup["notable-npcs"]))];
+									merged = true;
+								}
+							}
+
+							if (!merged) {
+								combinedObject["groups"].push(parsedGroup);
+							}
+						}
+					}
+			
+					if ("races" in parsedMsg) {
+						for (const parsedRace in parsedMsg["races"]) {
+							var merged = false;
+						
+							var raceName = parsedRace["name"];
+							for (var combinedRace in combinedObject["races"]) {
+								if (compareNames(raceName, combinedRace["name"])) {
+									combinedRace["description"] = combinedRace["description"] + parsedRace["description"];
+									combinedRace["appearance"] = combinedRace["appearance"] + parsedRace["appearance"];
+									combinedRace["customs"] = combinedRace["customs"] + parsedRace["customs"];
+									merged = true;
+								}
+							}
+
+							if (!merged) {
+								combinedObject["groups"].push(parsedGroup);
+							}
+						}
+					}
+			
+					if ("npcs" in parsedMsg) {
+						for (const parsedNPC in parsedMsg["npcs"]) {
+							var merged = false;
+						
+							var npcName = parsedNPC["name"];
+							for (var combinedNPC in combinedObject["npcs"]) {
+								if (compareNames(npcName, combinedNPC["name"])) {
+									combinedNPC["description"] = combinedNPC["description"] + parsedNPC["description"];
+									combinedNPC["history"] = combinedNPC["history"] + parsedNPC["history"];
+									combinedNPC["events"] = [...new Set(combinedNPC["events"].concat(parsedNPC["events"]))];
+									merged = true;
+								}
+							}
+
+							if (!merged) {
+								combinedObject["groups"].push(parsedGroup);
+							}
+						}
+					}
+			
+					if ("events" in parsedMsg) {
+						combinedObject["events"] = [...new Set(combinedOject["events"].concat(parsedMsg["events"]))];
+					}
+				}
+		    
+		    		console.log(JSON.stringify(combinedObject, null, 4);
 			});
-	 	})
+	 	});
 	    };
 	    //Step 3:Read the file as ArrayBuffer
 	    fileReader.readAsArrayBuffer(file);
@@ -142,6 +258,17 @@ function selectImportFiles(event) {
 	}
 
 	input.click();
+}
+
+function compareNames(string1, string2) {
+	const regex = /(?:(the|a|an) +)/g; 
+	const subst = ` `;
+
+	// The substituted value will be contained in the result variable
+	var cleaned1 = string1.replace(regex, subst).toLowerCase();;	
+	var cleaned2 = string2.replace(regex, subst).toLowerCase();;
+	
+	return (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1);
 }
 
 function startAdventure(event) {
