@@ -632,14 +632,9 @@ function prepAdventure(sessionName) {
 		$( "#text-submit-button" ).show();
 		$( "#start-adventure-button" ).hide();
 		
-		if (turnNumber) {
-		$( "#turn-number" ).text(turnNumber);
-		
-		// Add turn number to the last turn object
-		lastTurn["turn"] = turnNumber;
-	
-		// Pull out the location
 		response = localStorage.getItem(sessionName + ".last-turn");
+		$( "#turn-number" ).text(response["turn-number"]);
+	
 		var location = response["location"];
 		if (location)
 			$( "#location-field" ).text(location);
