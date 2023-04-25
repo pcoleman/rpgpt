@@ -597,30 +597,31 @@ function changeSession(sessionName) {
    
      // Initialize player creation for the session
      initializeNewCharacterCreation(sessionName);
-   }
+	   localStorage.setItem("currentSession", sessionName);
+	   
+	   console.log(sessionName);
+	   // Update the player list
+	   $("#player-list").empty();
+	    var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
+	    var playerList = $("#player-list")
 
-	console.log(sessionName);
-   // Update the player list
-   $("#player-list").empty();
-    var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
-    var playerList = $("#player-list")
-    
-    for (i in playerArray) {
-	console.log(JSON.stringify(playerArray));
-	console.log(playerArray[i]);
-	var player = createPlayerElement(sessionName, playerArray[i]);
-	playerList.append(player);
-    }
-	
-    // Select the current player
-	console.log(sessionName + ".current-player");
-    var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
-     console.log(currentPlayerName);
-    if (currentPlayerName) {
-	changePlayer({data:{sessionName:sessionName, playerName: currentPlayerName}});
-    }
-	
-	prepAdventure(sessionName);
+	    for (i in playerArray) {
+		console.log(JSON.stringify(playerArray));
+		console.log(playerArray[i]);
+		var player = createPlayerElement(sessionName, playerArray[i]);
+		playerList.append(player);
+	    }
+
+	    // Select the current player
+		console.log(sessionName + ".current-player");
+	    var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
+	     console.log(currentPlayerName);
+	    if (currentPlayerName) {
+		changePlayer({data:{sessionName:sessionName, playerName: currentPlayerName}});
+	    }
+
+		prepAdventure(sessionName);
+   }
 }
 
 function prepAdventure(sessionName) {
@@ -633,7 +634,7 @@ function prepAdventure(sessionName) {
 		$( "#start-adventure-button" ).hide();
 		
 		response = localStorage.getItem(sessionName + ".last-turn");
-		$( "#turn-number" ).text(response["turn-number"]);
+		$( "#turn-number" ).text(response["turn"]);
 	
 		var location = response["location"];
 		if (location) {
