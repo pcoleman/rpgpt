@@ -646,11 +646,6 @@ function prepAdventure(sessionName) {
 			var descriptionsCombined = description.join('<br><br>');
 			$( "#description-field" ).html(descriptionsCombined);
 		}
-
-		console.log("poi: " + poi);
-		if (poi) {
-			$( "#poi-field" ).html("");
-		}
 	} else {
 		$( "#text-response-field" ).html("Press the button below to begin your adventure");
 		$( "#text-submit-area" ).hide();
