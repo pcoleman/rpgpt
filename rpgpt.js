@@ -164,6 +164,7 @@ function processBooks(promptMessages) {
 	for (const i in promptMessages) {
 		console.log(JSON.stringify(combinedObject, null, 4));
 		console.log(promptMessages[i]);
+		try {
 		var parsedMsg = JSON.parse(promptMessages[i].trim());
 		console.log(parsedMsg);
 
@@ -280,6 +281,9 @@ function processBooks(promptMessages) {
 		
 		if ("rules" in parsedMsg) {
 			combinedObject["rules"] = [...new Set(combinedObject["rules"].concat(parsedMsg["rules"]))];
+		}
+		} catch {
+			console.log("Not valid JSON " + promptMessages[i]));
 		}
 	}
 
