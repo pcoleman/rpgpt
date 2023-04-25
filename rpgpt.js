@@ -806,10 +806,10 @@ function prompt(messages) {
 	     success: function (data) {
 		     console.log(JSON.stringify(data));
 		     var messages = data.choices[0].message.content;
-       		 resolve(message)
+       		 resolve(messages);
      		 },
       error: function (error) {
-        reject(error)
+        reject(error);
       }
 	  });
  });
