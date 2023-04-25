@@ -160,7 +160,7 @@ function createSummary(promptMessages) {
 }
 	
 function processBooks(promptMessages) {
-	var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[], "rules":[]};
+	var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "characters":[], "events":[], "rules":[]};
 	for (const i in promptMessages) {
 		console.log(JSON.stringify(combinedObject, null, 4));
 		console.log(promptMessages[i]);
@@ -248,7 +248,7 @@ function processBooks(promptMessages) {
 				}
 
 				if (!merged) {
-					combinedObject["groups"].push(parsedRace);
+					combinedObject["races"].push(parsedRace);
 				}
 			}
 		}
@@ -270,7 +270,7 @@ function processBooks(promptMessages) {
 				}
 
 				if (!merged) {
-					combinedObject["groups"].push(parsedNPC);
+					combinedObject["characters"].push(parsedNPC);
 				}
 			}
 		}
