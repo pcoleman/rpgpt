@@ -162,7 +162,7 @@ function processBooks(promptMessages) {
 	for (const i in promptMessages) {
 		console.log(JSON.stringify(combinedObject, null, 4));
 		console.log(promptMessages[i]);
-		var parsedMsg = JSON.parse(promptMessages[i]);
+		var parsedMsg = JSON.parse(promptMessages[i].trim());
 		console.log(parsedMsg);
 
 		if ("setting" in parsedMsg) {
