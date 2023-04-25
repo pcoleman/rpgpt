@@ -667,7 +667,7 @@ function initializeNewCharacterCreation(sessionName) {
             console.log(msg);
             var characterCreationSteps = msg;
             console.log(characterCreationSteps);
-            localStorage.setItem(sessionName + ".character-creation-steps", JSON.stringify(characterCreationSteps));
+            localStorage.setItem(sessionName + ".character-creation-steps", characterCreationSteps);
             var firstStep = characterCreationSteps[0];
             var firstStepMessage = [{"role":"user", "content": "Provide a detailed description of the first step of character creation, " + firstStep + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
             prompt(firstStepMessage).then(function(msg) {
