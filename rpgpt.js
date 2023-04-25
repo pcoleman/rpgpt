@@ -147,10 +147,8 @@ function startAdventure(event) {
 	
 	console.log(JSON.stringify(message));
 
-        prompt(message, function(msg) {
-	      var response = msg.choices[0].message.content;
-	      processResponse(sessionName, response);
-	      console.log(JSON.stringify(msg));
+        prompt(message).then(function(msg) {
+	      processResponse(msg);
 		$( "#text-submit-area" ).show();
 		$( "#text-submit-button" ).show();
 		$( "#start-adventure-button" ).hide();
@@ -184,11 +182,8 @@ function submitAction(event) {
 	
 	console.log(JSON.stringify(message));
 
-        prompt(message, function(msg) {
-	      var response = msg.choices[0].message.content;
-	      processResponse(sessionName, response);
-	      console.log(JSON.stringify(msg));
-	    });
+        
+	prompt(message).then(processResponse);
 }
 
 function craftMessage(sessionName, playerName, message) {
@@ -213,7 +208,8 @@ function craftMessage(sessionName, playerName, message) {
 	return [{"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting}, {"role":"assistant", "content": character}, {"role":"assistant", "content": summary}, {"role":"user", "content": userMessage}];
 }
 
-function processResponse(sessionName, message) {
+function processResponse(message) {
+	 var sessionName = localStorage.getItem("currentSession");
 	console.log("processing response");
 	console.log(message);
 	var response = JSON.parse(message);
@@ -486,15 +482,15 @@ function initializeNewCharacterCreation(sessionName) {
      var setting = localStorage.getItem(sessionName + ".setting");
      var mechanics = localStorage.getItem(sessionName + ".mechanics");
      var messages = [{"role":"user", "content": "For the " + setting + " setting using the " + mechanics + " rule set, list out succinctly the steps for character creation, format it as a JSON array of strings, no new lines"}];
-     prompt(messages, function(msg){
+     prompt(messages).then(function(msg){
             console.log(msg);
-            var characterCreationSteps = JSON.parse(msg.choices[0].message.content);
+            var characterCreationSteps = msg;
             console.log(characterCreationSteps);
             localStorage.setItem(sessionName + ".character-creation-steps", JSON.stringify(characterCreationSteps));
             var firstStep = characterCreationSteps[0];
             var firstStepMessage = [{"role":"user", "content": "Provide a detailed description of the first step of character creation, " + firstStep + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
-            prompt(firstStepMessage, function(msg) {
-              var firstStep = msg.choices[0].message.content;
+            prompt(firstStepMessage).then(function(msg) {
+              var firstStep = msg;
               console.log(firstStep);
               localStorage.setItem(sessionName + ".character-creation-first-step", firstStep);
               $("#new-player-text").html(firstStep);
@@ -564,7 +560,7 @@ function nextPlayerCreationStage() {
 
 	    console.log(JSON.stringify(message));
 	    // Send prompt
-	    prompt(message, function(msg) {
+	    prompt(message).then(function(msg) {
 	      var nextStep = msg.choices[0].message.content;
 	      console.log(JSON.stringify(msg));
 	      console.log(nextStep);
@@ -587,15 +583,15 @@ function nextPlayerCreationStage() {
 	    console.log(characterString);
 	    // Create new message to send to chatGPT
 	    var message = [{"role":"user", "content": "create a " + mechanics + " character sheet for: " + characterString + ". Provide counts for inventory items. Include the number of expendable slots, for example spell slots or skills that have a limited number of uses. Include other features or attributes commonly associated with this type of character that was not listed above, assign values to these."}];
-            prompt(message, function(msg) {
-	      var characterSheet = msg.choices[0].message.content;
+            prompt(message).then(function(msg) {
+	      var characterSheet = msg;
 	      console.log(JSON.stringify(msg));
 	      console.log(characterSheet);
 		    
 	      var csmessage = [{"role":"user", "content": "convert this character sheet to a JSON object: " + characterSheet}];
             
 	      prompt(csmessage, function(msg) {
-	      	var characterSheet = msg.choices[0].message.content;
+	      	var characterSheet = msg;
 	      	console.log(JSON.stringify(msg));
 	      	console.log(characterSheet);
 		
@@ -792,23 +788,29 @@ function editPlayerButton() {
 	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
 }
 
-function prompt(messages, successMethod) {
-  var token = localStorage.getItem("openai-key");
-  $.ajax({
-    url: 'https://api.openai.com/v1/chat/completions',
-    type: 'POST',
-    data: JSON.stringify({
-        "model": "gpt-3.5-turbo",
-        "messages": messages
-    }),
-    headers: {
-        "Authorization": 'Bearer ' + token,
-        "Content-Type": "application/json"
-    },
-    dataType: 'json',
-    success: successMethod,
-    error: function(xhr, textStatus, errorThrown) {
-        alert(xhr.responseText);
-    }
-  });
+function prompt(messages) {
+	return new Promise((resolve, reject) => {
+	  var token = localStorage.getItem("openai-key");
+	  $.ajax({
+	    url: 'https://api.openai.com/v1/chat/completions',
+	    type: 'POST',
+	    data: JSON.stringify({
+		"model": "gpt-3.5-turbo",
+		"messages": messages
+	    }),
+	    headers: {
+		"Authorization": 'Bearer ' + token,
+		"Content-Type": "application/json"
+	    },
+	    dataType: 'json',
+	     success: function (data) {
+		     console.log(JSON.stringify(data));
+		     var messages = data.choices[0].message.content;
+       		 resolve(message)
+     		 },
+      error: function (error) {
+        reject(error)
+      }
+	  });
+ });
 }
