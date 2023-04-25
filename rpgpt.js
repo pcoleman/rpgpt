@@ -138,8 +138,7 @@ function selectImportFiles(event) {
 				var messages = [{"role":"user", "content": tempMessage}];
 				promptPromises.push(prompt(messages));
 			}
-			
-			Promise.all(promptPromises).then(fuction(promptMessages) {
+			Promise.all(promptPromises).then(function (promptMessages) {
 				var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[]};
 				for (const msg in promptMessages) {
 					console.log(JSON.stringify(combinedObject, null, 4);
