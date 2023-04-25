@@ -152,7 +152,7 @@ function selectImportFiles(event) {
 	
 function createSummary(promptMessages) {
 	for (const i in promptMessages) {
-		console.log(promptMessages[i];
+		console.log(promptMessages[i]);
 	}
 }
 	
