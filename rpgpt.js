@@ -298,7 +298,7 @@ function compareNames(string1, string2) {
 	var cleaned1 = string1.replace(regex, subst).toLowerCase().trim();
 	var cleaned2 = string2.replace(regex, subst).toLowerCase().trim();
 	
-	console.log("Comparing: " + cleaned1 + " : " + cleaned2 + " - " + (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1));
+	console.log("Comparing: " + cleaned1 + " : " + cleaned2 + " - " + (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1)));
 	return (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1));
 }
 
