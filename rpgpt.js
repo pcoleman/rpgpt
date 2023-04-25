@@ -282,7 +282,8 @@ function processBooks(promptMessages) {
 		if ("rules" in parsedMsg) {
 			combinedObject["rules"] = [...new Set(combinedObject["rules"].concat(parsedMsg["rules"]))];
 		}
-		} catch {
+		} catch (error){
+			console.log(error);
 			console.log("Not valid JSON " + promptMessages[i]);
 		}
 	}
