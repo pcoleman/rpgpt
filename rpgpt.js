@@ -625,7 +625,7 @@ function changeSession(sessionName) {
 
 function prepAdventure(sessionName) {
 	console.log("preparing adventure");
-	var chatlog = localStorage.getItem(sessionName + ".chat-log");
+	var chatlog = localStorage.getItem(sessionName + ".log");
 	if (chatlog) {
 		$( "#text-response-field" ).html(chatlog);
 		$( "#text-submit-area" ).show();
