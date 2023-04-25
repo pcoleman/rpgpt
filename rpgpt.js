@@ -227,7 +227,7 @@ function selectImportFiles(event) {
 							}
 
 							if (!merged) {
-								combinedObject["groups"].push(parsedGroup);
+								combinedObject["groups"].push(parsedRace);
 							}
 						}
 					}
@@ -249,7 +249,7 @@ function selectImportFiles(event) {
 							}
 
 							if (!merged) {
-								combinedObject["groups"].push(parsedGroup);
+								combinedObject["groups"].push(parsedNPC);
 							}
 						}
 					}
