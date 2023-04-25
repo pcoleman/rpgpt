@@ -770,9 +770,8 @@ function nextPlayerCreationStage() {
 		    
 	      var csmessage = [{"role":"user", "content": "convert this character sheet to a JSON object: " + characterSheet}];
             
-	      prompt(csmessage, function(msg) {
+	      prompt(csmessage).then(function(msg) {
 	      	var characterSheet = msg;
-	      	console.log(JSON.stringify(msg));
 	      	console.log(characterSheet);
 		
 		      
