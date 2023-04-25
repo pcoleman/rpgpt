@@ -741,7 +741,7 @@ function nextPlayerCreationStage() {
 	    console.log(JSON.stringify(message));
 	    // Send prompt
 	    prompt(message).then(function(msg) {
-	      var nextStep = msg.choices[0].message.content;
+	      var nextStep = msg;
 	      console.log(JSON.stringify(msg));
 	      console.log(nextStep);
 
