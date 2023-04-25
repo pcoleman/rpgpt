@@ -143,6 +143,7 @@ function selectImportFiles(event) {
 				var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[]};
 				for (const i in promptMessages) {
 					console.log(JSON.stringify(combinedObject, null, 4));
+					console.log(promptMessages[i]);
 					var parsedMsg = JSON.parse(promptMessages[i]);
 					console.log(parsedMsg);
 			                
