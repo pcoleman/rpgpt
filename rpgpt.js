@@ -162,11 +162,8 @@ function createSummary(promptMessages) {
 function processBooks(promptMessages) {
 	var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "characters":[], "events":[], "rules":[]};
 	for (const i in promptMessages) {
-		console.log(JSON.stringify(combinedObject, null, 4));
-		console.log(promptMessages[i]);
 		try {
 		var parsedMsg = JSON.parse(promptMessages[i].trim());
-		console.log(parsedMsg);
 
 		if ("setting" in parsedMsg) {
 			var merged = false;
@@ -299,7 +296,6 @@ function compareNames(string1, string2) {
 	var cleaned1 = string1.replace(regex, subst).toLowerCase().trim();
 	var cleaned2 = string2.replace(regex, subst).toLowerCase().trim();
 	
-	console.log("Comparing: " + cleaned1 + " : " + cleaned2 + " - " + (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1)));
 	return (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1));
 }
 
