@@ -145,6 +145,7 @@ async function processPDF(result) {
 	
 	//var userMessage = "Create a detailed summary of the following passage, while maintaining any details about the setting, characters, location, groups, evets, or rules. Passage: ";
 	for (let i = 0; i < finalLength; i += pageSize) {
+		console.log(i + "/" + finalLength);
 		var tempMessage = userMessage + "\n\n" + result.slice(i,(i + pageSize));
 		var messages = [{"role":"user", "content": tempMessage}];
 
