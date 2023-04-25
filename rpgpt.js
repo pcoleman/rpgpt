@@ -138,9 +138,9 @@ function selectImportFiles(event) {
 			        var tempMessage = userMessage + "\n\n" + result.slice(i,(i + pageSize));
 				var messages = [{"role":"user", "content": tempMessage}];
 				
-				await var tempPromise = prompt(messages);
+				promptPromises.push(prompt(messages));
 				
-				promptPromises.push(tempPromise);
+				await new Promise(r => setTimeout(r, 60000));
 			}
 			Promise.all(promptPromises).then(processBooks);
 	 	});
