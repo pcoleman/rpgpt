@@ -132,135 +132,14 @@ function selectImportFiles(event) {
 			var pageSize = 5000
 			var finalLength = result.length - pageSize - 1;
 			
-			var userMessage = "I want you to pull detailed information out of the passage below. Only output valid JSON and only include data that was specified in the passage below. This is a template for your response:{\"setting\": <setting>,\"locations\": <locations>,\"groups\": <groups>,\"races\": <races>,\"npcs\": <npcs>,\"events\": <events>}, In the template above, items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with these specifications: <setting>: This should be a valid JSON object that looks like {\"name\": <name of the setting>, \"description\": <description of the setting>, \"history\":<history of the setting>}.  <locations>: This should be a valid JSON array that looks like [{\"name\": <The name of the location>, \"description\": <A description of the location, including appearance, function and mood>, \"groups\": <a json array of strings containing the groups associated with the location>, \"npcs\": <a json array of strings containing npcs currently in this location>, \"history\": <any history of this specific location>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player visits this location, and their requirements>, \"nearby-locations\": <a json array of strings containing any relevant nearby locations>}].   <groups>: This should be a valid JSON array that looks like [{\"name\": <the name of the group>, \"description\": <a description of the group>, \"history\": <a history of the group>, \"notable-npcs\": <a json array of string containing the names of notable npcs related to this group>}].   <races>: This should be a valid JSON array that looks like [{\"name\": <The name of the race or species or creature>, \"description: <A description of the race>, \"appearance\": <Common defining features for appearance>, \"customs\": <a description of any customs specific to this race>}].  <npcs>: This should be a valid JSON array that looks like [{\"name\":<The name of the NPC>, \"description\": <A description of the NPC>, \"history\": <A history of the npc>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player talks to this npc, and their requirements>}].  <events>: These are events not tied to a location or NPC, This should be a valid JSON array that looks like [{\"event\": <the event that will happen>, \"condition\": <the required conditions necessary for the event to happen>}]";
-			
+			//var userMessage = "I want you to pull detailed information out of the passage below. Only output valid JSON and only include data that was specified in the passage below. This is a template for your response:{\"setting\": <setting>,\"locations\": <locations>,\"groups\": <groups>,\"races\": <races>,\"npcs\": <npcs>,\"events\": <events>}, In the template above, items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with these specifications: <setting>: This should be a valid JSON object that looks like {\"name\": <name of the setting>, \"description\": <description of the setting>, \"history\":<history of the setting>}.  <locations>: This should be a valid JSON array that looks like [{\"name\": <The name of the location>, \"description\": <A description of the location, including appearance, function and mood>, \"groups\": <a json array of strings containing the groups associated with the location>, \"npcs\": <a json array of strings containing npcs currently in this location>, \"history\": <any history of this specific location>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player visits this location, and their requirements>, \"nearby-locations\": <a json array of strings containing any relevant nearby locations>}].   <groups>: This should be a valid JSON array that looks like [{\"name\": <the name of the group>, \"description\": <a description of the group>, \"history\": <a history of the group>, \"notable-npcs\": <a json array of string containing the names of notable npcs related to this group>}].   <races>: This should be a valid JSON array that looks like [{\"name\": <The name of the race or species or creature>, \"description: <A description of the race>, \"appearance\": <Common defining features for appearance>, \"customs\": <a description of any customs specific to this race>}].  <npcs>: This should be a valid JSON array that looks like [{\"name\":<The name of the NPC>, \"description\": <A description of the NPC>, \"history\": <A history of the npc>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player talks to this npc, and their requirements>}].  <events>: These are events not tied to a location or NPC, This should be a valid JSON array that looks like [{\"event\": <the event that will happen>, \"condition\": <the required conditions necessary for the event to happen>}]";
+			var userMessage = "Create a consice bulleted summary of the following passage, while maintaining any details about the setting, characters, location, groups, evets, or rules. Passage: ";
 			for (let i = 0; i < 15000; i += pageSize) {
 				var tempMessage = userMessage + "\n\n" + result.slice(i,pageSize);
 				var messages = [{"role":"user", "content": tempMessage}];
 				promptPromises.push(prompt(messages));
 			}
-			Promise.all(promptPromises).then(function (promptMessages) {
-				var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[]};
-				for (const i in promptMessages) {
-					console.log(JSON.stringify(combinedObject, null, 4));
-					console.log(promptMessages[i]);
-					var parsedMsg = JSON.parse(promptMessages[i]);
-					console.log(parsedMsg);
-			                
-					if ("setting" in parsedMsg) {
-						var merged = false;
-						var settingName = parsedMsg["setting"]["name"];
-						for (const j in combinedObject["setting"]) {
-							var combinedSetting = combinedObject["setting"][j];
-							if (compareNames(settingName, combinedSetting["name"])) {
-								combinedSetting["description"] = combinedSetting["description"] + parsedMsg["setting"]["description"];
-								combinedSetting["history"] = combinedSetting["history"] + parsedMsg["setting"]["history"];
-								merged = true;
-							}
-						}
-						
-						if (!merged) {
-							combinedObject["setting"].push(parsedMsg["setting"]);
-						}
-					}
-			
-					if ("locations" in parsedMsg) {
-						for (const j in parsedMsg["locations"]) {
-							var parsedLocation = parsedMsg["locations"][j]
-							var merged = false;
-							var locationName = parsedLocation["name"];
-							for (const k in combinedObject["locations"]) {
-								var combinedLocation = combinedObject["locations"][k];
-								if (compareNames(locationName, combinedLocation["name"])) {
-									combinedLocation["description"] = combinedLocation["description"] + parsedLocation["description"];
-									combinedLocation["history"] = combinedLocation["history"] + parsedLocation["history"];
-									combinedLocation["groups"] = [...new Set(combinedLocation["groups"].concat(parsedLocation["groups"]))];
-									combinedLocation["npcs"] = [...new Set(combinedLocation["npcs"].concat(parsedLocation["npcs"]))];
-									combinedLocation["events"] = [...new Set(combinedLocation["events"].concat(parsedLocation["events"]))];
-									combinedLocation["nearby-locations"] = [...new Set(combinedLocation["nearby-locations"].concat(parsedLocation["nearby-locations"]))];
-									merged = true;
-								}
-							}
-
-							if (!merged) {
-								combinedObject["locations"].push(parsedLocation);
-							}
-						}
-					}
-			
-					if ("groups" in parsedMsg) {
-						for (const j in parsedMsg["groups"]) {
-							var parsedGroup = parsedMsg["groups"][j];
-							var merged = false;
-						
-							var groupName = parsedGroup["name"];
-							for (const k in combinedObject["groups"]) {
-								var combinedGroup = combinedObject["groups"][k];
-								if (compareNames(groupName, combinedGroup["name"])) {
-									combinedGroup["description"] = combinedGroup["description"] + parsedGroup["description"];
-									combinedGroup["history"] = combinedGroup["history"] + parsedGroup["history"];
-									combinedGroup["notable-npcs"] = [...new Set(combinedGroup["notable-npcs"].concat(parsedGroup["notable-npcs"]))];
-									merged = true;
-								}
-							}
-
-							if (!merged) {
-								combinedObject["groups"].push(parsedGroup);
-							}
-						}
-					}
-			
-					if ("races" in parsedMsg) {
-						for (const j in parsedMsg["races"]) {
-							var parsedRace = parsedMsg["races"][j];
-							var merged = false;
-						
-							var raceName = parsedRace["name"];
-							for (const k in combinedObject["races"]) {
-								var combinedRace = combinedObject["races"][k];
-								if (compareNames(raceName, combinedRace["name"])) {
-									combinedRace["description"] = combinedRace["description"] + parsedRace["description"];
-									combinedRace["appearance"] = combinedRace["appearance"] + parsedRace["appearance"];
-									combinedRace["customs"] = combinedRace["customs"] + parsedRace["customs"];
-									merged = true;
-								}
-							}
-
-							if (!merged) {
-								combinedObject["groups"].push(parsedRace);
-							}
-						}
-					}
-			
-					if ("npcs" in parsedMsg) {
-						for (const j in parsedMsg["npcs"]) {
-							var parsedNPC = parsedMsg["npcs"][j];
-							var merged = false;
-						
-							var npcName = parsedNPC["name"];
-							for (const k in combinedObject["npcs"]) {
-								var combinedNPC = combinedObject["npcs"][k];
-								if (compareNames(npcName, combinedNPC["name"])) {
-									combinedNPC["description"] = combinedNPC["description"] + parsedNPC["description"];
-									combinedNPC["history"] = combinedNPC["history"] + parsedNPC["history"];
-									combinedNPC["events"] = [...new Set(combinedNPC["events"].concat(parsedNPC["events"]))];
-									merged = true;
-								}
-							}
-
-							if (!merged) {
-								combinedObject["groups"].push(parsedNPC);
-							}
-						}
-					}
-			
-					if ("events" in parsedMsg) {
-						combinedObject["events"] = [...new Set(combinedObject["events"].concat(parsedMsg["events"]))];
-					}
-				}
-		    
-		    		console.log(JSON.stringify(combinedObject, null, 4));
-			});
+			Promise.all(promptPromises).then(createSummary);
 	 	});
 	    };
 	    //Step 3:Read the file as ArrayBuffer
@@ -269,6 +148,135 @@ function selectImportFiles(event) {
 	}
 
 	input.click();
+}
+	
+function createSummary(promptMessages) {
+	for (const i in promptMessages) {
+		console.log(promptMessages[i];
+	}
+}
+	
+function processBooks(promptMessages) {
+	var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[]};
+	for (const i in promptMessages) {
+		console.log(JSON.stringify(combinedObject, null, 4));
+		console.log(promptMessages[i]);
+		var parsedMsg = JSON.parse(promptMessages[i]);
+		console.log(parsedMsg);
+
+		if ("setting" in parsedMsg) {
+			var merged = false;
+			var settingName = parsedMsg["setting"]["name"];
+			for (const j in combinedObject["setting"]) {
+				var combinedSetting = combinedObject["setting"][j];
+				if (compareNames(settingName, combinedSetting["name"])) {
+					combinedSetting["description"] = combinedSetting["description"] + parsedMsg["setting"]["description"];
+					combinedSetting["history"] = combinedSetting["history"] + parsedMsg["setting"]["history"];
+					merged = true;
+				}
+			}
+
+			if (!merged) {
+				combinedObject["setting"].push(parsedMsg["setting"]);
+			}
+		}
+
+		if ("locations" in parsedMsg) {
+			for (const j in parsedMsg["locations"]) {
+				var parsedLocation = parsedMsg["locations"][j]
+				var merged = false;
+				var locationName = parsedLocation["name"];
+				for (const k in combinedObject["locations"]) {
+					var combinedLocation = combinedObject["locations"][k];
+					if (compareNames(locationName, combinedLocation["name"])) {
+						combinedLocation["description"] = combinedLocation["description"] + parsedLocation["description"];
+						combinedLocation["history"] = combinedLocation["history"] + parsedLocation["history"];
+						combinedLocation["groups"] = [...new Set(combinedLocation["groups"].concat(parsedLocation["groups"]))];
+						combinedLocation["npcs"] = [...new Set(combinedLocation["npcs"].concat(parsedLocation["npcs"]))];
+						combinedLocation["events"] = [...new Set(combinedLocation["events"].concat(parsedLocation["events"]))];
+						combinedLocation["nearby-locations"] = [...new Set(combinedLocation["nearby-locations"].concat(parsedLocation["nearby-locations"]))];
+						merged = true;
+					}
+				}
+
+				if (!merged) {
+					combinedObject["locations"].push(parsedLocation);
+				}
+			}
+		}
+
+		if ("groups" in parsedMsg) {
+			for (const j in parsedMsg["groups"]) {
+				var parsedGroup = parsedMsg["groups"][j];
+				var merged = false;
+
+				var groupName = parsedGroup["name"];
+				for (const k in combinedObject["groups"]) {
+					var combinedGroup = combinedObject["groups"][k];
+					if (compareNames(groupName, combinedGroup["name"])) {
+						combinedGroup["description"] = combinedGroup["description"] + parsedGroup["description"];
+						combinedGroup["history"] = combinedGroup["history"] + parsedGroup["history"];
+						combinedGroup["notable-npcs"] = [...new Set(combinedGroup["notable-npcs"].concat(parsedGroup["notable-npcs"]))];
+						merged = true;
+					}
+				}
+
+				if (!merged) {
+					combinedObject["groups"].push(parsedGroup);
+				}
+			}
+		}
+
+		if ("races" in parsedMsg) {
+			for (const j in parsedMsg["races"]) {
+				var parsedRace = parsedMsg["races"][j];
+				var merged = false;
+
+				var raceName = parsedRace["name"];
+				for (const k in combinedObject["races"]) {
+					var combinedRace = combinedObject["races"][k];
+					if (compareNames(raceName, combinedRace["name"])) {
+						combinedRace["description"] = combinedRace["description"] + parsedRace["description"];
+						combinedRace["appearance"] = combinedRace["appearance"] + parsedRace["appearance"];
+						combinedRace["customs"] = combinedRace["customs"] + parsedRace["customs"];
+						merged = true;
+					}
+				}
+
+				if (!merged) {
+					combinedObject["groups"].push(parsedRace);
+				}
+			}
+		}
+
+		if ("npcs" in parsedMsg) {
+			for (const j in parsedMsg["npcs"]) {
+				var parsedNPC = parsedMsg["npcs"][j];
+				var merged = false;
+
+				var npcName = parsedNPC["name"];
+				for (const k in combinedObject["npcs"]) {
+					var combinedNPC = combinedObject["npcs"][k];
+					if (compareNames(npcName, combinedNPC["name"])) {
+						combinedNPC["description"] = combinedNPC["description"] + parsedNPC["description"];
+						combinedNPC["history"] = combinedNPC["history"] + parsedNPC["history"];
+						combinedNPC["events"] = [...new Set(combinedNPC["events"].concat(parsedNPC["events"]))];
+						merged = true;
+					}
+				}
+
+				if (!merged) {
+					combinedObject["groups"].push(parsedNPC);
+				}
+			}
+		}
+
+		if ("events" in parsedMsg) {
+			combinedObject["events"] = [...new Set(combinedObject["events"].concat(parsedMsg["events"]))];
+		}
+	}
+
+	console.log(JSON.stringify(combinedObject, null, 4));
 }
 
 function compareNames(string1, string2) {
