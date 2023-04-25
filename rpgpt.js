@@ -137,6 +137,8 @@ function selectImportFiles(event) {
 			for (let i = 0; i < 15000; i += pageSize) {
 				var tempMessage = userMessage + "\n\n" + result.slice(i,pageSize);
 				var messages = [{"role":"user", "content": tempMessage}];
+				
+				console.log(tempMessage);
 				promptPromises.push(prompt(messages));
 			}
 			Promise.all(promptPromises).then(createSummary);
