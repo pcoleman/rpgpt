@@ -255,7 +255,7 @@ function selectImportFiles(event) {
 					}
 			
 					if ("events" in parsedMsg) {
-						combinedObject["events"] = [...new Set(combinedOject["events"].concat(parsedMsg["events"]))];
+						combinedObject["events"] = [...new Set(combinedObject["events"].concat(parsedMsg["events"]))];
 					}
 				}
 		    
