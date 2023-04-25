@@ -141,7 +141,7 @@ function selectImportFiles(event) {
 			Promise.all(promptPromises).then(function (promptMessages) {
 				var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[]};
 				for (const msg in promptMessages) {
-					console.log(JSON.stringify(combinedObject, null, 4);
+					console.log(JSON.stringify(combinedObject, null, 4));
 					var parsedMsg = JSON.parse(msg);
 			                
 					if ("setting" in parsedMsg) {
@@ -247,7 +247,7 @@ function selectImportFiles(event) {
 					}
 				}
 		    
-		    		console.log(JSON.stringify(combinedObject, null, 4);
+		    		console.log(JSON.stringify(combinedObject, null, 4));
 			});
 	 	});
 	    };
