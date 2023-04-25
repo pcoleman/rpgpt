@@ -141,15 +141,16 @@ function selectImportFiles(event) {
 			}
 			Promise.all(promptPromises).then(function (promptMessages) {
 				var combinedObject = {"setting":[], "locations":[], "groups":[], "races":[], "npcs":[], "events":[]};
-				for (const msg in promptMessages) {
+				for (const i in promptMessages) {
 					console.log(JSON.stringify(combinedObject, null, 4));
-					var parsedMsg = JSON.parse(msg);
-					console.log(msg);
+					var parsedMsg = JSON.parse(promptMessages[i]);
+					console.log(parsedMsg);
 			                
 					if ("setting" in parsedMsg) {
 						var merged = false;
 						var settingName = parsedMsg["setting"]["name"];
-						for (var combinedSetting in combinedObject["setting"]) {
+						for (const j in combinedObject["setting"]) {
+							var combinedSetting = combinedObject["setting"][j];
 							if (compareNames(settingName, combinedSetting["name"])) {
 								combinedSetting["description"] = combinedSetting["description"] + parsedMsg["setting"]["description"];
 								combinedSetting["history"] = combinedSetting["history"] + parsedMsg["setting"]["history"];
@@ -163,10 +164,12 @@ function selectImportFiles(event) {
 					}
 			
 					if ("locations" in parsedMsg) {
-						for (const parsedLocation in parsedMsg["locations"]) {
+						for (const j in parsedMsg["locations"]) {
+							var parsedLocation = parsedMsg["locations"][j]
 							var merged = false;
 							var locationName = parsedLocation["name"];
-							for (var combinedLocation in combinedObject["locations"]) {
+							for (const k in combinedObject["locations"]) {
+								var combinedLocation = combinedObject["locations"][k];
 								if (compareNames(locationName, combinedLocation["name"])) {
 									combinedLocation["description"] = combinedLocation["description"] + parsedLocation["description"];
 									combinedLocation["history"] = combinedLocation["history"] + parsedLocation["history"];
@@ -185,11 +188,13 @@ function selectImportFiles(event) {
 					}
 			
 					if ("groups" in parsedMsg) {
-						for (const parsedGroup in parsedMsg["groups"]) {
+						for (const j in parsedMsg["groups"]) {
+							var parsedGroup = parsedMsg["groups"][j];
 							var merged = false;
 						
 							var groupName = parsedGroup["name"];
-							for (var combinedGroup in combinedObject["groups"]) {
+							for (const k in combinedObject["groups"]) {
+								var combinedGroup = combinedObject["groups"][k];
 								if (compareNames(groupName, combinedGroup["name"])) {
 									combinedGroup["description"] = combinedGroup["description"] + parsedGroup["description"];
 									combinedGroup["history"] = combinedGroup["history"] + parsedGroup["history"];
@@ -205,11 +210,13 @@ function selectImportFiles(event) {
 					}
 			
 					if ("races" in parsedMsg) {
-						for (const parsedRace in parsedMsg["races"]) {
+						for (const j in parsedMsg["races"]) {
+							var parsedRace = parsedMsg["races"][j];
 							var merged = false;
 						
 							var raceName = parsedRace["name"];
-							for (var combinedRace in combinedObject["races"]) {
+							for (const k in combinedObject["races"]) {
+								var combinedRace = combinedObject["races"][k];
 								if (compareNames(raceName, combinedRace["name"])) {
 									combinedRace["description"] = combinedRace["description"] + parsedRace["description"];
 									combinedRace["appearance"] = combinedRace["appearance"] + parsedRace["appearance"];
@@ -225,11 +232,13 @@ function selectImportFiles(event) {
 					}
 			
 					if ("npcs" in parsedMsg) {
-						for (const parsedNPC in parsedMsg["npcs"]) {
+						for (const j in parsedMsg["npcs"]) {
+							var parsedNPC = parsedMsg["npcs"][j];
 							var merged = false;
 						
 							var npcName = parsedNPC["name"];
-							for (var combinedNPC in combinedObject["npcs"]) {
+							for (const k in combinedObject["npcs"]) {
+								var combinedNPC = combinedObject["npcs"][k];
 								if (compareNames(npcName, combinedNPC["name"])) {
 									combinedNPC["description"] = combinedNPC["description"] + parsedNPC["description"];
 									combinedNPC["history"] = combinedNPC["history"] + parsedNPC["history"];
