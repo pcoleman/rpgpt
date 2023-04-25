@@ -618,6 +618,11 @@ function changeSession(sessionName) {
 	     console.log(currentPlayerName);
 	    if (currentPlayerName) {
 		changePlayer({data:{sessionName:sessionName, playerName: currentPlayerName}});
+	    } ese {
+		if (currentPlayerTree) {
+			jsonview.destroy(currentPlayerTree);
+		}
+	
 	    }
 
 		prepAdventure(sessionName);
