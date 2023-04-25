@@ -80,7 +80,7 @@ $(document).ready(function() {
 });
 
     /**
-     * Extract text from PDFs with PDF.js
+     * Extract text from PDFs with PDF.js 
      * Uses the demo pdf.js from https://mozilla.github.io/pdf.js/getting_started/
      */
     function pdfToText(data) {
