@@ -1002,6 +1002,8 @@ function get(name) {
 }
 
 function get(prefix, name) {
+	console.log("Prefix: " + prefix);
+	console.log("Name: " + name);
 	const regex = /(?:(the|a|an) +)/g; 
 	const subst = ` `;
 
