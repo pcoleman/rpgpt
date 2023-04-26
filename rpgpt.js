@@ -10,7 +10,7 @@ $(document).ready(function() {
     });
 	
     // load session array
-    var sessionArray = JSON.parse(get("sessions"));
+    var sessionArray = JSON.parse(get("", "sessions"));
     var sessionSelect = document.querySelector('#session-selection');
     
     for (i in sessionArray) {
@@ -19,7 +19,7 @@ $(document).ready(function() {
         sessionSelect.add(newSession);
     }
     
-    var sessionName = get("currentSession");
+    var sessionName = get("", "currentSession");
     
     if (sessionName) {
         changeSession(sessionName);
@@ -56,7 +56,7 @@ $(document).ready(function() {
     $( "#session-removal-button" ).click(removeSession);
     
     $( "#new-character-button" ).click(function(){
-      var sessionName = get("currentSession");
+      var sessionName = get("", "currentSession");
       set(sessionName, "player-creation-stage", 0);
       remove(sessionName, "player-creation-decisions");
       $( "#new-player-submit-button" ).show();
@@ -301,7 +301,7 @@ function compareNames(string1, string2) {
 }
 
 function startAdventure(event) {
-	var sessionName = get("currentSession");
+	var sessionName = get("","currentSession");
 	var playerName = get(sessionName, "current-player");
 	set(sessionName, "hot-summary", "");
 	
@@ -319,7 +319,7 @@ function startAdventure(event) {
 
 
 function submitAction(event) {
-	var sessionName = get("currentSession");
+	var sessionName = get("","currentSession");
 	var playerName = get(sessionName, "current-player");
 	var action = document.querySelector('#text-submit-area').value;
 	document.querySelector('#text-submit-area').value = "";
@@ -349,7 +349,7 @@ function submitAction(event) {
 }
 
 function craftMessage(sessionName, playerName, message) {
-	var sessionName = get("currentSession");
+	var sessionName = get("","currentSession");
 	var playerName = get(sessionName, "current-player");
 	var playerObject = JSON.parse(get(sessionName, playerName));
 	console.log(sessionName + ".hot-summary");
@@ -371,7 +371,7 @@ function craftMessage(sessionName, playerName, message) {
 }
 
 function processResponse(message) {
-	 var sessionName = get("currentSession");
+	 var sessionName = get("","currentSession");
 	console.log("processing response");
 	console.log(message);
 	var response = JSON.parse(message);
@@ -481,7 +481,7 @@ function saveSession() {
   
   
   // Saving the text fields to Local Storage
-  set(sessionName, JSON.stringify(sessionObject));
+  set("", sessionName, JSON.stringify(sessionObject));
   
   if (sessionMechanics) {
   	set(sessionName, "mechanics", sessionMechanics);
@@ -496,7 +496,7 @@ function saveSession() {
   }
   
   // Adding session the the list of sessions
-  var sessionArrayString = get("sessions");
+  var sessionArrayString = get("", "sessions");
   
   if (sessionArrayString) {
     var sessionArray = JSON.parse(sessionArrayString);
@@ -505,9 +505,9 @@ function saveSession() {
     var sessionArray = [sessionName];
   }
   
-  set("sessions", JSON.stringify(sessionArray));
+  set("", "sessions", JSON.stringify(sessionArray));
   
-  set("currentSession", sessionName);
+  set("", "currentSession", sessionName);
   
   // Clearing out text fields
   document.querySelector('#session-creation-name').value = "";
@@ -524,11 +524,11 @@ function saveSession() {
   sessionSelect.value = sessionName
   
    // Clearing out text fields
-  var tempSession = get(sessionName);
+  var tempSession = get("", sessionName);
   var tempMechanics = get(sessionName, "mechanics");
   var tempSetting = get(sessionName, "setting");
   var tempCampaign = get(sessionName, "campaign");
-  var tempArray = get("sessions");
+  var tempArray = get("", "sessions");
 
   console.log("out: "+ tempSession);
   console.log("out: "+ tempMechanics);
@@ -597,7 +597,7 @@ function changeSession(sessionName) {
    
      // Initialize player creation for the session
      initializeNewCharacterCreation(sessionName);
-	   set("currentSession", sessionName);
+	   set("", "currentSession", sessionName);
 	   
 	   console.log(sessionName);
 	   // Update the player list
@@ -684,7 +684,7 @@ function initializeNewCharacterCreation(sessionName) {
 
 function nextPlayerCreationStage() {
 	console.log("next player creation stage");
-  var sessionName = get("currentSession");
+  var sessionName = get("", "currentSession");
 
   var setting = get(sessionName, "setting");
   var mechanics = get(sessionName, "mechanics");
@@ -932,7 +932,7 @@ function removePlayer(event) {
 }
 
 function removePlayerButton() {
-	var sessionName = get("currentSession");
+	var sessionName = get("","currentSession");
 	var playerName = get(sessionName, "removePlayer");
 	console.log("removing players");
 	
@@ -952,7 +952,7 @@ function removePlayerButton() {
 }
 
 function editPlayerButton() {
-	var sessionName = get("currentSession");
+	var sessionName = get("","currentSession");
 	var playerName = get(sessionName, "editPlayer");
 	console.log("editing player " + playerName);
 	
@@ -965,10 +965,6 @@ function editPlayerButton() {
 	set(sessionName, playerName, JSON.stringify(modifiedPlayerObject));
 	
 	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
-}
-
-function set(name) {
-	return set("", name);	
 }
 
 function set(prefix, name, value) {
@@ -997,10 +993,6 @@ function set(prefix, name, value) {
 	return localStorage.setItem(keyName, value);
 }
 
-function get(name) {
-	return get("", name);
-}
-
 function get(prefix, name) {
 	console.log("Prefix: " + prefix);
 	console.log("Name: " + name);
@@ -1027,10 +1019,6 @@ function get(prefix, name) {
 	
 	console.log("getting key: " + keyName);
 	return localStorage.getItem(keyName);
-}
-
-function remove(name) {
-	return remove("", name);
 }
 
 function remove(prefix, name) {
