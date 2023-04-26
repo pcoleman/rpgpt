@@ -984,7 +984,11 @@ function prompt(messages) {
 	    dataType: 'json',
 	     success: function (data) {
 		     console.log(JSON.stringify(data));
-		     var messages = data.choices[0].message.content.substr(0, data.choices[0].message.content.lastIndexOf("}")).trim();
+		     var messages = data.choices[0].message.content;
+		     var lastIndex = data.choices[0].message.content.lastIndexOf("}");
+		     if (lastIndex < messages.length - 3) {
+		     	messages = messages.substr(0, lastIndex+1).trim(); 
+		     }
        		 resolve(messages);
      		 },
       error: function (error) {
