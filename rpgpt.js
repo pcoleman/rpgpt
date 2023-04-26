@@ -357,7 +357,7 @@ function craftMessage(sessionName, playerName, message) {
 	console.log(playerObject);
 	var mechanics = get(sessionName, "mechanics");
 	var setting = "The setting for this role playing game is " + get(sessionName, "setting");
-	var character = "My character is " + playerName + "." + playerObject.background + ". This is my character sheet: " + JSON.stringify(playerObject.json);
+	var character = "My player character is " + playerName + "." + playerObject.background + ". This is my character sheet: " + JSON.stringify(playerObject.json);
 	var summary = "These are the events that have happened so far in the game: " + hotSummary;
 	var lastTurn =  get(sessionName, "last-turn");
 	var gamePrompt = "You are a game master running a game using the rules of " + mechanics + "\n\nThis is a JSON template for the game output:\n{\n\"turn_number\": <TURN>,\n\"roll\" <ROLL>,\"player\": <PLAYER>,\n\"location\":  <LOCATION>,\n\"story\": <STORY>,\n\"summary\": <SUMMARY>,\n\"location_interations\": <LOCATION_INTERACTIONS>,\n\"npc_interactions\": <NPC_INTERACIONS>,\n\"points_of_interest\": <POI>\n}\n\nIn the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below:\n• <TURN>\n		○ The current turn number. Increment it each turn.\n    • <ROLL>\n		○ The result of any dice rolls that were required to resolve an action, include the attribute or skill being rolled for. Return a null if no dice rolls were done\n	• <PLAYER>\n		○ A valid JSON object representing the changes made to the previously provided players character sheet, for example if the player had 10 health and lost 2 the object would be {\"hit points\": 8}. If there have been no changes return a null \n	• <LOCATION>\n		○ The current location as understood by the main character.\n	• <STORY>\n		○ The results of the actions taken from the last turn. Write it as a narrative, but stop before my character's next action. Include lots of dialogue. Include descriptions of locations and NPCs that are new since the last turn. It will use a Erin Morgenstern-esque second person, present tense writing style.\n			  * <SUMMARY>\n    ○ A concise minmimal third person, summary of <STORY>, the player character should be referred to by name.\n  * <LOCATION_INTERACIONS>\n    ○ A JSON aray that looks like this\n [\"<A third person summary string of the players interactions with the location>\",\"<a third person summary string of the players interactions with the location>\"]\n  * <NPC_INTERACTIONS>\n    ○ A JSON array that looks like this\n[{\"name\": <The Name of the NPC>, \"interaction\": [\"<A third person summary of the players interaction with the NPC>\", \"<A third person summary of the players interaction with the NPC>\"] \n  * <POI>\n    ○ A JSON array that contains the names of at least 3 nearby locations, looks like [\"location1\", \"location2\", \"location3\"]\n\nThere are some special commands I can issue. These result of the command will replace [story] in the game output. The special commands are issued with one of the words below and has the listed result.\n	• hint\n		○ You will give a small hint to point me an interesting direction for the story.\n\nThe following rules are central to the game logic and must always be followed:\n	1. Use the rules for " + mechanics + "\n        1. After you output the template, that ends one turn. Wait for my response to start the next turn.  2. The output should always be valid JSON and nothing else\n\n\nSettings: " + setting + "\nPlayer:" + playerName;
@@ -379,7 +379,7 @@ function craftMessage(sessionName, playerName, message) {
 		}
 		
 		// Get short locations
-		if (lastTurnObject["nearby-locations"]) {
+		if ("nearby-locations" in lastTurnObject) {
 			var lastTurnNearbyLocations =  JSON.parse(lastTurnObject["nearby-locations"]);
 			for (var i in lastTurnNearbyLocations) {
 				var ltnbLocation= get(sessionName + ".location", lastTurnNearbyLocations[i]);
@@ -390,7 +390,7 @@ function craftMessage(sessionName, playerName, message) {
 		}
 		
 		// Get full NPCs
-		if (lastTurnObject["npc-interactions"]) {
+		if ("npc-interactions" in lastTurnObject) {
 			var lastTurnNPCs =  JSON.parse(lastTurnObject["npc-interactions"]);
 			for (var i in lastTurnNPCs) {
 				var lastNPC= get(sessionName + ".location", lastTurnNPCs[i]["name"]);
@@ -404,8 +404,9 @@ function craftMessage(sessionName, playerName, message) {
 	// Create user message
 	var userMessage = gamePrompt + ", Action: " + message;
 	
+	var fullLocationMessage = "";
 	// Process the full locations
-	var fullLocationMessage = "here is some information for locations in this setting: [" + fullLocations.join(",") + "]";
+	if (fullLocations.length > 0) fullLocationMessage = "here is some information for locations in this setting: [" + fullLocations.join(",") + "]";
 	
 	// Process the short locations
 	var shortLocationString = ""
@@ -413,21 +414,23 @@ function craftMessage(sessionName, playerName, message) {
 		var tempLocation = {};
 		var shortLocation = shortLocations[i];
 		tempLocation["name"] = shortLocation["name"];
-		if (shortLocation["short-description"]) {
+		if ("short-description" in shortLocation) {
 			tempLocation["description"] = shortLocation["short-description"];
 		}
 		
-		if (shortLocation["hot-summary"]) {
+		if ("hot-summary" in shortLocation) {
 			tempLocation["hot-summary"] = shortLocation["hot-summary"];
 		}
 		shortLocationString = shortLocationString + "," + JSON.stringify(tempLocation);
 	}
 	
-	var shortLocationMessage = "here is some information for locations in this setting: [" + shortLocationString.substring(1) + "]";
+	var shortLocationMessage = "";
+	if (shortLocationString) shortLocationMessage = "here is some information for locations in this setting: [" + shortLocationString.substring(1) + "]";
 	
 	// Process the full NPCs
-	
-	var fullNPCMessage = "here is some information for npcs in this setting: [" + fullLocations.join(",") + "]";
+	var fullNPCMessage = "";
+	// Process the full locations
+	if (fullNPCs.length > 0) fullNPCMessage = "here is some information for characters in this setting: [" + fullNPCs.join(",") + "]";
 	
 	// Process the short NPCs
 	
@@ -436,17 +439,18 @@ function craftMessage(sessionName, playerName, message) {
 		var tempNPC = {};
 		var shortNPC = shortNPCs[i];
 		tempNPC["name"] = shortNPC["name"];
-		if (shortNPC["short-description"]) {
+		if ("short-description" in shortNPC) {
 			tempNPC["short-description"] = shortNPC["short-description"];
 		}
 		
-		if (shortNPC["hot-summary"]) {
+		if ("hot-summary" in shortNPC) {
 			tempNPC["hot-summary"] = shortNPC["hot-summary"];
 		}
 		shortNPCString = shortNPCString + "," + JSON.stringify(tempNPC);
 	}
 	
-	var shortNPCMessage = "here is some information for locations in this setting: [" + shortNPCString.substring(1) + "]";
+	var shortNPCMessage = "";
+	if (shortNPCString) shortNPCMessage = "here is some information for characters in this setting: [" + shortNPCString.substring(1) + "]";
 	
 	var messageArray = [];
 	
@@ -456,7 +460,7 @@ function craftMessage(sessionName, playerName, message) {
 	// Pass in general background
 	if (setting) messageArray.push({"role":"assistant", "content": setting});
 	
-	// Pass in the character object
+	// Pass in the player character object
 	if (character) messageArray.push({"role":"assistant", "content": character});
 	
 	// Pass in situational context
