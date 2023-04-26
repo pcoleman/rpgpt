@@ -542,7 +542,11 @@ function saveSession() {
 
 function removeSession() {
   var sessionSelect = document.querySelector('#session-selection');
-  var sessionName = sessionSelect.value;
+  var sessionN = sessionSelect.value;	
+	const regex = /(?:(the|a|an) +)/g; 
+	const subst = ` `;
+
+	var sessionName = sessionN.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
   var arr = []; // Array to hold the keys
   
   // Iterate over localStorage and insert the keys that meet the condition into arr
