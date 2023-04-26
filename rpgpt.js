@@ -294,8 +294,8 @@ function compareNames(string1, string2) {
 	const subst = ` `;
 
 	// The substituted value will be contained in the result variable
-	var cleaned1 = string1.replace(regex, subst).toLowerCase().trim();
-	var cleaned2 = string2.replace(regex, subst).toLowerCase().trim();
+	var cleaned1 = string1.toLowerCase().replace(regex, subst).trim();
+	var cleaned2 = string2.toLowerCase().replace(regex, subst).trim();
 	
 	return (cleaned1.includes(cleaned2) || cleaned2.includes(cleaned1));
 }
@@ -1023,8 +1023,8 @@ function set(prefix, name, value) {
 	const regex = /(?:(the|a|an) +)/g; 
 	const subst = ` `;
 
-	var cleanedName = name.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
-	var cleanedPrefix = prefix.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
+	var cleanedName = name.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
+	var cleanedPrefix = prefix.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
 	
 	var keyName = cleanedPrefix + "." + cleanedName;
 
@@ -1051,8 +1051,8 @@ function get(prefix, name) {
 	const regex = /(?:(the|a|an) +)/g; 
 	const subst = ` `;
 
-	var cleanedName = name.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
-	var cleanedPrefix = prefix.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
+	var cleanedName = name.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
+	var cleanedPrefix = prefix.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
 	
 	var keyName = cleanedPrefix + "." + cleanedName;
 	
@@ -1077,8 +1077,8 @@ function remove(prefix, name) {
 	const regex = /(?:(the|a|an) +)/g; 
 	const subst = ` `;
 
-	var cleanedName = name.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
-	var cleanedPrefix = prefix.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
+	var cleanedName = name.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
+	var cleanedPrefix = prefix.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
 	
 	var keyName = cleanedPrefix + "." + cleanedName;
 	
