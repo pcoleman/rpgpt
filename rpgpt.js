@@ -392,7 +392,7 @@ function craftMessage(sessionName, playerName, message) {
 	var userMessage = gamePrompt + ", Action: " + message;
 	
 	// Process the full locations
-	var fullLocationMessage = "here is some information for locations in this setting: [" fullLocations.join(",") + "]";
+	var fullLocationMessage = "here is some information for locations in this setting: [" + fullLocations.join(",") + "]";
 	
 	// Process the short locations
 	var shortLocationString = ""
@@ -410,7 +410,7 @@ function craftMessage(sessionName, playerName, message) {
 		shortLocationString = shortLocationString + "," + JSON.stringify(tempLocation);
 	}
 	
-	var shortLocationMessage = "here is some information for locations in this setting: [" shortLocationString.substring(1) + "]";
+	var shortLocationMessage = "here is some information for locations in this setting: [" + shortLocationString.substring(1) + "]";
 			       
 	return [{"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting}, {"role":"assistant", "content": character}, {"role":"assistant", "content": fullLocationMessage}, {"role":"assistant", "content": shortLocationMessage}, {"role":"assistant", "content": summary}, {"role":"user", "content": userMessage}];
 }
