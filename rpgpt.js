@@ -364,6 +364,8 @@ function craftMessage(sessionName, playerName, message) {
 	
 	var fullLocations = [];
 	var shortLocations = [];
+	var fullNPCs = [];
+	var shortNPCs = [];
 	if (lastTurn) {
 		gamePrompt = gamePrompt + ", This is JSON object representing the state of the gamelast turn: " + lastTurn;
 		
@@ -383,6 +385,17 @@ function craftMessage(sessionName, playerName, message) {
 				var ltnbLocation= get(sessionName + ".location", lastTurnNearbyLocations[i]);
 				if (ltnbLocation) {
 					shortLocations.push(JSON.parse(ltnbLocation));	
+				}
+			}
+		}
+		
+		// Get full NPCs
+		if (lastTurnObject["npc-interactions"]) {
+			var lastTurnNPCs =  JSON.parse(lastTurnObject["npc-interactions"]);
+			for (var i in lastTurnNPCs) {
+				var lastNPC= get(sessionName + ".location", lastTurnNPCs[i]["name"]);
+				if (lastNPC) {
+					fullNPCs.push(lastNPC);	
 				}
 			}
 		}
@@ -411,8 +424,54 @@ function craftMessage(sessionName, playerName, message) {
 	}
 	
 	var shortLocationMessage = "here is some information for locations in this setting: [" + shortLocationString.substring(1) + "]";
+	
+	// Process the full NPCs
+	
+	var fullNPCMessage = "here is some information for npcs in this setting: [" + fullLocations.join(",") + "]";
+	
+	// Process the short NPCs
+	
+	var shortNPCString = ""
+	for (var i in shortNPCs) {
+		var tempNPC = {};
+		var shortNPC = shortNPCs[i];
+		tempNPC["name"] = shortNPC["name"];
+		if (shortNPC["short-description"]) {
+			tempNPC["short-description"] = shortNPC["short-description"];
+		}
+		
+		if (shortNPC["hot-summary"]) {
+			tempNPC["hot-summary"] = shortNPC["hot-summary"];
+		}
+		shortNPCString = shortNPCString + "," + JSON.stringify(tempNPC);
+	}
+	
+	var shortNPCMessage = "here is some information for locations in this setting: [" + shortNPCString.substring(1) + "]";
+	
+	var messageArray = [];
+	
+	// Set the system state
+	messageArray.push({"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON"});
+	
+	// Pass in general background
+	if (setting) messageArray.push({"role":"assistant", "content": setting});
+	
+	// Pass in the character object
+	if (character) messageArray.push({"role":"assistant", "content": character});
+	
+	// Pass in situational context
+	if (fullLocationMessage) messageArray.push({"role":"assistant", "content": fullLocationMessage});
+	if (shortLocationMessage) messageArray.push({"role":"assistant", "content": shortLocationMessage});
+	if (fullNPCMessage) messageArray.push({"role":"assistant", "content": fullNPCMessage});
+	if (shortNPCMessage) messageArray.push({"role":"assistant", "content": shortNPCMessage});
+	
+	// Pass in the summary
+	if (summary) messageArray.push({"role":"assistant", "content": summary});
+	
+	// Pass in the game prompt
+	messageArray.push({"role":"user", "content": userMessage});
 			       
-	return [{"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting}, {"role":"assistant", "content": character}, {"role":"assistant", "content": fullLocationMessage}, {"role":"assistant", "content": shortLocationMessage}, {"role":"assistant", "content": summary}, {"role":"user", "content": userMessage}];
+	return messageArray;
 }
 
 function processResponse(message) {
@@ -490,6 +549,9 @@ function processResponse(message) {
 
 			set(sessionName + ".npc", npcName, JSON.stringify(npcObject));	
 		}
+		
+		// Store in the last-turn object
+		lastTurn["npc-interactions"] = npc_interactions;
 	}
 	
         var description = response["description"];
