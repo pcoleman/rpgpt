@@ -390,7 +390,7 @@ function craftMessage(sessionName, playerName, message) {
 		}
 		
 		// Get full NPCs
-		if ("npc-interactions" in lastTurnObject) {
+		if ("npc-interactions" in lastTurnObject && lastTurnObject["npc-interactions"].length > 0) {
 			console.log(lastTurnObject["npc-interactions"]);
 			var lastTurnNPCs =  JSON.parse(lastTurnObject["npc-interactions"]);
 			for (var i in lastTurnNPCs) {
@@ -591,6 +591,9 @@ function processResponse(message) {
 	var roll = response["roll"];
 	console.log("roll: " + roll);
 	if (roll) {
+		if (typeof roll === 'object') {
+			roll = JSON.stringify(roll,null,4);
+		}
 		mainResponse = mainResponse + "<br><br>Roll: " + roll + "<br><br>";	
 	}
 	
