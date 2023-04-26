@@ -10,7 +10,7 @@ $(document).ready(function() {
     });
 	
     // load session array
-    var sessionArray = JSON.parse(localStorage.getItem("sessions"));
+    var sessionArray = JSON.parse(get("", "sessions"));
     var sessionSelect = document.querySelector('#session-selection');
     
     for (i in sessionArray) {
@@ -19,7 +19,7 @@ $(document).ready(function() {
         sessionSelect.add(newSession);
     }
     
-    var sessionName = localStorage.getItem("currentSession");
+    var sessionName = get("","currentSession");
     
     if (sessionName) {
         changeSession(sessionName);
@@ -36,16 +36,16 @@ $(document).ready(function() {
     $( "#session-removal-button" ).click(removeSession);
     
     $( "#new-character-button" ).click(function(){
-      var sessionName = localStorage.getItem("currentSession");
-      localStorage.setItem(sessionName + ".player-creation-stage", 0);
-      localStorage.removeItem(sessionName + ".player-creation-decisions");
+      var sessionName = get("","currentSession");
+      set(sessionName, "player-creation-stage", 0);
+      remove(sessionName, "player-creation-decisions");
       $( "#new-player-submit-button" ).show();
       $( "#new-player-save-button" ).hide(); 
       initializeNewCharacterCreation(sessionName);
     });
 	
     // Load Log
-    var log  = localStorage.getItem(sessionName+".log");
+    var log  = get(sessionName, "log");
     
     if (log) {
 		$( "#text-response-field" ).html(log);
@@ -55,7 +55,7 @@ $(document).ready(function() {
     }
 	
     // Load last turn
-    var lastTurn  = localStorage.getItem(sessionName+".last-turn");
+    var lastTurn  = get(sessionName, "last-turn");
 	
 	if (lastTurn) {
 		var lastTurnObject = JSON.parse(lastTurn);
@@ -301,9 +301,9 @@ function compareNames(string1, string2) {
 }
 
 function startAdventure(event) {
-	var sessionName = localStorage.getItem("currentSession");
-	var playerName = localStorage.getItem(sessionName + ".current-player");
-	localStorage.setItem(sessionName + ".hot-summary", "");
+	var sessionName = get("", "currentSession");
+	var playerName = get(sessionName, "current-player");
+	set(sessionName, "hot-summary", "");
 	
 	var message = craftMessage(sessionName, playerName, "introduce the game, it will be written as narrator of a story. This introduction will consist of the following parts, an overview of the game world and setting, an introduction to the main character, an original expository event that starts the story off.");
 	
@@ -319,22 +319,22 @@ function startAdventure(event) {
 
 
 function submitAction(event) {
-	var sessionName = localStorage.getItem("currentSession");
-	var playerName = localStorage.getItem(sessionName + ".current-player");
+	var sessionName = get("", "currentSession");
+	var playerName = get(sessionName, "current-player");
 	var action = document.querySelector('#text-submit-area').value;
 	document.querySelector('#text-submit-area').value = "";
 	
 	// Add action to the log
 
 	// Set the running log
-	var log = localStorage.getItem(sessionName+".log");
+	var log = get(sessionName, "log");
 	if (!log) {
 		log = action;
 	} else {
 		log = log + "<br><br>" + action;
 	}
 		
-	localStorage.setItem(sessionName+".log", log);
+	set(sessionName, "log", log);
 	
 	$( "#text-response-field" ).html(log);
 	
@@ -349,17 +349,17 @@ function submitAction(event) {
 }
 
 function craftMessage(sessionName, playerName, message) {
-	var sessionName = localStorage.getItem("currentSession");
-	var playerName = localStorage.getItem(sessionName + ".current-player");
-	var playerObject = JSON.parse(localStorage.getItem(sessionName + "." + playerName));
+	var sessionName = get("", "currentSession");
+	var playerName = get(sessionName, "current-player");
+	var playerObject = JSON.parse(get(sessionName, playerName));
 	console.log(sessionName + ".hot-summary");
-	var hotSummary = localStorage.getItem(sessionName + ".hot-summary");
+	var hotSummary = get(sessionName, "hot-summary");
 	console.log(playerObject);
-	var mechanics = localStorage.getItem(sessionName+".mechanics");
-	var setting = "The setting for this role playing game is " + localStorage.getItem(sessionName+".setting");
+	var mechanics = get(sessionName, "mechanics");
+	var setting = "The setting for this role playing game is " + get(sessionName, "setting");
 	var character = "My character is " + playerName + "." + playerObject.background + ". This is my character sheet: " + JSON.stringify(playerObject.json);
 	var summary = "These are the events that have happened so far in the game: " + hotSummary;
-	var lastTurn =  localStorage.getItem(sessionName+".last-turn");
+	var lastTurn =  get(sessionName, "last-turn");
 	var gamePrompt = "You are a game master running a game using the rules of " + mechanics + "\n\nThis is a JSON template for the game output:\n{\n\"turn_number\": <TURN>,\n\"roll\" <ROLL>,\"player\": <PLAYER>,\n\"location\":  <LOCATION>,\n\"story\": <STORY>,\n\"summary\": <SUMMARY>,\n\"location_interations\": <LOCATION_INTERACTIONS>,\n\"npc_interactions\": <NPC_INTERACIONS>,\n\"points_of_interest\": <POI>\n}\n\nIn the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below:\n• <TURN>\n		○ The current turn number. Increment it each turn.\n    • <ROLL>\n		○ The result of any dice rolls that were required to resolve an action, include the attribute or skill being rolled for. Return a null if no dice rolls were done\n	• <PLAYER>\n		○ A valid JSON object representing the changes made to the previously provided players character sheet, for example if the player had 10 health and lost 2 the object would be {\"hit points\": 8}. If there have been no changes return a null \n	• <LOCATION>\n		○ The current location as understood by the main character.\n	• <STORY>\n		○ The results of the actions taken from the last turn. Write it as a narrative, but stop before my character's next action. Include lots of dialogue. Include descriptions of locations and NPCs that are new since the last turn. It will use a Erin Morgenstern-esque second person, present tense writing style.\n			  * <SUMMARY>\n    ○ A concise minmimal third person, summary of <STORY>, the player character should be referred to by name.\n  * <LOCATION_INTERACIONS>\n    ○ A JSON object that looks like this\n{<The Name of the location>: [<An array of summaries of the players interactions with the location}]\n  * <NPC_INTERACTIONS>\n    ○ A JSON array that looks like this\n[{\"name\": <The Name of the NPC>, \"interaction\": [<A summary of the players interaction with the NPC}] \n  * <POI>\n    ○ A JSON array that contains the names of at least 3 nearby locations, looks like [\"location1\", \"location2\", \"location3\"]\n\nThere are some special commands I can issue. These result of the command will replace [story] in the game output. The special commands are issued with one of the words below and has the listed result.\n	• hint\n		○ You will give a small hint to point me an interesting direction for the story.\n\nThe following rules are central to the game logic and must always be followed:\n	1. Use the rules for " + mechanics + "\n        1. After you output the template, that ends one turn. Wait for my response to start the next turn.  2. The output should always be valid JSON and nothing else\n\n\nSettings: " + setting + "\nPlayer:" + playerName;
 	
 	if (lastTurn) {
@@ -371,7 +371,7 @@ function craftMessage(sessionName, playerName, message) {
 }
 
 function processResponse(message) {
-	 var sessionName = localStorage.getItem("currentSession");
+	 var sessionName = get("", "currentSession");
 	console.log("processing response");
 	console.log(message);
 	var response = JSON.parse(message);
@@ -419,9 +419,9 @@ function processResponse(message) {
 	var summary = response["summary"];
 	console.log("summary: " + summary);
 	if (summary) {
-		var hotsummary = localStorage.getItem(sessionName + ".hot-summary");
+		var hotsummary = get(sessionName, "hot-summary");
 		hotsummary = hotsummary + summary;
-		localStorage.setItem(sessionName + ".hot-summary", hotsummary);
+		set(sessionName, "hot-summary", hotsummary);
 	}
 	
 	var mainResponse = ""
@@ -441,17 +441,17 @@ function processResponse(message) {
 		lastTurn["story"] = story;
 		
 		// Set the last turn
-		localStorage.setItem(sessionName+".last-turn", JSON.stringify(lastTurn));
+		set(sessionName, "last-turn", JSON.stringify(lastTurn));
 		
 		// Set the running log
-		var log = localStorage.getItem(sessionName+".log");
+		var log = get(sessionName, "log");
 		if (!log) {
 			log = mainResponse;
 		} else {
 			log = log + "<br><br>" + mainResponse;
 		}
 		
-		localStorage.setItem(sessionName+".log", log);
+		set(sessionName, "log", log);
 	}
 	
 	if (mainResponse) {
@@ -481,22 +481,22 @@ function saveSession() {
   
   
   // Saving the text fields to Local Storage
-  localStorage.setItem(sessionName, JSON.stringify(sessionObject));
+  set("", sessionName, JSON.stringify(sessionObject));
   
   if (sessionMechanics) {
-  	localStorage.setItem(sessionName+".mechanics", sessionMechanics);
+  	set(sessionName, "mechanics", sessionMechanics);
   }
   
   if (sessionSetting) {
-  	localStorage.setItem(sessionName+".setting", sessionSetting);
+  	set(sessionName, "setting", sessionSetting);
   }
   
   if (sessionCampaign) {
-  	localStorage.setItem(sessionName+".campaign", sessionCampaign);
+  	set(sessionName, "campaign", sessionCampaign);
   }
   
   // Adding session the the list of sessions
-  var sessionArrayString = localStorage.getItem("sessions");
+  var sessionArrayString = get("", "sessions");
   
   if (sessionArrayString) {
     var sessionArray = JSON.parse(sessionArrayString);
@@ -505,9 +505,9 @@ function saveSession() {
     var sessionArray = [sessionName];
   }
   
-  localStorage.setItem("sessions", JSON.stringify(sessionArray));
+  set("", "sessions", JSON.stringify(sessionArray));
   
-  localStorage.setItem("currentSession", sessionName);
+  set("", "currentSession", sessionName);
   
   // Clearing out text fields
   document.querySelector('#session-creation-name').value = "";
@@ -524,11 +524,11 @@ function saveSession() {
   sessionSelect.value = sessionName
   
    // Clearing out text fields
-  var tempSession = localStorage.getItem(sessionName);
-  var tempMechanics = localStorage.getItem(sessionName+".mechanics");
-  var tempSetting = localStorage.getItem(sessionName+".setting");
-  var tempCampaign = localStorage.getItem(sessionName+".campaign");
-  var tempArray = localStorage.getItem("sessions");
+  var tempSession = get("", sessionName);
+  var tempMechanics = get(sessionName, "mechanics");
+  var tempSetting = get(sessionName, "setting");
+  var tempCampaign = get(sessionName, "campaign");
+  var tempArray = get("", "sessions");
 
   console.log("out: "+ tempSession);
   console.log("out: "+ tempMechanics);
@@ -597,12 +597,12 @@ function changeSession(sessionName) {
    
      // Initialize player creation for the session
      initializeNewCharacterCreation(sessionName);
-	   localStorage.setItem("currentSession", sessionName);
+	   set("", "currentSession", sessionName);
 	   
 	   console.log(sessionName);
 	   // Update the player list
 	   $("#player-list").empty();
-	    var playerArray = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
+	    var playerArray = JSON.parse(get(sessionName, "player-characters"));
 	    var playerList = $("#player-list")
 
 	    for (i in playerArray) {
@@ -614,7 +614,7 @@ function changeSession(sessionName) {
 
 	    // Select the current player
 		console.log(sessionName + ".current-player");
-	    var currentPlayerName = localStorage.getItem(sessionName + ".current-player");
+	    var currentPlayerName = get(sessionName, "current-player");
 	     console.log(currentPlayerName);
 	    if (currentPlayerName) {
 		changePlayer({data:{sessionName:sessionName, playerName: currentPlayerName}});
@@ -630,14 +630,14 @@ function changeSession(sessionName) {
 
 function prepAdventure(sessionName) {
 	console.log("preparing adventure");
-	var chatlog = localStorage.getItem(sessionName + ".log");
+	var chatlog = get(sessionName, "log");
 	if (chatlog) {
 		$( "#text-response-field" ).html(chatlog);
 		$( "#text-submit-area" ).show();
 		$( "#text-submit-button" ).show();
 		$( "#start-adventure-button" ).hide();
 		
-		response = localStorage.getItem(sessionName + ".last-turn");
+		response = get(sessionName, "last-turn");
 		$( "#turn-number" ).text(response["turn"]);
 	
 		var location = response["location"];
@@ -657,45 +657,45 @@ function prepAdventure(sessionName) {
 }
 
 function initializeNewCharacterCreation(sessionName) {
-  var characterCreationSteps = localStorage.getItem(sessionName + ".character-creation-steps");
+  var characterCreationSteps = get(sessionName, "character-creation-steps");
   if (!characterCreationSteps) {
-     var setting = localStorage.getItem(sessionName + ".setting");
-     var mechanics = localStorage.getItem(sessionName + ".mechanics");
+     var setting = get(sessionName, "setting");
+     var mechanics = get(sessionName, "mechanics");
      var messages = [{"role":"user", "content": "For the " + setting + " setting using the " + mechanics + " rule set, list out succinctly the steps for character creation, format it as a JSON array of strings, no new lines"}];
      prompt(messages).then(function(msg){
             console.log(msg);
             var characterCreationSteps = msg;
             console.log(characterCreationSteps);
-            localStorage.setItem(sessionName + ".character-creation-steps", characterCreationSteps);
+            set(sessionName, "character-creation-steps", characterCreationSteps);
             var firstStep = characterCreationSteps[0];
             var firstStepMessage = [{"role":"user", "content": "Provide a detailed description of the first step of character creation, " + firstStep + ", using the " + mechanics + " in the " + setting + " setting. Provide a description of the options. Format everything using html code."}];
             prompt(firstStepMessage).then(function(msg) {
               var firstStep = msg;
               console.log(firstStep);
-              localStorage.setItem(sessionName + ".character-creation-first-step", firstStep);
+              set(sessionName, "character-creation-first-step", firstStep);
               $("#new-player-text").html(firstStep);
             });
      });
   } else {
-    var firstStep = localStorage.getItem(sessionName + ".character-creation-first-step");
+    var firstStep = get(sessionName, "character-creation-first-step");
     $("#new-player-text").html(firstStep);
   }
 }
 
 function nextPlayerCreationStage() {
 	console.log("next player creation stage");
-  var sessionName = localStorage.getItem("currentSession");
+  var sessionName = get("", "currentSession");
 
-  var setting = localStorage.getItem(sessionName + ".setting");
-  var mechanics = localStorage.getItem(sessionName + ".mechanics");
+  var setting = get(sessionName, "setting");
+  var mechanics = get(sessionName, "mechanics");
 
   // Get the current player creation stage
-  var stage = Number(localStorage.getItem(sessionName + ".player-creation-stage"));
+  var stage = Number(get(sessionName, "player-creation-stage"));
   
   // Increment the stage to pull in the prompt for the second stage.
   stage = stage + 1;
   
-  var character_creation_steps = JSON.parse(localStorage.getItem(sessionName + ".character-creation-steps"));
+  var character_creation_steps = JSON.parse(get(sessionName, "character-creation-steps"));
 
   console.log(JSON.stringify(character_creation_steps));
   console.log(stage);
@@ -705,13 +705,13 @@ function nextPlayerCreationStage() {
   if (stage <= character_creation_steps.length + 2) {
   
     // Save the new stage number
-    localStorage.setItem(sessionName + ".player-creation-stage", stage);
+    set(sessionName, "player-creation-stage", stage);
   
     // Get the stage text for the next stage
     var stageText = character_creation_steps[stage];
     
     // Get the decisions made so far during player creation
-    var characterDecisions = localStorage.getItem(sessionName + ".player-creation-decisions");
+    var characterDecisions = get(sessionName, "player-creation-decisions");
     
     // Get the decision that was just made
     var input = document.querySelector('#character-creation-text').value;
@@ -729,7 +729,7 @@ function nextPlayerCreationStage() {
     }
     
     //save the update character decision array
-    localStorage.setItem(sessionName + ".player-creation-decisions", JSON.stringify(characterDecisions));
+    set(sessionName, "player-creation-decisions", JSON.stringify(characterDecisions));
 	  
     if (stage < character_creation_steps.length) {
 	    // Append all the decisions so far
@@ -751,11 +751,11 @@ function nextPlayerCreationStage() {
 	   $("#new-player-text").html("<h2>What is your character's name?</h2>"); 
     } else if (stage == (character_creation_steps.length + 1 )) {
 	   // Save the character name in a temporary variable
-	   localStorage.setItem(sessionName + ".player-creation-name", input);
+	   set(sessionName, "player-creation-name", input);
            $("#new-player-text").html("<h2>What is your character's background?</h2>"); 
     } else {
 	   // Save the character background in a temporary variable
-	   localStorage.setItem(sessionName + ".player-creation-background", input);
+	   set(sessionName, "player-creation-background", input);
 	    
 	    // Append all the decisions so far
 	    var characterString = characterDecisions.join();
@@ -777,7 +777,7 @@ function nextPlayerCreationStage() {
 		      
 		$("#new-player-text").html(characterSheet);
                 // Save the player JSON
-                localStorage.setItem(sessionName + ".player-creation-json", characterSheet);
+                set(sessionName, "player-creation-json", characterSheet);
 		      
 		$( "#new-player-submit-button" ).hide();
 		$( "#new-player-save-button" ).show();      
@@ -791,18 +791,18 @@ function saveNewPlayer(event) {
 	sessionName = event.data.session;
 	console.log("saving new player");
 	// Get all the information about the player character
-	var name = localStorage.getItem(sessionName + ".player-creation-name");
-	var background = localStorage.getItem(sessionName + ".player-creation-background");
-	var json = localStorage.getItem(sessionName + ".player-creation-json");
+	var name = get(sessionName, "player-creation-name");
+	var background = get(sessionName, "player-creation-background");
+	var json = get(sessionName, "player-creation-json");
 	
 	// Create the player character object
 	var playerObject = {"background":background, "json":JSON.parse(json)};
 	
 	// Save the player character object
-	localStorage.setItem(sessionName + "." + name, JSON.stringify(playerObject));
+	set(sessionName, name, JSON.stringify(playerObject));
 	
 	// Add the player character to the list of available player characters
-	var playerCharacters = localStorage.getItem(sessionName + ".player-characters");
+	var playerCharacters = get(sessionName, "player-characters");
 	
 	if (!playerCharacters) {
 		playerCharacters = [name];	
@@ -812,7 +812,7 @@ function saveNewPlayer(event) {
 	}
 	
 	// Save the new list of player characters
-	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
+	set(sessionName, "player-characters", JSON.stringify(playerCharacters));
 	
 	// Create a new player element to add to the list on the site
 	var player = createPlayerElement(sessionName, name);
@@ -879,10 +879,10 @@ function changePlayer(event) {
 	playerEditButtonContainer.show();
 	
 	// Set the new player as the current player
-	localStorage.setItem(sessionName + ".current-player", playerName);
+	set(sessionName, "current-player", playerName);
 	
 	// Enable the player tree
-	var playerObject = JSON.parse(localStorage.getItem(sessionName + "." + playerName));
+	var playerObject = JSON.parse(get(sessionName, playerName));
 	
 	// remove the current player tree
 	if (currentPlayerTree) {
@@ -904,10 +904,10 @@ function changePlayer(event) {
 function editPlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
-	localStorage.setItem(sessionName + ".editPlayer", playerName);
+	set(sessionName, "editPlayer", playerName);
 	
 	// Populate the edit field
-	var playerObject = JSON.parse(localStorage.getItem(sessionName + "." + playerName));
+	var playerObject = JSON.parse(get(sessionName, playerName));
 	
 	var playerString = JSON.stringify(playerObject, null, 4);
 	$("#player-edit-text-area").text(playerString);
@@ -920,7 +920,7 @@ function editPlayer(event) {
 function removePlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
-	localStorage.setItem(sessionName + ".removePlayer", playerName);
+	set(sessionName, "removePlayer", playerName);
 	
 	// Show player removal modal
 	$("#player-removal-modal").show();
@@ -932,28 +932,28 @@ function removePlayer(event) {
 }
 
 function removePlayerButton() {
-	var sessionName = localStorage.getItem("currentSession");
-	var playerName = localStorage.getItem(sessionName + ".removePlayer");
+	var sessionName = get("", "currentSession");
+	var playerName = get(sessionName, "removePlayer");
 	console.log("removing players");
 	
 	// Remove the player character from the list of available player characters
-	var playerCharacters = JSON.parse(localStorage.getItem(sessionName + ".player-characters"));
+	var playerCharacters = JSON.parse(get(sessionName, "player-characters"));
 	playerCharacters.splice(playerCharacters.indexOf(playerName), 1);
-	localStorage.setItem(sessionName + ".player-characters", JSON.stringify(playerCharacters));
+	set(sessionName, "player-characters", JSON.stringify(playerCharacters));
 	
 	// Remove the player objct
-	localStorage.removeItem(sessionName + "." + playerName);
+	remove(sessionName,playerName);
 
 	// Remove player from the list on the page
 	$("#" + playerName.replace(/\s+/g, '') + "-list-item").remove();
 	
 	// reset remove player field
-	localStorage.setItem(sessionName + ".removePlayer", "");
+	set(sessionName, "removePlayer", "");
 }
 
 function editPlayerButton() {
-	var sessionName = localStorage.getItem("currentSession");
-	var playerName = localStorage.getItem(sessionName + ".editPlayer");
+	var sessionName = get("", "currentSession");
+	var playerName = get(sessionName, "editPlayer");
 	console.log("editing player " + playerName);
 	
 	// Get the modified player text
@@ -962,14 +962,74 @@ function editPlayerButton() {
 	var modifiedPlayerObject = JSON.parse(modifiedPlayer);
 	
 	// Save modified player
-	localStorage.setItem(sessionName + "." + playerName, JSON.stringify(modifiedPlayerObject));
+	set(sessionName, playerName, JSON.stringify(modifiedPlayerObject));
 	
 	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
 }
 
+function set(prefix, name, value) {
+	const regex = /(?:(the|a|an) +)/g; 
+	const subst = ` `;
+
+	var cleanedName = name.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
+	var cleanedPrefix = prefix.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
+	
+	var keyName = cleanedPrefix + "." + cleanedName;
+	  // Iterate over localStorage and save the keys that meet the condition
+	if (localStorage.getItem(keyName) === null) {
+	  for (var i = 0; i < localStorage.length; i++){
+	    if (localStorage.key(i).includes(cleanedPrefix) && localStorage.key(i).includes(cleanedName)) {
+	       keyName = localStorage.key(i);
+	    }
+	  }
+	}
+	
+	return localStorage.setItem(keyName, value);
+}
+
+function get(prefix, name) {
+	const regex = /(?:(the|a|an) +)/g; 
+	const subst = ` `;
+
+	var cleanedName = name.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
+	var cleanedPrefix = prefix.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
+	
+	var keyName = cleanedPrefix + "." + cleanedName;
+	  // Iterate over localStorage and save the keys that meet the condition
+	if (localStorage.getItem(keyName) === null) {
+	  for (var i = 0; i < localStorage.length; i++){
+	    if (localStorage.key(i).includes(cleanedPrefix) && localStorage.key(i).includes(cleanedName)) {
+	       keyName = localStorage.key(i);
+	    }
+	  }
+	}
+	
+	return localStorage.getItem(keyName);
+}
+
+function remove(prefix, name) {
+	const regex = /(?:(the|a|an) +)/g; 
+	const subst = ` `;
+
+	var cleanedName = name.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
+	var cleanedPrefix = prefix.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
+	
+	var keyName = cleanedPrefix + "." + cleanedName;
+	  // Iterate over localStorage and save the keys that meet the condition
+	if (localStorage.getItem(keyName) === null) {
+	  for (var i = 0; i < localStorage.length; i++){
+	    if (localStorage.key(i).includes(cleanedPrefix) && localStorage.key(i).includes(cleanedName)) {
+	       keyName = localStorage.key(i);
+	    }
+	  }
+	}
+	
+	return localStorage.removeItem(keyName);
+}
+
 function prompt(messages) {
 	return new Promise((resolve, reject) => {
-	  var token = localStorage.getItem("openai-key");
+	  var token = get("", "openai-key");
 	  $.ajax({
 	    url: 'https://api.openai.com/v1/chat/completions',
 	    type: 'POST',
