@@ -23,6 +23,26 @@ $(document).ready(function() {
     
     if (sessionName) {
         changeSession(sessionName);
+	    
+	    // Load Log
+	    var log  = get(sessionName, "log");
+
+	    if (log) {
+			$( "#text-response-field" ).html(log);
+			$( "#text-submit-area" ).show();
+			$( "#text-submit-button" ).show();
+			$( "#start-adventure-button" ).hide();
+	    }
+
+	    // Load last turn
+	    var lastTurn  = get(sessionName, "last-turn");
+
+		if (lastTurn) {
+			var lastTurnObject = JSON.parse(lastTurn);
+			$( "#turn-number" ).text(lastTurnObject["turn"]);
+			$( "#location-field" ).text(lastTurnObject["location"]);
+			$( "#description-field" ).html(lastTurn["description"]);
+		}
     }
     
     $("#session-selection").change(function () {
@@ -43,26 +63,6 @@ $(document).ready(function() {
       $( "#new-player-save-button" ).hide(); 
       initializeNewCharacterCreation(sessionName);
     });
-	
-    // Load Log
-    var log  = get(sessionName, "log");
-    
-    if (log) {
-		$( "#text-response-field" ).html(log);
-	    	$( "#text-submit-area" ).show();
-		$( "#text-submit-button" ).show();
-		$( "#start-adventure-button" ).hide();
-    }
-	
-    // Load last turn
-    var lastTurn  = get(sessionName, "last-turn");
-	
-	if (lastTurn) {
-		var lastTurnObject = JSON.parse(lastTurn);
-		$( "#turn-number" ).text(lastTurnObject["turn"]);
-		$( "#location-field" ).text(lastTurnObject["location"]);
-		$( "#description-field" ).html(lastTurn["description"]);
-    	}
     
     $( "#new-player-submit-button" ).click(nextPlayerCreationStage);
     
