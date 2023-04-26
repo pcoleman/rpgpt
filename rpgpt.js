@@ -1068,7 +1068,7 @@ function prompt(messages) {
 		     console.log(JSON.stringify(data));
 		     var messages = data.choices[0].message.content;
 		     
-		     if (messages.includes("}") {
+		     if (messages.includes("}")) {
 			     var lastIndex = messages.lastIndexOf("}");
 			     if (lastIndex < messages.length - 3) {
 				messages = messages.substr(0, lastIndex+1).trim(); 
