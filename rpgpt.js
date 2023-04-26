@@ -967,7 +967,7 @@ function editPlayerButton() {
 	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
 }
 
-functon set(name) {
+function set(name) {
 	return set("" name);	
 }
 
