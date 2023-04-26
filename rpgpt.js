@@ -978,12 +978,14 @@ function set(prefix, name, value) {
 	  // Iterate over localStorage and save the keys that meet the condition
 	if (localStorage.getItem(keyName) === null) {
 	  for (var i = 0; i < localStorage.length; i++){
+		  console.log("setting: " + cleanedPrefix + "." + cleanedName + "   -   " + localStorage.key(i);
 	    if (localStorage.key(i).includes(cleanedPrefix) && localStorage.key(i).includes(cleanedName)) {
 	       keyName = localStorage.key(i);
 	    }
 	  }
 	}
 	
+	console.log("setting key: " + keyName;
 	return localStorage.setItem(keyName, value);
 }
 
@@ -998,12 +1000,14 @@ function get(prefix, name) {
 	  // Iterate over localStorage and save the keys that meet the condition
 	if (localStorage.getItem(keyName) === null) {
 	  for (var i = 0; i < localStorage.length; i++){
+		  console.log("getting: " + cleanedPrefix + "." + cleanedName + "   -   " + localStorage.key(i);
 	    if (localStorage.key(i).includes(cleanedPrefix) && localStorage.key(i).includes(cleanedName)) {
 	       keyName = localStorage.key(i);
 	    }
 	  }
 	}
 	
+	console.log("getting key: " + keyName;
 	return localStorage.getItem(keyName);
 }
 
