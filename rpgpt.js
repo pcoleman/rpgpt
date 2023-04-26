@@ -362,12 +362,57 @@ function craftMessage(sessionName, playerName, message) {
 	var lastTurn =  get(sessionName, "last-turn");
 	var gamePrompt = "You are a game master running a game using the rules of " + mechanics + "\n\nThis is a JSON template for the game output:\n{\n\"turn_number\": <TURN>,\n\"roll\" <ROLL>,\"player\": <PLAYER>,\n\"location\":  <LOCATION>,\n\"story\": <STORY>,\n\"summary\": <SUMMARY>,\n\"location_interations\": <LOCATION_INTERACTIONS>,\n\"npc_interactions\": <NPC_INTERACIONS>,\n\"points_of_interest\": <POI>\n}\n\nIn the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below:\n• <TURN>\n		○ The current turn number. Increment it each turn.\n    • <ROLL>\n		○ The result of any dice rolls that were required to resolve an action, include the attribute or skill being rolled for. Return a null if no dice rolls were done\n	• <PLAYER>\n		○ A valid JSON object representing the changes made to the previously provided players character sheet, for example if the player had 10 health and lost 2 the object would be {\"hit points\": 8}. If there have been no changes return a null \n	• <LOCATION>\n		○ The current location as understood by the main character.\n	• <STORY>\n		○ The results of the actions taken from the last turn. Write it as a narrative, but stop before my character's next action. Include lots of dialogue. Include descriptions of locations and NPCs that are new since the last turn. It will use a Erin Morgenstern-esque second person, present tense writing style.\n			  * <SUMMARY>\n    ○ A concise minmimal third person, summary of <STORY>, the player character should be referred to by name.\n  * <LOCATION_INTERACIONS>\n    ○ A JSON aray that looks like this\n [\"<A third person summary string of the players interactions with the location>\",\"<a third person summary string of the players interactions with the location>\"]\n  * <NPC_INTERACTIONS>\n    ○ A JSON array that looks like this\n[{\"name\": <The Name of the NPC>, \"interaction\": [\"<A third person summary of the players interaction with the NPC>\", \"<A third person summary of the players interaction with the NPC>\"] \n  * <POI>\n    ○ A JSON array that contains the names of at least 3 nearby locations, looks like [\"location1\", \"location2\", \"location3\"]\n\nThere are some special commands I can issue. These result of the command will replace [story] in the game output. The special commands are issued with one of the words below and has the listed result.\n	• hint\n		○ You will give a small hint to point me an interesting direction for the story.\n\nThe following rules are central to the game logic and must always be followed:\n	1. Use the rules for " + mechanics + "\n        1. After you output the template, that ends one turn. Wait for my response to start the next turn.  2. The output should always be valid JSON and nothing else\n\n\nSettings: " + setting + "\nPlayer:" + playerName;
 	
+	var fullLocations = [];
+	var shortLocations = [];
 	if (lastTurn) {
 		gamePrompt = gamePrompt + ", This is JSON object representing the state of the gamelast turn: " + lastTurn;
+		
+		// Get full locations
+		var lastTurnObject = JSON.parse(lastTurn);
+		if (lastTurnObject["location"]) {
+			var lastTurnLocation = get(sessionName + ".location", lastTurnObject["location"]);
+			if (lastTurnLocation) {
+				fullLocations.push(JSON.stringify(lastTurnLocation));	
+			}
+		}
+		
+		// Get short locations
+		if (lastTurnObject["nearby-locations"]) {
+			var lastTurnNearbyLocations =  JSON.parse(lastTurnObject["nearby-locations"]);
+			for (var i in lastTurnNearbyLocations) {
+				var ltnbLocation= get(sessionName + ".location", lastTurnNearbyLocations[i]);
+				if (ltnbLocation) {
+					shortLocations.push(lastTurnLocation);	
+				}
+			}
+		}
 	}
+	
+	// Create user message
 	var userMessage = gamePrompt + ", Action: " + message;
 	
-	return [{"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting}, {"role":"assistant", "content": character}, {"role":"assistant", "content": summary}, {"role":"user", "content": userMessage}];
+	// Process the full locations
+	var fullLocationMessage = "here is some information for locations in this setting: [" fullLocations.join(",") + "]";
+	
+	// Process the short locations
+	var shortLocationString = ""
+	for (var i in shortLocations) {
+		var tempLocation = {};
+		var shortLocation = shortLocations[i];
+		tempLocation["name"] = shortLocation["name"];
+		if (shortLocation["short-description"]) {
+			tempLocation["description"] = shortLocation["short-description"];
+		}
+		
+		if (shortLocation["hot-summary"]) {
+			tempLocation["hot-summary"] = shortLocation["hot-summary"];
+		}
+		shortLocationString = shortLocationString + "," + JSON.stringify(tempLocation);
+	}
+	
+	var shortLocationMessage = "here is some information for locations in this setting: [" shortLocationString.substring(1) + "]";
+			       
+	return [{"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON"},{"role":"assistant", "content": setting}, {"role":"assistant", "content": character}, {"role":"assistant", "content": fullLocationMessage}, {"role":"assistant", "content": shortLocationMessage}, {"role":"assistant", "content": summary}, {"role":"user", "content": userMessage}];
 }
 
 function processResponse(message) {
@@ -462,6 +507,9 @@ function processResponse(message) {
 	if (poi) {
 		var poilocations = poi.join('<br>');
 		$( "#poi-field" ).html(poilocations);
+		
+		// add nearby locations to the last turn
+		lastTurn["nearby-location"] = poi;
 	}
 	
 	var summary = response["summary"];
