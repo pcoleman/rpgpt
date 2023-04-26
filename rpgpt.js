@@ -372,7 +372,7 @@ function craftMessage(sessionName, playerName, message) {
 		if (lastTurnObject["location"]) {
 			var lastTurnLocation = get(sessionName + ".location", lastTurnObject["location"]);
 			if (lastTurnLocation) {
-				fullLocations.push(JSON.stringify(lastTurnLocation));	
+				fullLocations.push(lastTurnLocation);	
 			}
 		}
 		
@@ -382,7 +382,7 @@ function craftMessage(sessionName, playerName, message) {
 			for (var i in lastTurnNearbyLocations) {
 				var ltnbLocation= get(sessionName + ".location", lastTurnNearbyLocations[i]);
 				if (ltnbLocation) {
-					shortLocations.push(lastTurnLocation);	
+					shortLocations.push(JSON.parse(ltnbLocation));	
 				}
 			}
 		}
@@ -485,7 +485,7 @@ function processResponse(message) {
 				npcObject["hot-summary"] = summary;
 			} else {
 				npcObject = {"name": npcName}
-				npcObject["hot-summary"] = npc["interaction"]('. ');
+				npcObject["hot-summary"] = npc["interaction"].join('. ');
 			}
 
 			set(sessionName + ".npc", npcName, JSON.stringify(npcObject));	
