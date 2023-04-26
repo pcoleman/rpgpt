@@ -556,7 +556,7 @@ function processResponse(message) {
 		}
 		
 		// Store in the last-turn object
-		lastTurn["npc-interactions"] = npc_interactions;
+		if (npc_interactions.length > 0) lastTurn["npc-interactions"] = npc_interactions;
 	}
 	
         var description = response["description"];
