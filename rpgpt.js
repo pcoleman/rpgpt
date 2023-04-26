@@ -968,7 +968,7 @@ function editPlayerButton() {
 }
 
 function set(name) {
-	return set("" name);	
+	return set("", name);	
 }
 
 function set(prefix, name, value) {
