@@ -391,6 +391,7 @@ function craftMessage(sessionName, playerName, message) {
 		
 		// Get full NPCs
 		if ("npc-interactions" in lastTurnObject) {
+			console.log(lastTurnObject["npc-interactions"]);
 			var lastTurnNPCs =  JSON.parse(lastTurnObject["npc-interactions"]);
 			for (var i in lastTurnNPCs) {
 				var lastNPC= get(sessionName + ".location", lastTurnNPCs[i]["name"]);
