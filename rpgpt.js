@@ -1147,6 +1147,7 @@ function modifyPlayer(changeObject) {
 }
 		     
 function changePlayerRecursive(playerObject, changeObject) {
+	console.log("ENTERING THE RECURSIVE METHOD");
 	console.log(changeObject);
 	if (playerObject) {
 		var playerType = typeof playerObject;
