@@ -523,6 +523,14 @@ function processResponse(message) {
 	// initialize the last turn object
 	var lastTurn = {};
 	
+	// Process changes to the player
+	var changeObject = response["player"];
+	if (changeObject) {
+		var playerName = get(sessionName, "current-player");
+		var playerObject = JSON.parse(get(sessionName, playerName))["json"];
+		modifyPlayer(playerObject, changeObject);
+	}
+	
 	// Pull out the turn number
 	var turnNumber = response["turn_number"];
 	console.log("turn: " + turnNumber);
