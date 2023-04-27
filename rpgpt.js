@@ -1122,6 +1122,55 @@ function editPlayer(event) {
 	$("#player-edit-modal").show();
 }
 
+function changePlayer(changeObject) {
+	var sessionName = get("", "currentSession");
+	var playerName = get(sessionName, "current-player");
+	
+	var playerObject = JSON.parse(get(sessionName, playerName))["json"];
+	
+	playerObject["json"] = changePlayerRecursive(playerObject, changeObject);
+	
+	set(sessionName, playerName, JSON.stringify(playerObject));
+	
+	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
+}
+		     
+function changePlayerRecursive(playerObject, changeObject) {
+	if (playerObject) {
+		var playerType = typeof playerObject;
+		var changeType = typeof changeObject;
+		if (playerType == changeType) {
+			if (changeType == "object") {
+				if (isArray(changeObject)) {
+					// If an array return the changed version
+					changeObject
+				} else {
+					// Loop over the keys and recurse
+					const keys = Object.keys(changeObject);
+					keys.forEach((key, index) => {
+						var keyValue = changePlayerRecursive(playerObject[key], changeObject[key]);
+						playerObject[key] = keyValue;
+						return playerObject;
+					}
+				}
+			} else {
+				// If a primitive value return the changed version
+				return changeObject;
+			}
+		} else {
+			console.log("ERROR: Not matching types - " + JSON.stringify(playerObject) + "  -  " + JSON.stringify(changeObject));
+			// return the unchanged player object
+			return playerObject;
+		}
+	} else {
+		return changeObject;	
+	}
+}
+
+function isArray(myArray) {
+  return myArray.constructor.toString().indexOf("Array") > -1;
+}
+
 function removePlayer(event) {
 	var sessionName = event.data.sessionName;
 	var playerName = event.data.playerName;
