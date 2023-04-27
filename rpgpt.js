@@ -502,14 +502,16 @@ function getProperNouns(message) {
 	var re = /([A-Za-z]\s+)([A-Z][a-z]+(\s+[A-Z][a-z]+)*)/g;
 	var m;
 
-	var nouns = [];
+	var nouns = new Set();
 	do {
 	    m = re.exec(message);
 	    if (m) {
-		nouns.push(m[2]);
+		nouns.add(m[2]);
 		console.log(m[2]);
 	    }
 	} while (m);
+	
+	return [...nouns];
 }
 
 function processResponse(message) {
@@ -1231,16 +1233,16 @@ function search(name) {
 
 	var cleanedName = name.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
 	
-	var matches = [];
+	var matches = new Set();
 	  for (var i = 0; i < localStorage.length; i++){
 		console.log("searchhing: " + cleanedName + "   -   " + localStorage.key(i));
 	    if (localStorage.key(i).includes(cleanedName)) {
 		    console.log(localStorage.key(i));
-	       matches.push(localStorage.getItem(localStorage.key(i)));
+	       matches.add(localStorage.getItem(localStorage.key(i)));
 	    }
 	  }
 	
-	return matches;
+	return [...matches];
 }
 
 function remove(prefix, name) {
