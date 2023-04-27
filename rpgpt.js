@@ -1150,8 +1150,8 @@ function changePlayerRecursive(playerObject, changeObject) {
 					keys.forEach((key, index) => {
 						var keyValue = changePlayerRecursive(playerObject[key], changeObject[key]);
 						playerObject[key] = keyValue;
-						return playerObject;
-					}
+					});
+					return playerObject;
 				}
 			} else {
 				// If a primitive value return the changed version
