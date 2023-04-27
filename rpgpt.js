@@ -525,11 +525,7 @@ function processResponse(message) {
 	
 	// Process changes to the player
 	var changeObject = response["player"];
-	if (changeObject) {
-		console.log(MODIFY 0);
-		console.log(changeObject);
-		modifyPlayer(changeObject);
-	}
+	if (changeObject) modifyPlayer(changeObject);
 	
 	// Pull out the turn number
 	var turnNumber = response["turn_number"];
