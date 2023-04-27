@@ -541,9 +541,9 @@ function processResponse(message) {
 				npcObject = JSON.parse(npcObject);
 				var summary = npcObject["hot-summary"];
 				if (summary) {
-					summary = summary + ". " + npc["interaction"]('. ');
+					summary = summary + ". " + npc["interaction"].join('. ');
 				} else {
-					summary = npc["interaction"]('. ');
+					summary = npc["interaction"].join('. ');
 				}
 
 				npcObject["hot-summary"] = summary;
