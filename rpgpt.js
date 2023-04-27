@@ -1147,6 +1147,7 @@ function modifyPlayer(changeObject) {
 }
 		     
 function changePlayerRecursive(playerObject, changeObject) {
+	console.log(changeObject);
 	if (playerObject) {
 		var playerType = typeof playerObject;
 		var changeType = typeof changeObject;
@@ -1159,6 +1160,7 @@ function changePlayerRecursive(playerObject, changeObject) {
 				} else {
 					// Loop over the keys and recurse
 					const keys = Object.keys(changeObject);
+					console.log(keys);
 					for (var i in keys) {
 						var key = keys[i]
 						var keyValue = changePlayerRecursive(playerObject[key], changeObject[key]);
