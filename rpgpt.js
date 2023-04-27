@@ -394,7 +394,7 @@ function craftMessage(sessionName, playerName, message) {
 			console.log(lastTurnObject["npc-interactions"]);
 			var lastTurnNPCs =  lastTurnObject["npc-interactions"];
 			for (var i in lastTurnNPCs) {
-				var lastNPC= get(sessionName + ".location", lastTurnNPCs[i]["name"]);
+				var lastNPC= get(sessionName + ".npc", lastTurnNPCs[i]["name"]);
 				if (lastNPC) {
 					fullNPCs.push(lastNPC);	
 				}
