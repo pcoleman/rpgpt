@@ -1134,13 +1134,14 @@ function modifyPlayer(changeObject) {
 	var sessionName = get("", "currentSession");
 	var playerName = get(sessionName, "current-player");
 	
-	var playerObject = JSON.parse(get(sessionName, playerName))["json"];
+	var fullPlayerObject = JSON.parse(get(sessionName, playerName));
+	var playerObject = fullPlayerObject["json"];
 	
-	playerObject["json"] = changePlayerRecursive(playerObject, changeObject);
+	fullPlayerObject["json"] = changePlayerRecursive(playerObject, changeObject);
 	
-	console.log(playerObject);
+	console.log(fullPlayerObject);
 	
-	set(sessionName, playerName, JSON.stringify(playerObject));
+	set(sessionName, playerName, JSON.stringify(fullPlayerObject));
 	
 	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
 }
@@ -1153,7 +1154,7 @@ function changePlayerRecursive(playerObject, changeObject) {
 			if (changeType == "object") {
 				if (isArray(changeObject)) {
 					// If an array return the changed version
-					changeObject
+					return changeObject;
 				} else {
 					// Loop over the keys and recurse
 					const keys = Object.keys(changeObject);
