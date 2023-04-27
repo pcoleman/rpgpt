@@ -340,8 +340,6 @@ function submitAction(event) {
 	
 	console.log(action);
 	
-	getMentionedContext(action);
-	
 	var message = craftMessage(sessionName, playerName, action);
 	
 	console.log(JSON.stringify(message));
@@ -406,6 +404,7 @@ function craftMessage(sessionName, playerName, message) {
 	
 	// Create user message
 	var userMessage = gamePrompt + ", Action: " + message;
+		getMentionedContext(message);
 	
 	var fullLocationMessage = "";
 	// Process the full locations
@@ -482,6 +481,7 @@ function craftMessage(sessionName, playerName, message) {
 }
 
 function getMentionedContext(message) {
+	console.log("checking mentioned context");
 	var re = /([A-Za-z]\s+)([A-Z][a-z]+(\s+[A-Z][a-z]+)*)/g;
 	var m;
 
