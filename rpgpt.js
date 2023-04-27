@@ -1232,13 +1232,12 @@ function search(name) {
 	
 	var matches = [];
 	  for (var i = 0; i < localStorage.length; i++){
-		  console.log("searchhing: " + cleanedName + "   -   " + localStorage.key(i));
+		console.log("searchhing: " + cleanedName + "   -   " + localStorage.key(i));
 	    if (localStorage.key(i).includes(cleanedName)) {
 		    console.log(localStorage.key(i));
 	       matches.push(localStorage.getItem(localStorage.key(i)));
 	    }
 	  }
-	}
 	
 	return matches;
 }
