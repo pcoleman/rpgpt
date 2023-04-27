@@ -1138,6 +1138,8 @@ function modifyPlayer(changeObject) {
 	
 	playerObject["json"] = changePlayerRecursive(playerObject, changeObject);
 	
+	console.log(playerObject);
+	
 	set(sessionName, playerName, JSON.stringify(playerObject));
 	
 	changePlayer({data:{sessionName:sessionName, playerName: playerName}});
