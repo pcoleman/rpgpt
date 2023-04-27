@@ -340,6 +340,8 @@ function submitAction(event) {
 	
 	console.log(action);
 	
+	getMentionedContext(action);
+	
 	var message = craftMessage(sessionName, playerName, action);
 	
 	console.log(JSON.stringify(message));
@@ -477,6 +479,18 @@ function craftMessage(sessionName, playerName, message) {
 	messageArray.push({"role":"user", "content": userMessage});
 			       
 	return messageArray;
+}
+
+function getMentionedContext(message) {
+	var re = /([A-Za-z]\s+)([A-Z][a-z]+(\s+[A-Z][a-z]+)*)/g;
+	var m;
+
+	do {
+	    m = re.exec(message);
+	    if (m) {
+		console.log(m[1], m[2], m[3]);
+	    }
+	} while (m);
 }
 
 function processResponse(message) {
