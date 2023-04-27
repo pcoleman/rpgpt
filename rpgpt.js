@@ -371,10 +371,11 @@ function craftMessage(sessionName, playerName, message) {
 	if (lastTurn) {
 		gamePrompt = gamePrompt + ", This is JSON object representing the state of the gamelast turn: " + lastTurn;
 		
-		if ("story" in lastTurnObject) properNounMessage = properNounMessage + ". " + lastTurnObject["story"];
-		
 		// Get full locations
 		var lastTurnObject = JSON.parse(lastTurn);
+		
+		if ("story" in lastTurnObject) properNounMessage = properNounMessage + ". " + lastTurnObject["story"];
+		
 		if ("location" in lastTurnObject) {
 			var lastTurnLocation = get(sessionName + ".location", lastTurnObject["location"]);
 			if (lastTurnLocation) {
