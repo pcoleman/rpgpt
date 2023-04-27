@@ -526,9 +526,9 @@ function processResponse(message) {
 	// Process changes to the player
 	var changeObject = response["player"];
 	if (changeObject) {
-		var playerName = get(sessionName, "current-player");
-		var playerObject = JSON.parse(get(sessionName, playerName))["json"];
-		modifyPlayer(playerObject, changeObject);
+		console.log(MODIFY 0);
+		console.log(changeObject);
+		modifyPlayer(changeObject);
 	}
 	
 	// Pull out the turn number
