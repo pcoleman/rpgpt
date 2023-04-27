@@ -1153,6 +1153,7 @@ function changePlayerRecursive(playerObject, changeObject) {
 		if (playerType == changeType) {
 			if (changeType == "object") {
 				if (isArray(changeObject)) {
+					console.log("MODIFYING ARRAY: returning " + changeObject);
 					// If an array return the changed version
 					return changeObject;
 				} else {
@@ -1168,6 +1169,8 @@ function changePlayerRecursive(playerObject, changeObject) {
 				}
 			} else {
 				// If a primitive value return the changed version
+				
+				console.log("MODIFYING PRIMITIVE: returning " + changeObject);
 				return changeObject;
 			}
 		} else {
@@ -1176,6 +1179,7 @@ function changePlayerRecursive(playerObject, changeObject) {
 			return playerObject;
 		}
 	} else {
+		console.log("MODIFYING ADING: " + changeObject);
 		return changeObject;	
 	}
 }
