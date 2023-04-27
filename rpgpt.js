@@ -1122,7 +1122,7 @@ function editPlayer(event) {
 	$("#player-edit-modal").show();
 }
 
-function changePlayer(changeObject) {
+function modifyPlayer(changeObject) {
 	var sessionName = get("", "currentSession");
 	var playerName = get(sessionName, "current-player");
 	
