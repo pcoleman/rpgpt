@@ -462,7 +462,7 @@ function craftMessage(sessionName, playerName, message) {
 	var nouns = getProperNouns(properNounMessage);
 	var mentionedObjects = [];
 	for (var i in nouns) {
-		mentionedObjects = mentionedObjects.concat(search(nouns[i])),	
+		mentionedObjects = mentionedObjects.concat(search(nouns[i]));
 	}
 	
 	var mentionedObjectsMessage = "";
