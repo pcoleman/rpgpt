@@ -584,7 +584,7 @@ function processLocation(messageObject) {
 
 			compressObjectSummary(locationObject).then((newObject) => {
 				// Save location interactions
-				var location_interactions = response["location_interactions"];
+				var location_interactions = messageObject.response["location_interactions"];
 				if (location_interactions) {
 					var summary = newObject["hot-summary"];
 					if (summary) {
