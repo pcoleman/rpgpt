@@ -1355,7 +1355,7 @@ function compressSummary(response) {
 				console.log("compressing cold-summary");
 				var message = "Create a concise summary of this: " + coldSummary;
 				var messages = [{"role":"user", "content": message}];
-				gptQuery(messages).then((message) => {
+				gptQuery(messages).then(extractMessage).then((message) => {
 					console.log("setting compressed summary");
 					set(sessionName, "cold-summary", message);
 					resolve(response);
@@ -1364,7 +1364,7 @@ function compressSummary(response) {
 				console.log("compressing hot-summary");
 				var message = "Create a concise summary of this: " + hotSummary;
 				var messages = [{"role":"user", "content": message}];
-				gptQuery(messages).then((message) => {
+				gptQuery(messages).then(extractMessage).then((message) => {
 					console.log("setting compressed summary");
 					set(sessionName, "cold-summary", coldSummary + " " + message);
 					set(sessionName, "hot-summary", "");
