@@ -725,7 +725,7 @@ function processStory(messageObject) {
 			messageObject.lastTurn["story"] = story;
 		
 			// Set the last turn
-			set(sessionName, "last-turn", JSON.stringify(lastTurn));
+			set(sessionName, "last-turn", JSON.stringify(messageObject.lastTurn]));
 		
 			// Set the running log
 			var log = get(sessionName, "log");
