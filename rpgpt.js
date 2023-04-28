@@ -353,7 +353,9 @@ function craftMessage(sessionName, playerName, message) {
 	var playerName = get(sessionName, "current-player");
 	var playerObject = JSON.parse(get(sessionName, playerName));
 	console.log(sessionName + ".hot-summary");
+	var coldSummary = get(sessionName, "cold-summary");
 	var hotSummary = get(sessionName, "hot-summary");
+	if(coldSummary) hotSummary = coldSummary + " " + hotSummary;
 	console.log(playerObject);
 	var mechanics = get(sessionName, "mechanics");
 	var setting = "The setting for this role playing game is " + get(sessionName, "setting");
@@ -1341,7 +1343,62 @@ function remove(prefix, name) {
 	return localStorage.removeItem(keyName);
 }
 
+function compressSummary(response) {
+	return new Promise((resolve) => {
+		if (data.usage.total_tokens > 3750) {
+			var sessionName = get("","currentSession");
+			var coldSummary = get(sessionName, "cold-summary");
+			var hotSummary = get(sessionName, "hot-summary");
+			
+			// If the cold summary has grown too large compress it
+			if (coldSummary && coldSummary > hotSummary) {
+				console.log("compressing cold-summary");
+				var message = "Create a concise summary of this: " + coldSummary;
+				var messages = [{"role":"user", "content": message}];
+				prompt(messages).then((message) => {
+					set(sessionName, "cold-summary", message);
+					resolve(response);
+				}).catch(function(error) {
+            				reject(error);
+         			});
+			} else {
+				console.log("compressing hot-summary");
+				var message = "Create a concise summary of this: " + hotSummary;
+				var messages = [{"role":"user", "content": message}];
+				prompt(messages).then((message) => {
+					set(sessionName, "cold-summary", coldSummary + " " + message);
+					set(sessionName, "hot-summary", "");
+					resolve(response);
+				}).catch(function(error) {
+            				reject(error);
+         			});
+			}
+		} 
+	});		
+}
+
+function extractMessage(data) {
+	return new Promise((resolve) => {
+	     console.log(JSON.stringify(data));
+
+	     var messages = data.choices[0].message.content;
+
+	     if (messages.includes("}")) {
+		     var lastIndex = messages.lastIndexOf("}");
+		     if (lastIndex < messages.length - 3) {
+			messages = messages.substr(0, lastIndex+1).trim(); 
+		     }
+		}
+	 	resolve(messages);
+	});	
+	
+}
+
 function prompt(messages) {
+	return gptQuery(messages).then(compressSummary).then(extractMessage);
+}
+
+function gptQuery(messages) {
 	return new Promise((resolve, reject) => {
 	  var token = get("", "openai-key");
 	  $.ajax({
@@ -1358,15 +1415,7 @@ function prompt(messages) {
 	    dataType: 'json',
 	     success: function (data) {
 		     console.log(JSON.stringify(data));
-		     var messages = data.choices[0].message.content;
-		     
-		     if (messages.includes("}")) {
-			     var lastIndex = messages.lastIndexOf("}");
-			     if (lastIndex < messages.length - 3) {
-				messages = messages.substr(0, lastIndex+1).trim(); 
-			     }
-	     		}
-       		 resolve(messages);
+       		 resolve(data);
      		 },
       error: function (error) {
         reject(error);
