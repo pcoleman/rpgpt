@@ -1372,6 +1372,7 @@ function compressSummary(response) {
 				});
 			}
 		} else {
+			console.log.("summary is short enough");
 			resolve(response);	
 		}
 	});		
