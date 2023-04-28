@@ -523,161 +523,229 @@ function getProperNouns(message) {
 	return [...nouns];
 }
 
-function processResponse(message) {
-	 var sessionName = get("","currentSession");
-	console.log("processing response");
-	console.log(message);
-	var response = JSON.parse(message);
-	console.log(response);
-	// initialize the last turn object
-	var lastTurn = {};
-	
-	// Process changes to the player
-	var changeObject = response["player"];
-	if (changeObject) modifyPlayer(changeObject);
-	
-	// Pull out the turn number
-	var turnNumber = response["turn_number"];
-	console.log("turn: " + turnNumber);
-	if (turnNumber) {
-		$( "#turn-number" ).text(turnNumber);
+function processInitialResponse(message) {
+	return new Promise(function(resolve, reject) {
+		console.log("processing response");
+		console.log(message);
+		var response = JSON.parse(message);
+		console.log(response);
+
+		// initialize the last turn object
+		var messageObject = {"lastTurn": {}, "response": response};
+		resolve(messageObject);
+	});
+}
+
+function processPlayer(messageObject) {
+	return new Promise(function(resolve, reject) {
+		console.log("processing player");
+		var changeObject = messageObject.response["player"];
+		if (changeObject) modifyPlayer(changeObject);
+		resolve(messageObject);
+	});
+}
+
+
+function processTurnNumber(messageObject) {
+	return new Promise(function(resolve, reject) {
+		console.log("processing turn number");
+		var turnNumber = messageObject.response["turn_number"];
+		console.log("turn: " + turnNumber);
+		if (turnNumber) {
+			$( "#turn-number" ).text(turnNumber);
 		
-		// Add turn number to the last turn object
-		lastTurn["turn"] = turnNumber;
-	}
-	
-	// Pull out the location
-	var location = response["location"];
-	console.log("location: " + location);
-	if (location) {
-		$( "#location-field" ).text(location);
-		
-		// Add location to the last turn object
-		lastTurn["location"] = location;
-		
-		// Save location interactions
-		var location_interactions = response["location_interactions"];
-		if (location_interactions) {
-			var locationObject = get(sessionName + ".location", location);
-			if (locationObject) {
-				locationObject = JSON.parse(locationObject);
-				var summary = locationObject["hot-summary"];
-				if (summary) {
-					summary = summary + ". " + location_interactions.join('. ');
-				} else {
-					summary = location_interactions.join('. ');
-				}
-				
-				locationObject["hot-summary"] = summary;
-			} else {
-				locationObject = {"name": location}
-				locationObject["hot-summary"] = location_interactions.join('. ');
-			}
-			
-			set(sessionName + ".location", location, JSON.stringify(locationObject));
+			// Add turn number to the last turn object
+			messageResponse.lastTurn["turn"] = turnNumber;
 		}
-	}
+		resolve(messageResponse);
+	});
+}
+
+
+function processLocation(messageObject) {
+	return new Promise(function(resolve, reject) {
+		console.log("processing location");
+
+		var sessionName = get("","currentSession");
+		var location = messageObject.response["location"];
+		console.log("location: " + location);
+		if (location) {
+			$( "#location-field" ).text(location);
+		
+			// Add location to the last turn object
+			messageObject.lastTurn["location"] = location;
+		
+			// Check if location interactions need to be compressed
+			var locationObject = get(sessionName + ".location", location);
+			locationObject = JSON.parse(locationObject);
+			if (!locationObject) {
+				locationObject = {"name": location, "hot-summary": ""};
+			}
+
+			compressObjectSummary(locationObject).then((newObject) => {
+				// Save location interactions
+				var location_interactions = response["location_interactions"];
+				if (location_interactions) {
+					var summary = newObject["hot-summary"];
+					if (summary) {
+						summary = summary + " " + location_interactions.join('. ');
+					} else {
+						summary = location_interactions.join('. ');
+					}
+				
+					newObject["hot-summary"] = summary;
+				}
+				set(sessionName + ".location", location, JSON.stringify(newObject));
+
+				resolve(messageObject);
+			});
+			
 	
-	// Save location interactions
-	var npc_interactions = response["npc_interactions"];
-	if (npc_interactions) {
-		for (var i in npc_interactions) {
-			var npc = npc_interactions[i];
-			var npcName = npc["name"];
-			var npcObject = get(sessionName + ".npc", npcName);
-			if (npcObject) {
-				npcObject = JSON.parse(npcObject);
-				var summary = npcObject["hot-summary"];
+			
+		} else {
+			resolve(messageObject);
+		}
+	});
+}
+
+function processNPC(messageObject) {
+	return new Promise(function(resolve, reject) {
+		var sessionName = get("","currentSession");
+
+		console.log("processing NPCs");
+		var npc_interactions = messageObject.response["npc_interactions"];
+
+		if (npc_interactions) {
+			if (npc_interactions.length > 0) messageObject.lastTurn["npc-interactions"] = npc_interactions;
+
+			var npcPromises = []; // collecting all page promises
+			for (var i in npc_interactions) {
+				// Grap the npc_interactons from the message object
+				var npc = npc_interactions[i];
+				var npcName = npc["name"];
+
+				// Join the interactions if they are an array
 				var npcInteraction = "";
 				if (typeof npc["interaction"] == "object") {
 					npcInteraction = npc["interaction"].join('. ');
 				} else if (typeof  npc["interaction"] == "string") {
 					npcInteraction = npc["interaction"];
 				}
-				
-				if (summary) {
-					summary = summary + ". " + npcInteraction;
-				} else {
-					summary = npcInteraction;
-				}
 
-				npcObject["hot-summary"] = summary;
-			} else {
-				npcObject = {"name": npcName}
-				npcObject["hot-summary"] = npc["interaction"].join('. ');
+				// Grab the npc object from memory
+				var npcObject = get(sessionName + ".npc", npcName);
+				npcObject = JSON.parse(npcObject);
+				if (!npcObject) {
+					npcObject = {"name": npcName, "hot-summary": ""};
+				}
+				
+
+				npcPromises.push(compressObjectSummary(npcObject).then((newObject) => {
+					var summary = npcObject["hot-summary"];
+
+					if (summary) {
+						summary = summary + " " + npcInteraction;
+					} else {
+						summary = npcInteraction;
+					}
+
+					npcObject["hot-summary"] = summary;
+
+					set(sessionName + ".npc", npcName, JSON.stringify(npcObject));
+				}));
 			}
 
-			set(sessionName + ".npc", npcName, JSON.stringify(npcObject));	
-		}
-		
-		// Store in the last-turn object
-		if (npc_interactions.length > 0) lastTurn["npc-interactions"] = npc_interactions;
-	}
-	
-        var description = response["description"];
-	console.log("description: " + description);
-	if (description) {
-		var descriptionsCombined = description.join('<br><br>');
-		$( "#description-field" ).html(descriptionsCombined);
-		
-		// Add description to the last turn
-		lastTurn["description"] = descriptionsCombined;
-	}
-	
-	var poi = response["points_of_interest"];
-	console.log("poi: " + poi);
-	if (poi) {
-		var poilocations = poi.join('<br>');
-		$( "#poi-field" ).html(poilocations);
-		
-		// add nearby locations to the last turn
-		lastTurn["nearby-location"] = poi;
-	}
-	
-	var summary = response["summary"];
-	console.log("summary: " + summary);
-	if (summary) {
-		var hotsummary = get(sessionName, "hot-summary");
-		hotsummary = hotsummary + summary;
-		set(sessionName, "hot-summary", hotsummary);
-	}
-	
-	var mainResponse = ""
-	var roll = response["roll"];
-	console.log("roll: " + roll);
-	if (roll) {
-		if (typeof roll === 'object') {
-			roll = JSON.stringify(roll,null,4);
-		}
-		mainResponse = mainResponse + "<br><br>Roll: " + roll + "<br><br>";	
-	}
-	
-	var story = response["story"];
-	console.log("story: " + story);
-	if (story) {
-		story = story.replace(/(?:\r\n|\r|\n)/g, '<br>');
-		mainResponse = mainResponse + story;	
-		
-		// add story to the last turn object
-		lastTurn["story"] = story;
-		
-		// Set the last turn
-		set(sessionName, "last-turn", JSON.stringify(lastTurn));
-		
-		// Set the running log
-		var log = get(sessionName, "log");
-		if (!log) {
-			log = mainResponse;
+			Promise.all(npcPromises).then(function () {
+	      			resolve(messageObject);
+	    		});
+				
 		} else {
-			log = log + "<br><br>" + mainResponse;
+			resolve(messageObject);
 		}
+	});
+}
+
+function processPOI(messageObject) {
+	return new Promise(function(resolve, reject) {
+		var poi = messageObject.response["points_of_interest"];
+		console.log("processing poi: " + poi);
+		if (poi) {
+			var poilocations = poi.join('<br>');
+			$( "#poi-field" ).html(poilocations);
 		
-		set(sessionName, "log", log);
-	}
+			// add nearby locations to the last turn
+			messageObject.lastTurn["nearby-location"] = poi;
+		}
+
+		resolve(messageObject);
+	});
+}
+
+function processSummary(messageObject) {
+	return new Promise(function(resolve, reject) {
+		var summary = messageObject.response["summary"];
+		console.log("processing summary: " + summary);
+		if (summary) {
+			var sessionName = get("","currentSession");
+			var hotsummary = get(sessionName, "hot-summary");
+			hotsummary = hotsummary + " " + summary;
+			set(sessionName, "hot-summary", hotsummary);
+		}
+
+		resolve(messageObject);
+	});
+}
+
+function processStory(messageObject) {
+	return new Promise(function(resolve, reject) {
+		console.log("processing story");
+		var mainResponse = ""
+
+		// Process the roll information
+		var roll = messageObject.response["roll"];
+		
+		if (roll) {
+			if (typeof roll === 'object') {
+				roll = JSON.stringify(roll,null,4);
+			}
+			mainResponse = mainResponse + "<br><br>Roll: " + roll + "<br><br>";	
+		}
+
+		// Process the story
 	
-	if (mainResponse) {
-		$( "#text-response-field" ).html(log);
-	}
+		var story = messageObject.response["story"];
+		if (story) {
+			// Add in html formatting
+			story = story.replace(/(?:\r\n|\r|\n)/g, '<br>');
+			mainResponse = mainResponse + story;	
+		
+			// add story to the last turn object
+			messageObject.lastTurn["story"] = story;
+		
+			// Set the last turn
+			set(sessionName, "last-turn", JSON.stringify(lastTurn));
+		
+			// Set the running log
+			var log = get(sessionName, "log");
+			if (!log) {
+				log = mainResponse;
+			} else {
+				log = log + "<br><br>" + mainResponse;
+			}
+		
+			set(sessionName, "log", log);
+		}
+	
+		if (mainResponse) {
+			$( "#text-response-field" ).html(log);
+		}
+
+		resolve(messageObject);
+	});
+}
+
+function processResponse(message) {
+	return processInitialResponse(message).then(processPlayer).then(processTurnNumber).then(processLocation).then(processNPC).then(processPOI).then(processSummary).then(processStory);
 }
 
 function saveSession() {
