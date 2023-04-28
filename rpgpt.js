@@ -1359,9 +1359,7 @@ function compressSummary(response) {
 					console.log("setting compressed summary");
 					set(sessionName, "cold-summary", message);
 					resolve(response);
-				}).catch(function(error) {
-            				reject(error);
-         			});
+				});
 			} else {
 				console.log("compressing hot-summary");
 				var message = "Create a concise summary of this: " + hotSummary;
@@ -1371,9 +1369,7 @@ function compressSummary(response) {
 					set(sessionName, "cold-summary", coldSummary + " " + message);
 					set(sessionName, "hot-summary", "");
 					resolve(response);
-				}).catch(function(error) {
-            				reject(error);
-         			});
+				});
 			}
 		} 
 	});		
