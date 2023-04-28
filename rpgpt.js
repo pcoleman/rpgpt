@@ -750,6 +750,43 @@ function processResponse(message) {
 	return processInitialResponse(message).then(processPlayer).then(processTurnNumber).then(processLocation).then(processNPC).then(processPOI).then(processSummary).then(processStory);
 }
 
+function compressObjectSummary(newObject) {
+	return new Promise((resolve) => {
+		var coldSummary = newObject["cold-summary"];
+		var hotSummary = newObject["hot-summary"];
+			
+		// If the cold summary has grown too large compress it
+		if (coldSummary && coldSummary > hotSummary) {
+			if (coldSummary.length > 1500) {
+				console.log("compressing object cold-summary");
+				var message = "Create a concise summary of this: " + coldSummary;
+				var messages = [{"role":"user", "content": message}];
+				gptQuery(messages).then(extractMessage).then((message) => {
+					console.log("setting object compressed summary");
+					newObject["cold-summary"] = message;
+					resolve(newObject);
+				});
+			} else {
+				resolve(newObject);
+			}
+		} else {
+			if (hotSummary.length > 1500) {
+				console.log("compressing object hot-summary");
+				var message = "Create a concise summary of this: " + coldSummary;
+				var messages = [{"role":"user", "content": message}];
+				gptQuery(messages).then(extractMessage).then((message) => {
+					console.log("setting object compressed summary");
+					newObject["cold-summary"] = newObject["cold-summary"] + " " + message;
+					newObject["hot-summary"] = "";
+					resolve(newObject);
+				});
+			} else {
+				resolve(newObject);
+			}
+		}
+	});		
+}
+
 function saveSession() {
   // Grabbing all the values from the text fields
 	var sessionName = document.querySelector('#session-creation-name').value;
