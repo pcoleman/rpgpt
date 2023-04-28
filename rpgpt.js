@@ -1371,7 +1371,9 @@ function compressSummary(response) {
 					resolve(response);
 				});
 			}
-		} 
+		} else {
+			resolve(response);	
+		}
 	});		
 }
 
