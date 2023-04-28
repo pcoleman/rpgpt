@@ -555,9 +555,9 @@ function processTurnNumber(messageObject) {
 			$( "#turn-number" ).text(turnNumber);
 		
 			// Add turn number to the last turn object
-			messageResponse.lastTurn["turn"] = turnNumber;
+			messageObject.lastTurn["turn"] = turnNumber;
 		}
-		resolve(messageResponse);
+		resolve(messageObject);
 	});
 }
 
