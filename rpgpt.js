@@ -699,6 +699,8 @@ function processSummary(messageObject) {
 function processStory(messageObject) {
 	return new Promise(function(resolve, reject) {
 		console.log("processing story");
+		var sessionName = get("","currentSession");
+		
 		var mainResponse = ""
 
 		// Process the roll information
