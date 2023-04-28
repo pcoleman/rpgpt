@@ -588,10 +588,17 @@ function processResponse(message) {
 			if (npcObject) {
 				npcObject = JSON.parse(npcObject);
 				var summary = npcObject["hot-summary"];
+				var npcInteraction = "";
+				if (typeof npc["interaction"] == "object") {
+					npcInteraction = npc["interaction"].join('. ');
+				} else if (typeof  npc["interaction"] == "string") {
+					npcInteraction = npc["interaction"];
+				}
+				
 				if (summary) {
-					summary = summary + ". " + npc["interaction"].join('. ');
+					summary = summary + ". " + npcInteraction;
 				} else {
-					summary = npc["interaction"].join('. ');
+					summary = npcInteraction;
 				}
 
 				npcObject["hot-summary"] = summary;
