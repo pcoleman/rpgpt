@@ -1345,7 +1345,7 @@ function remove(prefix, name) {
 
 function compressSummary(response) {
 	return new Promise((resolve) => {
-		if (data.usage.total_tokens > 3750) {
+		if (response.usage.total_tokens > 3750) {
 			var sessionName = get("","currentSession");
 			var coldSummary = get(sessionName, "cold-summary");
 			var hotSummary = get(sessionName, "hot-summary");
