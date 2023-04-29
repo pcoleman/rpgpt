@@ -887,10 +887,11 @@ function createAdventures(adventures) {
 		for (var i in adventures) {
 			var campaignMessage = "outline this adventure:  " + adventures[i] + ", format it as a JSON array of strings.";
 			var messages = [{"role":"user", "content": campaignMessage}];
-			prompt(messages).then((message) => {
-				console.log(message);
-				resolve(message);
-			})
+			console.log(campaignMessage);
+			//prompt(messages).then((message) => {
+			//	console.log(message);
+			//	resolve(message);
+			//})
 		}
 	});
 }
