@@ -965,7 +965,7 @@ function adventureDetailsPromise(message) {
 
 	prompt(messages).then((newmessage) => {
 			console.log(newmessage);
-			var stepObject = JSON.parse(newmessage);
+			var stepObject = parseIncompleteJSON(newmessage);
 			
 			// add new object to the adventure details array
 			adventureDetails.push(stepObject);
@@ -1646,4 +1646,24 @@ function gptQuery(messages) {
       }
 	  });
  });
+}
+
+function parseIncompleteJSON (jsonString, i = 0) {
+	if (jsonString[0] == '[' && i == 0) { // agar json array of string hai to first time srf ']' lagay ga
+	  jsonString += ']'; 
+	} else if (jsonString[0] == '[') {
+	  jsonString = jsonString.slice(0, jsonString.length - 1).concat('}', ']');
+	} else {
+	  jsonString += '}';
+	}
+
+	if (i == 10) { 
+	  return jsonString;
+	}
+
+	try {
+	  return JSON.parse(jsonString);
+	} catch (e) {
+	  return parseIncompleteJSON(jsonString, ++i);
+	}
 }
