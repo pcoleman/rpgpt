@@ -894,13 +894,11 @@ function createAdventures(message) {
 		}
 		
 		Promise.all(adventurePromises).then((newmessages) => {
-			console.log("---------------------------------------------in the loop");
 			var adventureArray = []
 			for (var i in newmessages) {
 				var adventure = JSON.parse(newmessages[i]);
 				console.log(adventure);
-				adventureArray.concat(adventure);
-				console.log(adventureArray);
+				adventureArray = adventureArray.concat(adventure);
 			}
 			
 			console.log(adventureArray);
