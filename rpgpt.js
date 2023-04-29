@@ -880,9 +880,10 @@ function createCampaign(setting, text) {
 	});
 }
 
-function createAdventures(adventures) {
+function createAdventures(message) {
 	return new Promise((resolve, reject) => {
 		console.log("creating adventures");
+		var adventures = JSON.parse(message);
 		var adventurePromises = [];
 		for (var i in adventures) {
 			var campaignMessage = "outline this adventure:  " + adventures[i] + ", format it as a JSON array of strings.";
