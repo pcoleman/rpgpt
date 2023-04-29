@@ -821,7 +821,7 @@ function saveSession() {
   
   if (sessionCampaign) {
   	set(sessionName, "campaign", sessionCampaign);
-	 createCampaign(sessionSetting, sessionCampaign).then(createAdventures);
+	 createCampaign(sessionSetting, sessionCampaign).then(createAdventures).then(adventureDetails);
   }
   
   // Adding session the the list of sessions
