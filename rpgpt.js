@@ -880,7 +880,7 @@ function createCampaign(setting, text) {
 	});
 }
 
-function createAdventures(message) {
+async function createAdventures(message) {
 	return new Promise((resolve, reject) => {
 		console.log("creating adventures");
 		var adventures = JSON.parse(message);
