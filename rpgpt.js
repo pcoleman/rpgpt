@@ -821,7 +821,7 @@ function saveSession() {
   
   if (sessionCampaign) {
   	set(sessionName, "campaign", sessionCampaign);
-	 createCampaign(sessionSetting, sessionCampaign);
+	 createCampaign(sessionSetting, sessionCampaign).then(createAdventures);
   }
   
   // Adding session the the list of sessions
@@ -869,12 +869,30 @@ function saveSession() {
 }
 
 function createCampaign(setting, text) {
-	console.log("creating a new campaign");
-	var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of five adventures that are part of a larger story, format it as a JSON array of strings.";
-	var messages = [{"role":"user", "content": campaignMessage}];
-	prompt(messages).then((message) => {
-		console.log(message);
-	})
+	return new Promise((resolve, reject) => {
+		console.log("creating a new campaign");
+		var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of five adventures that are part of a larger story, format it as a JSON array of strings.";
+		var messages = [{"role":"user", "content": campaignMessage}];
+		prompt(messages).then((message) => {
+			console.log(message);
+			resolve(message);
+		})
+	});
+}
+
+function createAventures(adventures) {
+	return new Promise((resolve, reject) => {
+		console.log("creating adventures");
+		var adventurePromises = [];
+		for (var i in adventures) {
+			var campaignMessage = "outline this adventure:  " + adventures[i] + ", format it as a JSON array of strings.";
+			var messages = [{"role":"user", "content": campaignMessage}];
+			prompt(messages).then((message) => {
+				console.log(message);
+				resolve(message);
+			})
+		}
+	});
 }
 
 function removeSession() {
