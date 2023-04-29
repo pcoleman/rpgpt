@@ -885,14 +885,17 @@ function createAdventures(message) {
 		console.log("creating adventures");
 		var adventures = JSON.parse(message);
 		var adventurePromises = [];
+		var messages = [];
 		for (var i in adventures) {
-			var campaignMessage = "outline this adventure:  " + adventures[i] + ", format it as a JSON array of strings.";
+			var campaignMessage = "create a detailed outline of this adventure:  " + adventures[i] + ", format it as a JSON array of strings.";
 			var messages = [{"role":"user", "content": campaignMessage}];
 			console.log(campaignMessage);
-			//prompt(messages).then((message) => {
-			//	console.log(message);
-			//	resolve(message);
-			//})
+			prompt(messages).then((message) => {
+				console.log(message);
+				messages.pop();
+				var messages = [{"role":"user", "content": "This was the previous adventure: " + message}];
+				resolve(message);
+			})
 		}
 	});
 }
