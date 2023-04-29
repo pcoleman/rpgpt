@@ -872,7 +872,7 @@ function removeSession() {
   var sessionSelect = document.querySelector('#session-selection');
   var session = sessionSelect.value;	
 
-var sessionName = get("currentSession", sessionName);
+var sessionName = get("", "currentSession");
   var arr = []; // Array to hold the keys
   
   // Iterate over localStorage and insert the keys that meet the condition into arr
