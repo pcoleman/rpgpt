@@ -880,7 +880,7 @@ function createCampaign(setting, text) {
 	});
 }
 
-function createAventures(adventures) {
+function createAdventures(adventures) {
 	return new Promise((resolve, reject) => {
 		console.log("creating adventures");
 		var adventurePromises = [];
