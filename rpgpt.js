@@ -869,10 +869,13 @@ function saveSession() {
 
 
 function removeSession() {
+	const regex = /(?:(the|a|an) +)/g; 
+	const subst = ` `;
   var sessionSelect = document.querySelector('#session-selection');
-  var session = sessionSelect.value;	
+  var session = sessionSelect.value;
 
-var sessionName = get("", "currentSession");
+var sessionN = get("", "currentSession");
+var sessionName = sessionN.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
   var arr = []; // Array to hold the keys
   
 	console.log("removing sessino: " + sessionName);
@@ -895,7 +898,7 @@ var sessionName = get("", "currentSession");
   // Remove from the session array
   var sessionArray = JSON.parse(localStorage.getItem("sessions"));
   
-  const index = sessionArray.indexOf(sessionName);
+  const index = sessionArray.indexOf(session);
   
   const x = sessionArray.splice(index, 1);
   
