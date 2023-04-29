@@ -870,11 +870,9 @@ function saveSession() {
 
 function removeSession() {
   var sessionSelect = document.querySelector('#session-selection');
-  var sessionN = sessionSelect.value;	
-	const regex = /(?:(the|a|an) +)/g; 
-	const subst = ` `;
+  var session = sessionSelect.value;	
 
-	var sessionName = sessionN.replace(regex, subst).toLowerCase().trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
+var sessionName = get("currentSession", sessionName);
   var arr = []; // Array to hold the keys
   
   // Iterate over localStorage and insert the keys that meet the condition into arr
@@ -890,7 +888,7 @@ function removeSession() {
   }
   
   // Remove the session from the drop down
-  $("#session-selection option[value='" + sessionName + "']").remove();
+  $("#session-selection option[value='" + session + "']").remove();
   
   // Remove from the session array
   var sessionArray = JSON.parse(localStorage.getItem("sessions"));
