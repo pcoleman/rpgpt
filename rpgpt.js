@@ -903,13 +903,13 @@ function createAdventures(message) {
 			}
 			
 			console.log(adventureArray);
-			resolve(adventureArray);
+			resolve({"adventureSteps":adventureArray, "adventureOutline": adventures});
 		});
 	});
 }
 
 function adventureDetails(message) {
-	return adventureDetailsPromise({"adventureSteps": message, "backup": message, "adventureDetails": [], "npcs": [], "locations": [], "groups": []});
+	return adventureDetailsPromise({"adventureSteps": message.adventureSteps, "backup": message.adventureOutline, "adventureDetails": [], "npcs": [], "locations": [], "groups": []});
 }
 
 function adventureDetailsPromise(message) {
