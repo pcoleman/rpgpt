@@ -875,6 +875,7 @@ function removeSession() {
 var sessionName = get("", "currentSession");
   var arr = []; // Array to hold the keys
   
+	console.log("removing sessino: " + sessionName);
   // Iterate over localStorage and insert the keys that meet the condition into arr
   for (var i = 0; i < localStorage.length; i++){
     if (localStorage.key(i).includes(sessionName)) {
@@ -884,6 +885,7 @@ var sessionName = get("", "currentSession");
 
   // Iterate over arr and remove the items by key
   for (var i = 0; i < arr.length; i++) {
+    console.log("removing: " + arr[i]);
     localStorage.removeItem(arr[i]);
   }
   
