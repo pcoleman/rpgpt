@@ -890,12 +890,14 @@ function createAdventures(message) {
 			var campaignMessage = "create a detailed outline of this adventure:  " + adventures[i] + ", format it as a JSON array of strings.";
 			var messages = [{"role":"user", "content": campaignMessage}];
 			console.log(campaignMessage);
-			prompt(messages).then((message) => {
+			var message = await prompt(messages).then((message) => {
 				console.log(message);
-				messages.pop();
-				var messages = [{"role":"user", "content": "This was the previous adventure: " + message}];
-				resolve(message);
+				return message;
 			})
+			
+			adventurePromises.push(message);
+			messages.pop();
+			messages.push({"role":"assistant", "content": "This was the previous adeventure: " + message}];
 		}
 	});
 }
