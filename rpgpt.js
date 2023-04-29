@@ -870,7 +870,7 @@ function saveSession() {
 
 function createCampaign(setting, text) {
 	console.log("creating a new campaign");
-	var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of five adventures that are part of a larger story, format it as a JSON array of strings.
+	var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of five adventures that are part of a larger story, format it as a JSON array of strings.";
 	var messages = [{"role":"user", "content": campaignMessage}];
 	prompt(messages).then((message) => {
 		console.log(message);
