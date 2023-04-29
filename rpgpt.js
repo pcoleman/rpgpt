@@ -908,17 +908,67 @@ function createAdventures(message) {
 }
 
 function adventureDetails(message) {
-	return new Promise((resolve, reject) => {
-		console.log("detailing adventures");
-		var adventurePromises = [];
-		for (var i in message) {
-			var adventureMessage = "I want you to create detailed information about this step of the adventure: " + message[i] + " Only output valid JSON. This is a template for your response:{\"adventure\": <adventure>,\"locations\": <locations>,\"groups\": <groups>,\"races\": <races>,\"npcs\": <npcs>,\"events\": <events>}, In the template above, items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with these specifications: <adventure>: This should be a valid JSON object that looks like {\"name\": <name of the adventure>, \"description\": <a short concise summary of the adventure>}. Here is an example {\"name\": \"The Burried City\", \"description\": \"The players will go on an adventure to find treasure in a mysterious burried city. Doing so will uncover an ancient evil\"} <locations>: This should be a valid JSON array that looks like [{\"name\": <The name of the location>, \"description\": <A description of the location, including appearance, function and mood>, \"groups\": <a json array of strings containing the groups associated with the location>, \"npcs\": <a json array of strings containing npcs currently in this location>, \"history\": <any history of this specific location>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player visits this location, and their requirements>, \"nearby-locations\": <a json array of strings containing any relevant nearby locations>}]. Here is an example of the JSON array [{\"name\": \"The Burried City\", \"description\": \"The burried city is an ancient mysterious place, far in the underdark. Its passages are full of deadly traps and puzzles\", \"groups\": [\"The Cult of the Undead\", \"Draugr\"], npcs: [\"Mysterious Hooded Figure\", \"Rex, a wererat merchant\"], \"history\": \"The Burried city was once the home of a civilization of powerful mages. Their hunger for power grew too much dooming the city.\", \"events\" : [{\"event\": \"Joe the bartender gives the player a mysterious letter\", \"condition\": \"the player must have already talked to the mystic\"}, {\"event\": \"A bar fight breaks out\", \"condition\": \"the player brings up the topic of the mysterious letter\"}], \"nearby-locations:[\"The underdark\", \"the ruin of a building\", \"a long crevasse\"]}]  <groups>: This should be a valid JSON array that looks like [{\"name\": <the name of the group>, \"description\": <a description of the group>, \"history\": <a history of the group>, \"notable-npcs\": <a json array of string containing the names of notable npcs related to this group>}]. Here is an example: [{\"name\":\"harpers\", \"description\": \"The Harpers, or Those Who Harp, was a semi-secret organization dedicated to preserving historical lore, maintaining the balance between nature and civilization,and defending the innocent from the forces of evil across the Realms.The Harpers involved themselves in many world-changing events that helped shaped the course of Faerûn's destiny. Their power and influence waxed and waned over the years, as their order underwent a series of collapses and reformations.Their reputation amongst the people of the Realms just as varied wildly. They were just as often seen seen as wild-eyed idealists as they were insufferable meddlers who could not keep their business to themselves.\", \"history\": \"On the 27th of Flamerule in the Year of the Dawn Rose, 720 DR, a large congregation of dryads arrived at the Dancing Place druid grove in High Dale. Their arrival occurred at a time when dusk fell earlier than it should have and a bright moon shone when no moon should have been visible. The dryads bid the druids welcome the prizests of many different gods who started to arrive before finally Elminster appeared to explain why they had all been called.\", \"notable-npcs\":[\"Arilyn Moonblade\", \"Arrant Quill\"]}]  <races>: This should be a valid JSON array that looks like [{\"name\": <The name of the race or species or creature>, \"description: <A description of the race>, \"appearance\": <Common defining features for appearance>, \"customs\": <a description of any customs specific to this race>}]. Here is an example: [{\"name\": \"orc\", \"description\": \"Orcs were a race of humanoids that had been a threat to the civilized cultures of Toril, particularly Faerûn, for as long as any could remember. This changed somewhat in the years preceding and immediately after the Spellplague, when a horde of mountain orcs under the command of King Obould Many-Arrows unified into a single kingdom, one that was remarkably civilized.\", \"appearance\": \"Orcs varied in appearance, based on region and subrace, but all shared certain physical qualities. Orcs of all kinds usually had grayish skin, coarse hair, stooped postures, low foreheads, large muscular bodies, and porcine faces that featured lower canines that resembled boar tusks.\", \"customs\": Traditional orcish culture was extremely warlike and when not at war the race was usually planning for it. Most orcs approached life with the belief that to survive, one had to subjugate potential enemies and control as many resources as possible, which put them naturally at odds with other races as well as each other.\"}] <npcs>: This should be a valid JSON array that looks like [{\"name\":<The name of the NPC>, \"description\": <A description of the NPC>, \"history\": <A history of the npc>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player talks to this npc, and their requirements>}]. Here is an example: [{\"name\":\"Joe Smith\", \"description\": \"joe smith is a tall elf with long flowing white hair. He is blunt and lacks a sense of humor. he works as a carpenter\", \"history\": \"Joe smith grew up in waterdeep, he attended the university there\", \"events\": [{\"event\": \"Joe smith gives the player a chair\", \"condition\": \"the player found joe smith's lost tools\"}]}] <events>: These are events not tied to a location or NPC, This should be a valid JSON array that looks like [{\"event\": <the event that will happen>, \"condition\": <the required conditions necessary for the event to happen>}]. Here is an example: [{\"event\": \"A courier arrives and gives the player a mysterious message\", \"condition\": \"the player had taken the treasure from the under dark\"}]";
-			var messages = [{"role":"assistant", "content": "This is an outline of the campaign: " + JSON.stringify(message)}, {"role":"user", "content": adventureMessage}];
+	return adventureDetailsPromise({"adventureSteps": message, "backup": message, "adventureDetails": [], "npcs": [], "locations": [], "groups": []);
+}
+
+function adventureDetailsPromise(message) {
+	var adventureSteps = message.adventureSteps;
+	var adventureDetails = message.adventureDetails;
+	var backup = message.backup;
+	var npcs = message.npcs;
+	var locations = message.locations;
+	var groups = message.groups;
+	
+	// Check the end condition for the recursion
+	if (adventureSteps.length == 0) {
+		return new Promise((resolve, reject) => {
+			resolve(adventureDetails);
+		});
+	}
+
+	var messages = [];
+
+	// Set the complete outline for the adventure
+	if (backup) {
+		messages.push({"role":"assistant", "content": "This is an outline of the adventure: " + JSON.stringify(backup)});
+	}
+
+	// Provide the named locations so far
+	if (locations && locations.length > 0) {
+		messages.push({"role":"assistant", "content": "here are defined locations in this adventure so far: " + JSON.stringify(locations)});
+	}
+
+	// Provide the named NPCs so far
+	if (locations && locations.length > 0) {
+		messages.push({"role":"assistant", "content": "here are defined characters in this adventure so far: " + JSON.stringify(npcs)});
+	}
+
+	// Provide the named groups so far
+	if (locations && locations.length > 0) {
+		messages.push({"role":"assistant", "content": "here are defined groups in this adventure so far: " + JSON.stringify(npcs)});
+	}
+
+
+	var nextStep = adventureSteps.shift();
+
+	var adventureMessage = "I want you to create detailed information about this step of the adventure: " + nextStep + " Only output valid JSON. This is a template for your response:{\"adventure\": <adventure>,\"locations\": <locations>,\"groups\": <groups>,\"races\": <races>,\"npcs\": <npcs>,\"events\": <events>}, In the template above, items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with these specifications: <adventure>: This should be a valid JSON object that looks like {\"name\": <name of the adventure>, \"description\": <a short concise summary of the adventure>}. Here is an example {\"name\": \"The Burried City\", \"description\": \"The players will go on an adventure to find treasure in a mysterious burried city. Doing so will uncover an ancient evil\"} <locations>: This should be a valid JSON array that looks like [{\"name\": <The name of the location>, \"description\": <A description of the location, including appearance, function and mood>, \"groups\": <a json array of strings containing the groups associated with the location>, \"npcs\": <a json array of strings containing npcs currently in this location>, \"history\": <any history of this specific location>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player visits this location, and their requirements>, \"nearby-locations\": <a json array of strings containing any relevant nearby locations>}]. Here is an example of the JSON array [{\"name\": \"The Burried City\", \"description\": \"The burried city is an ancient mysterious place, far in the underdark. Its passages are full of deadly traps and puzzles\", \"groups\": [\"The Cult of the Undead\", \"Draugr\"], npcs: [\"Mysterious Hooded Figure\", \"Rex, a wererat merchant\"], \"history\": \"The Burried city was once the home of a civilization of powerful mages. Their hunger for power grew too much dooming the city.\", \"events\" : [{\"event\": \"Joe the bartender gives the player a mysterious letter\", \"condition\": \"the player must have already talked to the mystic\"}, {\"event\": \"A bar fight breaks out\", \"condition\": \"the player brings up the topic of the mysterious letter\"}], \"nearby-locations:[\"The underdark\", \"the ruin of a building\", \"a long crevasse\"]}]  <groups>: This should be a valid JSON array that looks like [{\"name\": <the name of the group>, \"description\": <a description of the group>, \"history\": <a history of the group>, \"notable-npcs\": <a json array of string containing the names of notable npcs related to this group>}]. Here is an example: [{\"name\":\"harpers\", \"description\": \"The Harpers, or Those Who Harp, was a semi-secret organization dedicated to preserving historical lore, maintaining the balance between nature and civilization,and defending the innocent from the forces of evil across the Realms.The Harpers involved themselves in many world-changing events that helped shaped the course of Faerûn's destiny. Their power and influence waxed and waned over the years, as their order underwent a series of collapses and reformations.Their reputation amongst the people of the Realms just as varied wildly. They were just as often seen seen as wild-eyed idealists as they were insufferable meddlers who could not keep their business to themselves.\", \"history\": \"On the 27th of Flamerule in the Year of the Dawn Rose, 720 DR, a large congregation of dryads arrived at the Dancing Place druid grove in High Dale. Their arrival occurred at a time when dusk fell earlier than it should have and a bright moon shone when no moon should have been visible. The dryads bid the druids welcome the prizests of many different gods who started to arrive before finally Elminster appeared to explain why they had all been called.\", \"notable-npcs\":[\"Arilyn Moonblade\", \"Arrant Quill\"]}]  <races>: This should be a valid JSON array that looks like [{\"name\": <The name of the race or species or creature>, \"description: <A description of the race>, \"appearance\": <Common defining features for appearance>, \"customs\": <a description of any customs specific to this race>}]. Here is an example: [{\"name\": \"orc\", \"description\": \"Orcs were a race of humanoids that had been a threat to the civilized cultures of Toril, particularly Faerûn, for as long as any could remember. This changed somewhat in the years preceding and immediately after the Spellplague, when a horde of mountain orcs under the command of King Obould Many-Arrows unified into a single kingdom, one that was remarkably civilized.\", \"appearance\": \"Orcs varied in appearance, based on region and subrace, but all shared certain physical qualities. Orcs of all kinds usually had grayish skin, coarse hair, stooped postures, low foreheads, large muscular bodies, and porcine faces that featured lower canines that resembled boar tusks.\", \"customs\": Traditional orcish culture was extremely warlike and when not at war the race was usually planning for it. Most orcs approached life with the belief that to survive, one had to subjugate potential enemies and control as many resources as possible, which put them naturally at odds with other races as well as each other.\"}] <npcs>: This should be a valid JSON array that looks like [{\"name\":<The name of the NPC>, \"description\": <A description of the NPC>, \"history\": <A history of the npc>, \"events\": <a json array of of objects that represent any campaign events that are suppose to happen when a player talks to this npc, and their requirements>}]. Here is an example: [{\"name\":\"Joe Smith\", \"description\": \"joe smith is a tall elf with long flowing white hair. He is blunt and lacks a sense of humor. he works as a carpenter\", \"history\": \"Joe smith grew up in waterdeep, he attended the university there\", \"events\": [{\"event\": \"Joe smith gives the player a chair\", \"condition\": \"the player found joe smith's lost tools\"}]}] <events>: These are events not tied to a location or NPC, This should be a valid JSON array that looks like [{\"event\": <the event that will happen>, \"condition\": <the required conditions necessary for the event to happen>}]. Here is an example: [{\"event\": \"A courier arrives and gives the player a mysterious message\", \"condition\": \"the player had taken the treasure from the under dark\"}]";
+	messages.push({"role":"user", "content": adventureMessage});
+
+	prompt(messages).then((newmessage) => {
+			console.log(newmessage);
+			var stepObject = JSON.parse(newmessage);
 			
-			prompt(messages).then((newmessage) => {
-				console.log(newmessage);
-			});
-		}
+			// add new object to the adventure details array
+			adventureDetails.push(stepObject);
+			
+			// Combine the subfields
+			npcs = npcs.concat(stepObject.npcs);
+			locations = npcs.concat(stepObject.locations);
+			groups = groups.concat(stepObject.groups);
+			
+			// Create the return object
+		        var returnObject = {"adventureSteps": adventureSteps, "adventureDetails": adventureDetails, "backup": backup, "npcs": npcs, "locations": locations, "groups": groups};
+			adventureDetailsPromise(returnObject);
 	});
 }
 
@@ -1447,7 +1497,6 @@ function get(prefix, name) {
 	  // Iterate over localStorage and save the keys that meet the condition
 	if (localStorage.getItem(keyName) === null) {
 	  for (var i = 0; i < localStorage.length; i++){
-		  console.log("getting: " + cleanedPrefix + "." + cleanedName + "   -   " + localStorage.key(i));
 	    if (localStorage.key(i).includes(cleanedPrefix) && localStorage.key(i).includes(cleanedName)) {
 	       keyName = localStorage.key(i);
 	    }
@@ -1467,7 +1516,6 @@ function search(name) {
 	
 	var matches = new Set();
 	  for (var i = 0; i < localStorage.length; i++){
-		console.log("searchhing: " + cleanedName + "   -   " + localStorage.key(i));
 	    if (localStorage.key(i).includes(cleanedName)) {
 		    console.log(localStorage.key(i));
 	       matches.add(localStorage.getItem(localStorage.key(i)));
