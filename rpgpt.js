@@ -915,7 +915,7 @@ function createAdventures(message) {
 }
 
 function adventureDetails(message) {
-	return adventureDetailsPromise({"adventureSteps": message.adventureSteps, "backup": message.adventureOutline, "adventureDetails": [], "npcs": [], "locations": [], "groups": []});
+	return adventureDetailsPromise({"adventureSteps": message.adventureSteps, "backup": message.adventureOutline, "adventureDetails": [], "npcs": new Set(), "locations": new Set(), "groups": new Set()});
 }
 
 function adventureDetailsPromise(message) {
@@ -941,18 +941,18 @@ function adventureDetailsPromise(message) {
 	}
 
 	// Provide the named locations so far
-	if (locations && locations.length > 0) {
-		messages.push({"role":"assistant", "content": "here are defined locations in this adventure so far: " + JSON.stringify(locations)});
+	if (locations && locations.size > 0) {
+		messages.push({"role":"assistant", "content": "here are defined locations in this adventure so far: " + JSON.stringify([...locations])});
 	}
 
 	// Provide the named NPCs so far
-	if (npcs && npcs.length > 0) {
-		messages.push({"role":"assistant", "content": "here are defined characters in this adventure so far: " + JSON.stringify(npcs)});
+	if (npcs && npcs.size > 0) {
+		messages.push({"role":"assistant", "content": "here are defined characters in this adventure so far: " + JSON.stringify([...npcs])});
 	}
 
 	// Provide the named groups so far
-	if (groups && groups.length > 0) {
-		messages.push({"role":"assistant", "content": "here are defined groups in this adventure so far: " + JSON.stringify(groups)});
+	if (groups && groups.size > 0) {
+		messages.push({"role":"assistant", "content": "here are defined groups in this adventure so far: " + JSON.stringify([...groups])});
 	}
 
 
@@ -972,15 +972,15 @@ function adventureDetailsPromise(message) {
 			
 			// Combine the subfields
 			for (var i in stepObject.npcs) {
-				npcs.push(stepObject.npcs[i].name);	
+				npcs.add(stepObject.npcs[i].name);	
 			}
 		
 			for (var i in stepObject.locations) {
-				locations.push(stepObject.locations[i].name);	
+				locations.add(stepObject.locations[i].name);	
 			}
 		
 			for (var i in stepObject.groups) {
-				groups.push(stepObject.groups[i].name);	
+				groups.add(stepObject.groups[i].name);	
 			}
 			
 			// Create the return object
