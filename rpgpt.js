@@ -896,7 +896,8 @@ function createAdventures(message) {
 		Promise.all(adventurePromises).then((newmessages) => {
 			var adventureArray = []
 			for (var i in newmessages) {
-				var adventure = JSON.parse(newmessages[i]);
+				var cleanedMessage = newmessages[i].replace(",\\n]", "]").replace(",]", "]");
+				var adventure = JSON.parse(cleanedMessage);
 				console.log(adventure);
 				adventureArray = adventureArray.concat(adventure);
 			}
