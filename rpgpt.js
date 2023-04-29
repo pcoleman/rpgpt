@@ -821,6 +821,7 @@ function saveSession() {
   
   if (sessionCampaign) {
   	set(sessionName, "campaign", sessionCampaign);
+	 createCampaign(sessionSetting, sessionCampaign);
   }
   
   // Adding session the the list of sessions
@@ -867,6 +868,14 @@ function saveSession() {
   initializeNewCharacterCreation(sessionName);
 }
 
+function createCampaign(setting, text) {
+	console.log("creating a new campaign");
+	var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of five adventures that are part of a larger story, format it as a JSON array of strings.
+	var messages = [{"role":"user", "content": campaignMessage}];
+	prompt(messages).then((message) => {
+		console.log(message);
+	})
+}
 
 function removeSession() {
 	const regex = /(?:(the|a|an) +)/g; 
@@ -907,19 +916,6 @@ var sessionName = sessionN.toLowerCase().replace(regex, subst).trim().replace(/\
   var focusedSession = sessionSelect.value;
   changeSession(focusedSession);
   localStorage.setItem("currentSession", focusedSession);
-  
-  // Clearing out text fields
-  var tempSession = localStorage.getItem(sessionName);
-  var tempMechanics = localStorage.getItem(sessionName+".mechanics");
-  var tempSetting = localStorage.getItem(sessionName+".setting");
-  var tempCampaign = localStorage.getItem(sessionName+".campaign");
-  var tempArray = localStorage.getItem("sessions");
-
-  console.log("out: "+ tempSession);
-  console.log("out: "+ tempMechanics);
-  console.log("out: "+ tempSetting);
-  console.log("out: "+ tempCampaign);
-  console.log("out: "+ tempArray);
 }
 
 function changeSession(sessionName) {
