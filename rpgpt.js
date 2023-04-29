@@ -893,10 +893,10 @@ function createAdventures(message) {
 			adventurePromises.push(prompt(messages));
 		}
 		
-		Promise.all(promptPromises).then((messages) => {
+		Promise.all(adventurePromises).then((newmessages) => {
 			var adventureArray = []
 			for (var i in messages) {
-				adventureArray.concat(JSON.parse(messages[i])); 
+				adventureArray.concat(JSON.parse(newmessages[i])); 
 			}
 			
 			console.log(adventureArray);
