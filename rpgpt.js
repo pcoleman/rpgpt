@@ -963,9 +963,17 @@ function adventureDetailsPromise(message) {
 			adventureDetails.push(stepObject);
 			
 			// Combine the subfields
-			npcs = npcs.concat(stepObject.npcs);
-			locations = npcs.concat(stepObject.locations);
-			groups = groups.concat(stepObject.groups);
+			for (var i in stepObject.npcs) {
+				npcs.push(stepObject.npcs[i].name);	
+			}
+		
+			for (var i in stepObject.locations) {
+				locations.push(stepObject.locations[i].name);	
+			}
+		
+			for (var i in stepObject.groups) {
+				groups.push(stepObject.npcs[i].groups);	
+			}
 			
 			// Create the return object
 		        var returnObject = {"adventureSteps": adventureSteps, "adventureDetails": adventureDetails, "backup": backup, "npcs": npcs, "locations": locations, "groups": groups};
