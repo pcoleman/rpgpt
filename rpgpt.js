@@ -880,7 +880,7 @@ function createCampaign(setting, text) {
 	});
 }
 
-async function createAdventures(message) {
+function createAdventures(message) {
 	return new Promise((resolve, reject) => {
 		console.log("creating adventures");
 		var adventures = JSON.parse(message);
@@ -888,17 +888,20 @@ async function createAdventures(message) {
 		var messages = [];
 		for (var i in adventures) {
 			var campaignMessage = "create a detailed outline of this adventure:  " + adventures[i] + ", format it as a JSON array of strings.";
-			var messages = [{"role":"user", "content": campaignMessage}];
-			console.log(campaignMessage);
-			var message = await prompt(messages).then((message) => {
-				console.log(message);
-				return message;
-			})
+			var messages = [{"role":"assistant", "content": "This is an outline of the campaign: " + JSON.stringify(adventures)}, {"role":"user", "content": campaignMessage}];
 			
-			adventurePromises.push(message);
-			messages.pop();
-			messages.push({"role":"assistant", "content": "This was the previous adeventure: " + message}];
+			adventurePromises.push(prompt(messages));
 		}
+		
+		Promise.all(promptPromises).then((messages) => {
+			var adventureArray = []
+			for (var i in messages) {
+				adventureArray.concat(JSON.parse(messages[i])); 
+			}
+			
+			console.log(adventureArray);
+			resolve(adventureArray);
+		});
 	});
 }
 
