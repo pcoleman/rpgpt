@@ -908,7 +908,7 @@ function createAdventures(message) {
 }
 
 function adventureDetails(message) {
-	return adventureDetailsPromise({"adventureSteps": message, "backup": message, "adventureDetails": [], "npcs": [], "locations": [], "groups": []);
+	return adventureDetailsPromise({"adventureSteps": message, "backup": message, "adventureDetails": [], "npcs": [], "locations": [], "groups": []});
 }
 
 function adventureDetailsPromise(message) {
