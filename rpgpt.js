@@ -368,8 +368,15 @@ function craftMessage(sessionName, playerName, message) {
 	var campaignMessage = "This is the the adventure for the player. adventure-outline=\"" + get(sessionName, "campaign") + "\"";
 	
 	// Create the events message
+	var events = get(sessionName, "events");
+	var eventsMessage;
+	if (events) eventsMessage = "These are some events and their conditions\"" + get(sessionName, "events") + "\"";
 	
-	var eventsMessage = "These are some events and their conditions\"" + get(sessionName, "events") + "\"";
+	// Create the game state message
+	
+	var gameState = get(sessionName, "game-state");
+	var gameStateMessage;
+	if (gameState) gameStateMessage = "This is the current game state: " + gameState;
 	
 	var properNounMessage = message;
 	
@@ -458,6 +465,14 @@ function craftMessage(sessionName, playerName, message) {
 			tempNPC["short-description"] = shortNPC["short-description"];
 		}
 		
+		if("health" in shortNPCs) {
+			tempNPC["health"] = shortNPC["health"];	
+		}
+		
+		if("state" in shortNPCs) {
+			tempNPC["state"] = shortNPC["state"];	
+		}
+		
 		if ("hot-summary" in shortNPC) {
 			tempNPC["hot-summary"] = shortNPC["hot-summary"];
 		}
@@ -486,6 +501,9 @@ function craftMessage(sessionName, playerName, message) {
 	
 	// Pass in general background
 	if (setting) messageArray.push({"role":"assistant", "content": setting});
+	
+	// Pass in the game state
+	if (gameStateMessage) messageArray.push({"role":"assistant", "content": gameStateMessage});
 	
 	// Pass in the player character object
 	if (character) messageArray.push({"role":"assistant", "content": character});
@@ -538,6 +556,15 @@ function processInitialResponse(message) {
 
 		// initialize the last turn object
 		var messageObject = {"lastTurn": {}, "response": response};
+		resolve(messageObject);
+	});
+}
+
+function processGameState(messageObject) {
+	return new Promise(function(resolve, reject) {
+		console.log("processing game state");
+		var gameState = messageObject.response["game_state"];
+		if (gameState) set(sessionName, "game-state", gameState);
 		resolve(messageObject);
 	});
 }
@@ -656,6 +683,9 @@ function processNPC(messageObject) {
 					}
 
 					npcObject["hot-summary"] = summary;
+					
+					if (npc["health"]) npcObject["health"] = npc["health"];
+					if (npc["state"]) npcObject["state"] = npc["state"];
 
 					set(sessionName + ".npc", npcName, JSON.stringify(npcObject));
 				}));
@@ -753,7 +783,7 @@ function processStory(messageObject) {
 }
 
 function processResponse(message) {
-	return processInitialResponse(message).then(processPlayer).then(processTurnNumber).then(processLocation).then(processNPC).then(processPOI).then(processSummary).then(processStory);
+	return processInitialResponse(message).then(processGameState).then(processPlayer).then(processTurnNumber).then(processLocation).then(processNPC).then(processPOI).then(processSummary).then(processStory);
 }
 
 function compressObjectSummary(newObject) {
