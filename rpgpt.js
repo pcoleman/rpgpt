@@ -989,6 +989,8 @@ function deduplicateArray(objectArray, topLevelFields, listFields) {
 		if(!objectCache.has(object1.name)) {
 			for (var k in objectArray) {
 				var object2 = objectArray[k];
+				console.log(object1);
+				console.log(object2);
 				if (object1.name == object2.name) {
 					object1 = merge(object1, object2, topLevelFields, listFields);
 				}
