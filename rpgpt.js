@@ -825,11 +825,6 @@ function saveSession() {
   	set(sessionName, "setting", sessionSetting);
   }
   
-  if (sessionCampaign) {
-  	set(sessionName, "campaign", sessionCampaign);
-	 createCampaign(sessionSetting, sessionCampaign).then(createAdventures).then(adventureDetails);
-  }
-  
   // Adding session the the list of sessions
   var sessionArrayString = get("", "sessions");
   
@@ -843,6 +838,10 @@ function saveSession() {
   set("", "sessions", JSON.stringify(sessionArray));
   
   set("", "currentSession", sessionName);
+	
+  if (sessionCampaign) {
+	 var campaignObjects = createCampaign(sessionSetting, sessionCampaign).then(createAdventures).then(adventureDetails).then(processCampaignObjects);
+  }
   
   // Clearing out text fields
   document.querySelector('#session-creation-name').value = "";
@@ -872,6 +871,154 @@ function saveSession() {
   console.log("out: "+ tempArray);
   
   initializeNewCharacterCreation(sessionName);
+}
+
+function processCampaignObjects(campaignObjects) {
+	var sessionName = get("", "currentSession");
+	
+	var finalLocations = [];
+	var finalGroups = [];
+	var finalRaces = [];
+	var finalNPCs = [];
+	var finalEvents = [];
+	
+	// Loop over all the campaign objects
+	for (var i in campaignObjects) {
+		var adventure = campaignObjects.adventure;
+		var locations = campaignObjects.locations;
+		var groups = campaignObjects.groups;
+		var races = campaignObjects.races;
+		var npcs = campaignObjects.npcs;
+		var events = campaignObjects.events;
+		
+		// Process adventure
+		set(sessionName, "campaign", adventure.description);
+		
+		// deduplicate lists
+		finalLocations = deduplicateArray(finalLocations.concat(locations), ["description", "history"], ["groups", "npcs", "events", "nearby-locations"]);
+		finalGroups = deduplicateArray(finalGroups.concat(groups), ["description", "history"], ["notable-npcs"]);
+		finalRaces = deduplicateArray(finalRaces.concat(races), ["description", "appearance", "customs"], []);
+		finalNPCs = deduplicateArray(finalNPCs.concat(npcs), ["description", "history"], ["events"]);
+		
+		var eventSet = new Set();
+		
+		for (var j in events) {
+			eventSet.add(events[j]);	
+		}
+		
+		for (var j in finalEvents) {
+			eventSet.add(events[j]);	
+		}
+		
+		finalEvents = [...eventSet];
+	}
+	
+	// process locations
+	for (var j in finalLocations) {
+		// create the interior locations
+		var locationMessage = 'Given the following location, I want you to generate a list of locations contained within it. This is a template for your response:{"locations": <locations>}In the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below: <locations>: This should be a valid JSON array that looks like [{"name": <The name of the location>, "description": <A description of the location, including appearance, function and mood>, "groups": <a json array of strings containing the groups associated with the location>, "npcs": <a json array of strings containing npcs currently in this location>, "history": <any history of this specific location>, "events": <a json array of of objects that represent any campaign events that are suppose to happen when a player visits this location, and their requirements>, "nearby-locations": <a json array of strings containing any relevant nearby locations>}]. Here is an example of the JSON array [{"name": "The Yawning Portal", "description": "The yawning portal is a very popular tavern in waterdeep. It is several hundred years old which can be seen in the weather worn wood construction. The inside is illuminated by fire light and and the ethereal light coming from a portal in the center of the building. The portal leads to an endless underground labyrinth.", "groups": ["harpers", "city guard"], npcs: ["joe, the bartender", "captain rex", "john smith"], "history": "The yawning portal was first constructed 300 years ago around a mysterious portal on a hill side. 200 years ago it was burnt down and rebuilt.", "events" : [{"event": "Joe the bartender gives the player a mysterious letter", "condition": "the player must have already talked to the mystic"}, {"event": "A bar fight breaks out", "condition": "the player brings up the topic of the mysterious letter"}], "nearby-locations:["The portal", "the bar", "the waterdeep keep"]}].   location: ';
+		var messages = [{"role":"user", "content": locationMessage + JSON.stringify(finalLocations[j])}];
+		prompt(messages).then((message) => {
+			console.log(message);
+			var innerLocations = JSON.parse(message);
+			var nearby = new Set();
+
+			for (var k innerLocations) {
+				saveCampaignObject(sessionName + ".location", innerLocations[k], ["groups", "npcs", "events", "nearby-locations"]);
+				nearby.add(innerLocations[k].name);
+			}
+
+			finalLocations[j]["nearby-locations"] =  finalLocations[j]["nearby-locations"].concat([...nearby]);
+			// Save the original locations
+			saveCampaignObject(sessionName + ".location", finalLocations[j], ["groups", "npcs", "events", "nearby-locations"]);
+		})
+
+	}
+
+	for (var j in finalGroups) {
+		saveCampaignObject(sessionName + ".group", finalGroups[j], ["notable-npcs"]);
+	}
+
+	for (var j in finalRaces) {
+		saveCampaignObject(sessionName + ".race", finalRaces[j], []);
+	}
+
+	for (var j in finalNPCs) {
+		saveCampaignObject(sessionName + ".npc", finalNPCs[j], ["notable-npcs"]);
+	}
+
+	var oldEvents = JSON.parse(get(sessionName, "events"));
+	oldEvents = oldEvents.concat(finalEvents);
+	set(sessionName, "events", JSON.stringify(oldEvents));
+	
+	console.log("----------------------------FINISHED BUILDING CAMPAIGN--------------------------------------------");
+}
+
+function saveCampaignObject(prefix, cobject, listFields) {
+	var name = cobject.name;
+	var saved = get(prefix, name);
+	
+	if (saved) {
+		var savedObject = JSON.parse(saved);
+		for (var i in listFields) {
+			var field = listFields[i];
+			if (field in savedObject) {
+				savedObject[field] = savedObject[field].concat(cobject[field]);
+			} else {
+				savedObject[field] = cobject[field];
+			}
+		}
+		set(prefix, name, JSON.stringify(savedObject));
+	} else {
+		set(prefix, name, JSON.stringify(cobject));	
+	}
+}
+
+function deduplicateArray(objectArray, topLevelFields, listFields) {
+	var objectCache = new Set();
+	var finalObjects = [];
+
+	for (var j in objectArray) {
+		var object1 = objectArray[j];
+		if(!objectCache.has(object1.name)) {
+			for (var k in objectArray) {
+				var object2 = objectArray[k];
+				if (object1.name == object2.name) {
+					object1 = merge(object1, object2, topLevelFields, listFields);
+				}
+			}
+			finalObjects.push(object1);
+			objectCache.add(object1.name);
+		}
+	}
+	
+	return finalObjects;
+}
+
+function merge(location1, location2, topLevelFields, listFields) {
+	// Replace top level fields
+	for (var i in topLevelFields) {
+		if (topLevelFields[i] in location2) location1[topLevelFields[i]] = location2[topLevelFields[i]];
+	}
+	
+	// deduplicate the list fields;
+	var listFields = ;
+	
+	for (var i in listFields) {
+		var listField = listFields[i];
+		var fieldSet = new Set();
+		for (var j in location1[listField]) {
+			fieldSet.add(location1[listField][j]);	
+		}
+		
+		for (var j in location2[listField]) {
+			fieldSet.add(location2[listField][j]);	
+		}
+		
+		location1[listField] = [...fieldSet];
+	}
+	
+	return location1;
 }
 
 function createCampaign(setting, text) {
@@ -965,27 +1112,31 @@ function adventureDetailsPromise(message) {
 
 	prompt(messages).then((newmessage) => {
 			console.log(newmessage);
-			var stepObject = parseIncompleteJSON(newmessage.replace(/(\r\n|\n|\r)/gm, ""));
-			
-			// add new object to the adventure details array
-			adventureDetails.push(stepObject);
-			
-			// Combine the subfields
-			for (var i in stepObject.npcs) {
-				npcs.add(stepObject.npcs[i].name);	
+			try {
+				var stepObject = JSON.parse(newmessage.replace(/(\r\n|\n|\r)/gm, ""));
+
+				// add new object to the adventure details array
+				adventureDetails.push(stepObject);
+
+				// Combine the subfields
+				for (var i in stepObject.npcs) {
+					npcs.add(stepObject.npcs[i].name);	
+				}
+
+				for (var i in stepObject.locations) {
+					locations.add(stepObject.locations[i].name);	
+				}
+
+				for (var i in stepObject.groups) {
+					groups.add(stepObject.groups[i].name);	
+				}
+
+				// Create the return object
+				var returnObject = {"adventureSteps": adventureSteps, "adventureDetails": adventureDetails, "backup": backup, "npcs": npcs, "locations": locations, "groups": groups};
+				adventureDetailsPromise(returnObject);
+			} catch (err) {
+				adventureDetailsPromise(message);
 			}
-		
-			for (var i in stepObject.locations) {
-				locations.add(stepObject.locations[i].name);	
-			}
-		
-			for (var i in stepObject.groups) {
-				groups.add(stepObject.groups[i].name);	
-			}
-			
-			// Create the return object
-		        var returnObject = {"adventureSteps": adventureSteps, "adventureDetails": adventureDetails, "backup": backup, "npcs": npcs, "locations": locations, "groups": groups};
-			adventureDetailsPromise(returnObject);
 	});
 }
 
@@ -1646,23 +1797,4 @@ function gptQuery(messages) {
       }
 	  });
  });
-}
-
-function parseIncompleteJSON (jsonString, i = 0) {
-	try {
-	  return JSON.parse(jsonString);
-	} catch (e) {
-		if (jsonString[0] == '[' && i == 0) { // agar json array of string hai to first time srf ']' lagay ga
-		  jsonString += ']'; 
-		} else if (jsonString[0] == '[') {
-		  jsonString = jsonString.slice(0, jsonString.length - 1).concat('}', ']');
-		} else {
-		  jsonString += '}';
-		}
-
-		if (i == 10) { 
-		  return jsonString;
-		}
-	  return parseIncompleteJSON(jsonString, ++i);
-	}
 }
