@@ -921,10 +921,11 @@ function processCampaignObjects(campaignObjects) {
 	
 	// process locations
 	for (var j in finalLocations) {
-		console.log(finalLocations[j]);
+		var finalLocation = finalLocations[j];
+				console.log("------++++++++++++++++ " + JSON.stringify(finalLocation));
 		// create the interior locations
 		var locationMessage = 'Given the following location, I want you to generate a list of additional locations contained within it. This is a template for your response:{"locations": <locations>} In the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below: <locations>: This should be a valid JSON array that looks like [{"name": <The name of the location>, "description": <A description of the location, including appearance, function and mood>, "groups": <a json array of strings containing the groups associated with the location>, "npcs": <a json array of strings containing npcs currently in this location>, "history": <any history of this specific location>, "events": <a json array of of objects that represent any campaign events that are suppose to happen when a player visits this location, and their requirements>, "nearby-locations": <a json array of strings containing any relevant nearby locations>}]. Here is an example of the JSON array [{"name": "The Yawning Portal", "description": "The yawning portal is a very popular tavern in waterdeep. It is several hundred years old which can be seen in the weather worn wood construction. The inside is illuminated by fire light and and the ethereal light coming from a portal in the center of the building. The portal leads to an endless underground labyrinth.", "groups": ["harpers", "city guard"], npcs: ["joe, the bartender", "captain rex", "john smith"], "history": "The yawning portal was first constructed 300 years ago around a mysterious portal on a hill side. 200 years ago it was burnt down and rebuilt.", "events" : [{"event": "Joe the bartender gives the player a mysterious letter", "condition": "the player must have already talked to the mystic"}, {"event": "A bar fight breaks out", "condition": "the player brings up the topic of the mysterious letter"}], "nearby-locations:["The portal", "the bar", "the waterdeep keep"]}]   Using that template, create new locations that would be within this location: ';
-		var messages = [{"role":"user", "content": locationMessage + " " + JSON.stringify(finalLocations[j])}];
+		var messages = [{"role":"user", "content": (locationMessage + " " + finalLocation)}];
 		console.log(locationMessage);
 		prompt(messages).then((message) => {
 			console.log(message);
@@ -937,9 +938,9 @@ function processCampaignObjects(campaignObjects) {
 			}
 
 			console.log(finalLocations[j]);
-			finalLocations[j]["nearby-locations"] =  finalLocations[j]["nearby-locations"].concat([...nearby]);
+			finalLocation["nearby-locations"] =  finalLocation["nearby-locations"].concat([...nearby]);
 			// Save the original locations
-			saveCampaignObject(sessionName + ".location", finalLocations[j], ["groups", "npcs", "events", "nearby-locations"]);
+			saveCampaignObject(sessionName + ".location", finalLocation, ["groups", "npcs", "events", "nearby-locations"]);
 		})
 
 	}
