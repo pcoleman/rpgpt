@@ -840,7 +840,7 @@ function saveSession() {
   set("", "currentSession", sessionName);
 	
   if (sessionCampaign) {
-	 var campaignObjects = createCampaign(sessionSetting, sessionCampaign).then(createAdventures).then(adventureDetails).then(processCampaignObjects);
+	 createCampaign(sessionSetting, sessionCampaign).then(createAdventures).then(adventureDetails).then(processCampaignObjects);
   }
   
   // Clearing out text fields
@@ -886,12 +886,12 @@ function processCampaignObjects(campaignObjects) {
 	
 	// Loop over all the campaign objects
 	for (var i in campaignObjects) {
-		var adventure = campaignObjects.adventure;
-		var locations = campaignObjects.locations;
-		var groups = campaignObjects.groups;
-		var races = campaignObjects.races;
-		var npcs = campaignObjects.npcs;
-		var events = campaignObjects.events;
+		var adventure = campaignObjects[i].adventure;
+		var locations = campaignObjects[i].locations;
+		var groups = campaignObjects[i].groups;
+		var races = campaignObjects[i].races;
+		var npcs = campaignObjects[i].npcs;
+		var events = campaignObjects[i].events;
 		
 		// Process adventure
 		set(sessionName, "campaign", adventure.description);
@@ -1029,7 +1029,7 @@ function merge(location1, location2, topLevelFields, listFields) {
 function createCampaign(setting, text) {
 	return new Promise((resolve, reject) => {
 		console.log("creating a new campaign");
-		var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of five adventures that are part of a larger story, format it as a JSON array of strings.";
+		var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of two adventures that are part of a larger story, format it as a JSON array of strings.";
 		var messages = [{"role":"user", "content": campaignMessage}];
 		prompt(messages).then((message) => {
 			console.log(message);
