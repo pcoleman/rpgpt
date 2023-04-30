@@ -1041,7 +1041,7 @@ function createCampaign(setting, text) {
 function createAdventures(message) {
 	return new Promise((resolve, reject) => {
 		console.log("creating adventures");
-		var adventures = JSON.parse(message).slice(-4);
+		var adventures = JSON.parse(message).slice(-1);
 		var adventurePromises = [];
 		var messages = [];
 		for (var i in adventures) {
