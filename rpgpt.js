@@ -1408,6 +1408,9 @@ function saveNewPlayer(event) {
 	// Create the player character object
 	var playerObject = {"background":background, "json":JSON.parse(json)};
 	
+	console.log("----------------------Testing--------------------");
+	console.log(name);
+	console.log(playerObject);
 	// Save the player character object
 	set(sessionName, name, JSON.stringify(playerObject));
 	
