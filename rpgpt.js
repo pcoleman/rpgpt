@@ -923,7 +923,7 @@ function processCampaignObjects(campaignObjects) {
 			var innerLocations = JSON.parse(message);
 			var nearby = new Set();
 
-			for (var k innerLocations) {
+			for (var k in innerLocations) {
 				saveCampaignObject(sessionName + ".location", innerLocations[k], ["groups", "npcs", "events", "nearby-locations"]);
 				nearby.add(innerLocations[k].name);
 			}
