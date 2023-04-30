@@ -1029,7 +1029,7 @@ function merge(location1, location2, topLevelFields, listFields) {
 function createCampaign(setting, text) {
 	return new Promise((resolve, reject) => {
 		console.log("creating a new campaign");
-		var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of two adventures that are part of a larger story, format it as a JSON array of strings.";
+		var campaignMessage = "outline a campaign about " + text + " set in " + setting + " that consists of five adventures that are part of a larger story, format it as a JSON array of strings.";
 		var messages = [{"role":"user", "content": campaignMessage}];
 		prompt(messages).then((message) => {
 			console.log(message);
@@ -1041,7 +1041,7 @@ function createCampaign(setting, text) {
 function createAdventures(message) {
 	return new Promise((resolve, reject) => {
 		console.log("creating adventures");
-		var adventures = JSON.parse(message);
+		var adventures = JSON.parse(message).slice(-4);
 		var adventurePromises = [];
 		var messages = [];
 		for (var i in adventures) {
