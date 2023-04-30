@@ -369,7 +369,7 @@ function craftMessage(sessionName, playerName, message) {
 	
 	// Create the events message
 	
-	var campaignMessage = "These are some events and their conditions\"" + get(sessionName, "events") + "\"";
+	var eventsMessage = "These are some events and their conditions\"" + get(sessionName, "events") + "\"";
 	
 	var properNounMessage = message;
 	
