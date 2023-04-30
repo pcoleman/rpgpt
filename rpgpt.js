@@ -874,6 +874,7 @@ function saveSession() {
 }
 
 function processCampaignObjects(campaignObjects) {
+	console.log("---------------------processing campaign objects");
 	var sessionName = get("", "currentSession");
 	
 	var finalLocations = [];
@@ -1074,6 +1075,7 @@ function adventureDetailsPromise(message) {
 	
 	// Check the end condition for the recursion
 	if (adventureSteps.length == 0) {
+		console.log("------------------------finishing recursion");
 		return new Promise((resolve, reject) => {
 			resolve(adventureDetails);
 		});
@@ -1132,9 +1134,10 @@ function adventureDetailsPromise(message) {
 
 				// Create the return object
 				var returnObject = {"adventureSteps": adventureSteps, "adventureDetails": adventureDetails, "backup": backup, "npcs": npcs, "locations": locations, "groups": groups};
-				adventureDetailsPromise(returnObject);
+				return adventureDetailsPromise(returnObject);
 			} catch (err) {
-				adventureDetailsPromise(message);
+				console.log("------------------------------retrying");
+				return adventureDetailsPromise(message);
 			}
 	});
 }
