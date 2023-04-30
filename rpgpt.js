@@ -1002,7 +1002,6 @@ function merge(location1, location2, topLevelFields, listFields) {
 	}
 	
 	// deduplicate the list fields;
-	var listFields = ;
 	
 	for (var i in listFields) {
 		var listField = listFields[i];
