@@ -1793,6 +1793,7 @@ function remove(prefix, name) {
 }
 
 function compressSummary(response) {
+	console.log(response);
 	return new Promise((resolve) => {
 		if (response.usage.total_tokens > 3750) {
 			var sessionName = get("","currentSession");
