@@ -1845,7 +1845,7 @@ function extractMessage(data) {
 }
 
 function prompt(messages) {
-	return gptQuery(messages).then(compressSummary).then(extractMessage);
+	return gptQuery(messages).catch(compressSummary).then(compressSummary).then(extractMessage);
 }
 
 function gptQuery(messages) {
