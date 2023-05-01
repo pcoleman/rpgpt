@@ -1800,7 +1800,7 @@ function compressSummary(response) {
 			var hotSummary = get(sessionName, "hot-summary");
 			
 			// If the cold summary has grown too large compress it
-			if (coldSummary && coldSummary > hotSummary) {
+			if (coldSummary && coldSummary.length > hotSummary.length) {
 				console.log("compressing cold-summary");
 				var message = "Create a concise summary of this: " + coldSummary;
 				var messages = [{"role":"user", "content": message}];
