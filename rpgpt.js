@@ -681,6 +681,9 @@ function processNPC(messageObject) {
 				var npc = npc_interactions[i];
 				var npcName = npc["name"];
 
+				// If the NPC is null move to the next one
+				if (!npcName || npcName == "null") continue;
+				
 				// Join the interactions if they are an array
 				var npcInteraction = "";
 				if (typeof npc["interaction"] == "object") {
