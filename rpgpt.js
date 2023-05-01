@@ -808,7 +808,7 @@ function compressObjectSummary(newObject) {
 		} else {
 			if (hotSummary.length > 1500) {
 				console.log("compressing object hot-summary");
-				var message = "Create a concise summary of this: " + coldSummary;
+				var message = "Create a concise summary of this: " + hotSummary;
 				var messages = [{"role":"user", "content": message}];
 				gptQuery(messages).then(extractMessage).then((message) => {
 					console.log("setting object compressed summary");
