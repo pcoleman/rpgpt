@@ -384,6 +384,10 @@ function craftMessage(sessionName, playerName, message) {
 	var shortLocations = [];
 	var fullNPCs = [];
 	var shortNPCs = [];
+	
+	// We will use this to make sure we don't provide the same saved object more than once.
+	var filter = new Set();
+	
 	if (lastTurn) {
 		gamePrompt = gamePrompt + ", This is JSON object representing the state of the gamelast turn: " + lastTurn;
 		
@@ -395,7 +399,10 @@ function craftMessage(sessionName, playerName, message) {
 		if ("location" in lastTurnObject) {
 			var lastTurnLocation = get(sessionName + ".location", lastTurnObject["location"]);
 			if (lastTurnLocation) {
-				fullLocations.push(lastTurnLocation);	
+				fullLocations.push(lastTurnLocation);
+				
+				// Add the name of the location to the filter
+				filter.add(lastTurnObject["location"]);
 			}
 		}
 		
@@ -405,7 +412,10 @@ function craftMessage(sessionName, playerName, message) {
 			for (var i in lastTurnNearbyLocations) {
 				var ltnbLocation= get(sessionName + ".location", lastTurnNearbyLocations[i]);
 				if (ltnbLocation) {
-					shortLocations.push(JSON.parse(ltnbLocation));	
+					shortLocations.push(JSON.parse(ltnbLocation));
+					
+					// Add the name of the location to the filter
+					filter.add(lastTurnNearbyLocations[i]);
 				}
 			}
 		}
@@ -418,6 +428,9 @@ function craftMessage(sessionName, playerName, message) {
 				var lastNPC= get(sessionName + ".npc", lastTurnNPCs[i]["name"]);
 				if (lastNPC) {
 					fullNPCs.push(lastNPC);	
+					
+					// Add the name of the NPC to the filter
+					filter.add(lastTurnNPCs[i]["name"]);
 				}
 			}
 		}
@@ -476,6 +489,10 @@ function craftMessage(sessionName, playerName, message) {
 		if ("hot-summary" in shortNPC) {
 			tempNPC["hot-summary"] = shortNPC["hot-summary"];
 		}
+		
+		if ("cold-summary" in shortNPC) {
+			tempNPC["cold-summary"] = shortNPC["cold-summary"];
+		}
 		shortNPCString = shortNPCString + "," + JSON.stringify(tempNPC);
 	}
 	
@@ -484,7 +501,7 @@ function craftMessage(sessionName, playerName, message) {
 	
 	
 	// Process the message for nouns
-	var nouns = getProperNouns(properNounMessage);
+	var nouns = getProperNouns(properNounMessage, filter);
 	var mentionedObjects = [];
 	for (var i in nouns) {
 		mentionedObjects = mentionedObjects.concat(search(nouns[i]));
@@ -530,7 +547,7 @@ function craftMessage(sessionName, playerName, message) {
 	return messageArray;
 }
 
-function getProperNouns(message) {
+function getProperNouns(message, filter) {
 	console.log("checking mentioned context");
 	var re = /([A-Za-z]\s+)([A-Z][a-z]+(\s+[A-Z][a-z]+)*)/g;
 	var m;
@@ -539,8 +556,15 @@ function getProperNouns(message) {
 	do {
 	    m = re.exec(message);
 	    if (m) {
-		nouns.add(m[2]);
-		console.log(m[2]);
+		if (filter) {
+			if (!filter.has(m[2])) {
+				nouns.add(m[2]);
+				console.log(m[2]);
+			}
+		} else {
+			nouns.add(m[2]);
+			console.log(m[2]);
+		}
 	    }
 	} while (m);
 	
