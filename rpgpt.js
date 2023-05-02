@@ -447,7 +447,7 @@ function craftMessage(sessionName, playerName, message) {
 	
 	
 	if (writingStyle) {
-		gamePrompt = gamePrompt + "\n\n" + writingStyle	
+		userMessage = userMessage + "\n\n" + writingStyle	
 	}
 	
 	var fullLocationMessage = "";
