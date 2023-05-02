@@ -362,7 +362,7 @@ function craftMessage(sessionName, playerName, message) {
 	// Get the writing style otherwise use a default style
 	var writingStyle = get(sessionName, "writingStyle");
 	if (!writingStyle) {
-		writingStyle = "";
+		writingStyle = "second person, present tense writing style. Include lots of dialogue.";
 	}
 	var setting = "The setting for this role playing game is " + get(sessionName, "setting");
 	var character = "My player character is " + playerName + "." + playerObject.background + ". This is my character sheet, player-character-sheet=" + JSON.stringify(playerObject.json);
