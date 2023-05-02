@@ -443,7 +443,7 @@ function craftMessage(sessionName, playerName, message) {
 	}
 	
 	if (writingStyle) {
-		gamePrompt = gamePrompt + "\n\n" + writingStyle	
+		gamePrompt = gamePrompt + "\n\n" + writingStyle + "\n\n";	
 	}
 	
 	// Create user message
