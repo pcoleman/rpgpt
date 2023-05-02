@@ -548,7 +548,7 @@ function craftMessage(sessionName, playerName, message) {
 	if (summary) messageArray.push({"role":"assistant", "content": summary});
 	
 	// Pass in the game prompt
-	messageArray.push({"role":"user", "content": userMessage});
+	messageArray.push({"role":"user", "content": userMessage + " \n\n Write everything like a pirate"});
 			       
 	return messageArray;
 }
