@@ -395,7 +395,7 @@ function craftMessage(sessionName, playerName, message) {
 	var filter = new Set();
 	
 	if (lastTurn) {
-		gamePrompt = gamePrompt + ", This is JSON object representing the state of the gamelast turn: " + lastTurn;
+		var lastTurnMessage ="This is JSON object representing the state of the game last turn: " + lastTurn;
 		
 		// Get full locations
 		var lastTurnObject = JSON.parse(lastTurn);
@@ -551,6 +551,9 @@ function craftMessage(sessionName, playerName, message) {
 	
 	// Pass in the summary
 	if (summary) messageArray.push({"role":"assistant", "content": summary});
+	
+	// Pass in the last turn
+	if (lastTurnMessage) messageArray.push({"role":"assistant", "content": lastTurnMessage});
 	
 	// Pass in the game prompt
 	messageArray.push({"role":"user", "content": userMessage});
