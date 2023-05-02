@@ -442,13 +442,13 @@ function craftMessage(sessionName, playerName, message) {
 		}
 	}
 	
+	if (writingStyle) {
+		gamePrompt = gamePrompt + "\n\n" + writingStyle	
+	}
+	
 	// Create user message
 	var userMessage = gamePrompt + ", Action: " + message;
 	
-	
-	if (writingStyle) {
-		userMessage = userMessage + "\n\n" + writingStyle	
-	}
 	
 	var fullLocationMessage = "";
 	// Process the full locations
