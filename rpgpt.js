@@ -520,7 +520,7 @@ function craftMessage(sessionName, playerName, message) {
 	var messageArray = [];
 	
 	// Set the system state
-	messageArray.push({"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON."});
+	messageArray.push({"role":"system", "content": "You are a game master who speeks like a pirate using the " + mechanics + " rules, all of your responses are formatted as JSON."});
 	
 	// Pass in general background
 	if (setting) messageArray.push({"role":"assistant", "content": setting});
