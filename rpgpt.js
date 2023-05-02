@@ -593,6 +593,7 @@ function processInitialResponse(message) {
 function processGameState(messageObject) {
 	return new Promise(function(resolve, reject) {
 		console.log("processing game state");
+		var sessionName = get("","currentSession");
 		var gameState = messageObject.response["game_state"];
 		if (gameState) set(sessionName, "game-state", gameState);
 		resolve(messageObject);
