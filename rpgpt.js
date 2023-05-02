@@ -1275,6 +1275,43 @@ var sessionName = sessionN.toLowerCase().replace(regex, subst).trim().replace(/\
   localStorage.setItem("currentSession", focusedSession);
 }
 
+function resetSession() {
+	const regex = /(?:(the|a|an) +)/g; 
+	const subst = ` `;
+  var sessionSelect = document.querySelector('#session-selection');
+  var session = sessionSelect.value;
+
+var sessionN = get("", "currentSession");
+var sessionName = sessionN.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
+  var arr = []; // Array to hold the keys
+  
+	console.log("removing sessino: " + sessionName);
+  // Iterate over localStorage and insert the keys that meet the condition into arr
+  for (var i = 0; i < localStorage.length; i++){
+    if (localStorage.key(i).includes(sessionName)) {
+      arr.push(localStorage.key(i));
+    }
+  }
+
+  // Iterate over arr and remove the items by key
+  for (var i = 0; i < arr.length; i++) {
+    console.log("removing summaries: " + arr[i]);
+ 	try {
+		var savedObj = localStorage.getItem(arr[i]);
+		var savedjson = JSON.parse(savedObj);
+		if ("hot-summary" in savedjson) savedjson["hot-summary"] = "";
+		if ("cold-summary" in savedjson) savedjson["cold-summary"] = "";
+	} catch {
+		// do nothing	
+	}
+  }
+	
+	localStorage.setItem(sessionName + "." + "hotsummary", "");
+	localStorage.setItem(sessionName + "." + "coldsummary", "");
+	localStorage.setItem(sessionName + "." + "log", "");
+	localStorage.setItem(sessionName + "." + "lastturn", "");
+}
+
 function changeSession(sessionName) {
 	console.log("changing session");
    // Check to make sure sessionName is not empty
