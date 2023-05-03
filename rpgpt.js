@@ -1073,7 +1073,7 @@ function deduplicateArray(objectArray, topLevelFields, listFields) {
 
 	for (var j in objectArray) {
 		var object1 = objectArray[j];
-		if(!objectCache.has(object1.name)) {
+		if(object1 && !objectCache.has(object1.name)) {
 			for (var k in objectArray) {
 				var object2 = objectArray[k];
 				if (object1.name == object2.name) {
