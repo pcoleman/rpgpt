@@ -1789,6 +1789,8 @@ function get(prefix, name) {
 	console.log("Name: " + name);
 	const regex = /(?:(the|a|an) +)/g; 
 	const subst = ` `;
+	
+	if (!name) return null;
 
 	var cleanedName = name.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[\W_]+/g,'');
 	var cleanedPrefix = prefix.toLowerCase().replace(regex, subst).trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9\.]+/g,'');
