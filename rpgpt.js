@@ -1480,10 +1480,12 @@ function nextPlayerCreationStage() {
 	   $("#new-player-text").html("<h2>What is your character's name?</h2>"); 
     } else if (stage == (character_creation_steps.length + 1 )) {
 	   // Save the character name in a temporary variable
+	   console.log("----------------------------" + input);
 	   set(sessionName, "player-creation-name", input);
            $("#new-player-text").html("<h2>What is your character's background?</h2>"); 
     } else {
 	   // Save the character background in a temporary variable
+	    console.log("----------------------------" + input);
 	   set(sessionName, "player-creation-background", input);
 	    
 	    // Append all the decisions so far
@@ -1523,6 +1525,10 @@ function saveNewPlayer(event) {
 	var name = get(sessionName, "player-creation-name");
 	var background = get(sessionName, "player-creation-background");
 	var json = get(sessionName, "player-creation-json");
+	
+	console.log("-name---------------------------" + name);
+	console.log("-background---------------------------" + background);
+	console.log("-json---------------------------" + json);
 	
 	// Create the player character object
 	var playerObject = {"background":background, "json":JSON.parse(json)};
