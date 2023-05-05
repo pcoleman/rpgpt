@@ -1,4 +1,4 @@
-let currentPlayerTree = null;
+let partyTrees = {};
 
 $(document).ready(function() {
     // Disable pressing enter on text boxes
@@ -1347,8 +1347,9 @@ function changeSession(sessionName) {
 	    if (currentPlayerName) {
 		changePlayer({data:{sessionName:sessionName, playerName: currentPlayerName}});
 	    } else {
-		if (currentPlayerTree) {
-			jsonview.destroy(currentPlayerTree);
+		if (partyTrees && partyTrees["player"]) {
+			jsonview.destroy(partyTrees["player"]);
+			delete partyTrees["player"];
 		}
 	    }
 
@@ -1616,8 +1617,9 @@ function changePlayer(event) {
 	var playerObject = JSON.parse(get(sessionName, playerName));
 	
 	// remove the current player tree
-	if (currentPlayerTree) {
-		jsonview.destroy(currentPlayerTree);	
+	if (partyTrees && partyTrees["player"]) {
+		jsonview.destroy(partyTrees["player"]);
+		delete partyTrees["player"];
 	}
 	
 	// create json tree object
@@ -1629,7 +1631,7 @@ function changePlayer(event) {
 	jsonview.render(tree, document.querySelector('#player-tree'));
 	
 	// set the new tree as the current player tree
-	currentPlayerTree = tree;
+	partyTrees["player"] = tree;
 }
 
 function editPlayer(event) {
