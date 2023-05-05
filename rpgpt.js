@@ -1657,23 +1657,28 @@ function renderParty() {
 	console.log("rendering party");
 	
 	var party = JSON.parse(get(sessionName + ".group", party));
-
+console.log(party);
 	if (party) {
 		var partyNPCs = party["notable-npcs"];
+		console.log(partyNPCs);
 		if (partyNPCs) {
 			var partyObject = {};
 			// remove the current character tree
-			jsonview.destroy(partyTrees["party"]);
-			delete partyTrees["party"];
+			if (partyTrees && partyTrees[partyNPCs[i]]) {
+				jsonview.destroy(partyTrees["party"]);
+				delete partyTrees["party"];
+			}
 			
 			for (var i in partyNPCs) {
+				console.log(partyNPCs[i]);
 				var npcObject = JSON.parse(get(sessionName + ".npc", partyNPCs[i]));
 
-				if (npcObject && partyTrees && partyTrees[partyNPCs[i]]) {
+				if (npcObject) {
 					partyObject[partyNPCs[i]] = npcObject;
 				}
 			}
 			
+			console.log(partyObject);
 			const tree = jsonview.create(partyObject);
 			jsonview.render(tree, document.querySelector('#player-tree'));
 			
