@@ -538,7 +538,7 @@ function craftMessage(sessionName, playerName, message) {
 	var coldSummary = get(sessionName, "cold-summary");
 	var hotSummary = get(sessionName, "hot-summary");
 	if(coldSummary) hotSummary = coldSummary + " " + hotSummary;
-	if (hotSummary) = messageArray.push({"role":"assistant", "content": "These are the events that have happened so far in the game: " + hotSummary});
+	if (hotSummary) messageArray.push({"role":"assistant", "content": "These are the events that have happened so far in the game: " + hotSummary});
 	
 	
 	// Pass in the last turn
