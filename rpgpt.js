@@ -351,51 +351,63 @@ function submitAction(event) {
 }
 
 function craftMessage(sessionName, playerName, message) {
+	// Get the session name
 	var sessionName = get("","currentSession");
+	
+	// We will use this to make sure we don't provide the same saved object more than once.
+	var filter = new Set();
+	
+	// Initialize the message array to pass to gpt
+	var messageArray = [];
+	
+	
+	// Set the system state
+	messageArray.push({"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON."});
+	
+	
+	// Pass in general background
+	var setting = "The setting for this role playing game is " + get(sessionName, "setting");
+	if (setting) messageArray.push({"role":"assistant", "content": setting});
+	
+	
+	// Pass in the game state
+	var gameState = get(sessionName, "game-state");
+	if (gameState) messageArray.push({"role":"assistant", "content": "This is the current game state: " + gameState;});
+	
+	
+	// Pass in the player character object
 	var playerName = get(sessionName, "current-player");
 	var playerObject = JSON.parse(get(sessionName, playerName));
-	console.log(sessionName + ".hot-summary");
-	var coldSummary = get(sessionName, "cold-summary");
-	var hotSummary = get(sessionName, "hot-summary");
-	var summaryStyle = get("", "summarystyle");
-	if(coldSummary) hotSummary = coldSummary + " " + hotSummary;
-	console.log(playerObject);
-	var mechanics = get(sessionName, "mechanics");
+	if (playerObject) messageArray.push({"role":"assistant", "content": "My player character is " + playerName + "." + playerObject.background + ". This is my character sheet, player-character-sheet=" + JSON.stringify(playerObject.json)});
 	
-	// Get the writing style otherwise use a default style
-	var writingStyle = get(sessionName, "writingStyle");
-	if (!writingStyle) {
-		writingStyle = "";
+	// Pass in party characters
+	var party = get(sessionName + ".group", "party");
+	if (party) {
+		var partyNPCs = party["notable-npcs"];
+		if (partyNPCs) {
+			var partyObjects = [];
+			for (var i in partyNPCs) {
+				var partyNPC= get(sessionName + ".npc", partyNPCs[i]["name"]);
+				if (partyNPC) {
+					partyObjects.push(partyNPC);	
+					
+					// Add the name of the NPC to the filter
+					filter.add(partyNPCs[i]["name"]);
+				}
+			}
+			
+			if (partyObjects.length > 0) messageArray.push({"role":"assistant", "content": "these are the characters currently following the player character: [" + partyObjects.join(",") + "]"});
+		}
 	}
-	var setting = "The setting for this role playing game is " + get(sessionName, "setting");
-	var character = "My player character is " + playerName + "." + playerObject.background + ". This is my character sheet, player-character-sheet=" + JSON.stringify(playerObject.json);
-	var summary = "These are the events that have happened so far in the game: " + hotSummary;
-	var lastTurn =  get(sessionName, "last-turn");
-	var gamePrompt = "You are a game master running a game using the rules of " + mechanics + "\n\nThis is a JSON template for the game output:\n{\n\"turn_number\": <TURN>,\n\"roll\" <ROLL>,\"player\": <PLAYER>,\n\"location\":  <LOCATION>,\n\"story\": <STORY>,\n\"summary\": <SUMMARY>,\n\"location_interations\": <LOCATION_INTERACTIONS>,\n\"npc_interactions\": <NPC_INTERACIONS>,\n\"points_of_interest\": <POI>\n,\"game_state\": <GAME STATE>}\n\nIn the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below:\n• <TURN>\n		○ The current turn number. Increment it each turn.\n    • <ROLL>\n		○ The result of any dice rolls that were required to resolve an action, include the attribute or skill being rolled for. Return a null if no dice rolls were done\n	• <PLAYER>\n		○ A valid JSON object representing any changes made to the character sheet represented by the JSON object player-character-sheet, for example if the player had 10 health and lost 2 the object would be {\"hit points\": 8}. If there have been no changes return a null \n	• <LOCATION>\n		○ The current location as understood by the main character.\n	• <STORY>\n		○ The results of the actions taken from the last turn. Write it as a narrative, but stop before my character's next action. Include descriptions of locations and NPCs that are new since the last turn. Use a second person perspective, include a lot of dialogue.\n			  * <SUMMARY>\n    ○ A " + summaryStyle + " summary of <STORY>, the player character should be referred to by name.\n  * <LOCATION_INTERACIONS>\n    ○ A JSON array that looks like this\n [\"<A  " + summaryStyle + " summary string of the players interactions with the location>\"]\n  * <NPC_INTERACTIONS>\n    ○ A JSON array that looks like this\n[{\"name\": <The Name of the NPC>, \"health\": <The NPCs health>, \"state\": <The NPCs current state, such as stunned or paralyzed>, \"interaction\": [\"<A " + summaryStyle + " summary of the players interaction with the NPC>\"]}] \n  * <POI>\n    ○ A JSON array that contains the names of at least 3 nearby locations, looks like [\"location1\", \"location2\", \"location3\"] \n  * <GAME STATE>\n ○ A string that contains any game level status, such as game phase, count down clocks, etc. \n\nThere are some special commands I can issue. These result of the command will replace [story] in the game output. The special commands are issued with one of the words below and has the listed result.\n	• hint\n		○ You will replace <STORY> with a small hint to point me an interesting direction for the story.\n\nThe following rules are central to the game logic and must always be followed:\n	1. Use the rules for " + mechanics + "\n        2. After you output the template, that ends one turn. Wait for my response to start the next turn.  3. The output should always be valid JSON and nothing else. 4. If adventure-outline is defined, use adventure-outline as a guide on what situations and events to present to the player. 5. Do any event whose conditions have been met. \n\n\nSettings: " + setting + "\nPlayer:" + playerName;
 	
-	// Create the campaign message
-	var campaignMessage = "This is the the adventure for the player. adventure-outline=\"" + get(sessionName, "campaign") + "\"";
-	
-	// Create the events message
-	var events = get(sessionName, "events");
-	var eventsMessage;
-	if (events) eventsMessage = "These are some events and their conditions\"" + get(sessionName, "events") + "\"";
-	
-	// Create the game state message
-	
-	var gameState = get(sessionName, "game-state");
-	var gameStateMessage;
-	if (gameState) gameStateMessage = "This is the current game state: " + gameState;
-	
+	// Process the last turn object
 	var properNounMessage = message;
 	
 	var fullLocations = [];
 	var shortLocations = [];
 	var fullNPCs = [];
 	var shortNPCs = [];
-	
-	// We will use this to make sure we don't provide the same saved object more than once.
-	var filter = new Set();
+	var lastTurn =  get(sessionName, "last-turn");
 	
 	if (lastTurn) {
 		var lastTurnMessage ="This was the state of the game last turn: " + lastTurn;
@@ -445,17 +457,10 @@ function craftMessage(sessionName, playerName, message) {
 		}
 	}
 	
-	if (writingStyle) {
-		gamePrompt = gamePrompt + "\n\n" + writingStyle + "\n\n";	
-	}
 	
-	// Create user message
-	var userMessage = gamePrompt + ", Action: " + message;
+	// Pass in the full locations
+	if (fullLocations.length > 0) messageArray.push({"role":"assistant", "content": "here is some information for locations in this setting: [" + fullLocations.join(",") + "]"});
 	
-	
-	var fullLocationMessage = "";
-	// Process the full locations
-	if (fullLocations.length > 0) fullLocationMessage = "here is some information for locations in this setting: [" + fullLocations.join(",") + "]";
 	
 	// Process the short locations
 	var shortLocationString = ""
@@ -473,16 +478,13 @@ function craftMessage(sessionName, playerName, message) {
 		shortLocationString = shortLocationString + "," + JSON.stringify(tempLocation);
 	}
 	
-	var shortLocationMessage = "";
-	if (shortLocationString) shortLocationMessage = "here is some information for locations in this setting: [" + shortLocationString.substring(1) + "]";
+	if (shortLocationString) messageArray.push({"role":"assistant", "content": "here is some information for locations in this setting: [" + shortLocationString.substring(1) + "]"});
 	
-	// Process the full NPCs
-	var fullNPCMessage = "";
-	// Process the full locations
-	if (fullNPCs.length > 0) fullNPCMessage = "here is some information for characters in this setting: [" + fullNPCs.join(",") + "]";
 	
-	// Process the short NPCs
+	// Pass in the full NPCs
+	if (fullNPCs.length > 0) messageArray.push({"role":"assistant", "content":"here is some information for characters in this setting: [" + fullNPCs.join(",") + "]"});
 	
+	// Pass in the short NPCs
 	var shortNPCString = ""
 	for (var i in shortNPCs) {
 		var tempNPC = {};
@@ -514,50 +516,58 @@ function craftMessage(sessionName, playerName, message) {
 	if (shortNPCString) shortNPCMessage = "here is some information for characters in this setting: [" + shortNPCString.substring(1) + "]";
 	
 	
-	// Process the message for nouns
+	// Pass in mentioned objects
 	var nouns = getProperNouns(properNounMessage, filter);
 	var mentionedObjects = [];
 	for (var i in nouns) {
 		mentionedObjects = mentionedObjects.concat(search(nouns[i]));
 	}
 	
-	var mentionedObjectsMessage = "";
-	if (mentionedObjects.length > 0) mentionedObjectsMessage = "here is some additional context: [" + mentionedObjects.join(",") + "]";
-	
-	
-	var messageArray = [];
-	
-	// Set the system state
-	messageArray.push({"role":"system", "content": "You are a game master using the " + mechanics + " rules, all of your responses are formatted as JSON."});
-	
-	// Pass in general background
-	if (setting) messageArray.push({"role":"assistant", "content": setting});
-	
-	// Pass in the game state
-	if (gameStateMessage) messageArray.push({"role":"assistant", "content": gameStateMessage});
-	
-	// Pass in the player character object
-	if (character) messageArray.push({"role":"assistant", "content": character});
-	
-	// Pass in situational context
-	if (fullLocationMessage) messageArray.push({"role":"assistant", "content": fullLocationMessage});
-	if (shortLocationMessage) messageArray.push({"role":"assistant", "content": shortLocationMessage});
-	if (fullNPCMessage) messageArray.push({"role":"assistant", "content": fullNPCMessage});
-	if (shortNPCMessage) messageArray.push({"role":"assistant", "content": shortNPCMessage});
-	if (mentionedObjectsMessage) messageArray.push({"role":"assistant", "content": mentionedObjectsMessage});	
+	if (mentionedObjects.length > 0) messageArray.push({"role":"assistant", "content": "here is some additional context: [" + mentionedObjects.join(",") + "]"});
 	
 	// Pass in campaign
-	if (campaignMessage) messageArray.push({"role":"assistant", "content": campaignMessage});
+	var campaign = get(sessionName, "campaign");
+	if (campaign) messageArray.push({"role":"assistant", "content": campaignMessage});"This is the the adventure for the player. adventure-outline=\"" + campaign + "\"";
+	
 	
 	// Pass in events
-	if (eventsMessage) messageArray.push({"role":"assistant", "content": eventsMessage});
+	var events = get(sessionName, "events");
+	if (events) messageArray.push({"role":"assistant", "content": "These are some events and their conditions\"" + get(sessionName, "events") + "\""});
 	
 	// Pass in the summary
-	if (summary) messageArray.push({"role":"assistant", "content": summary});
+	var coldSummary = get(sessionName, "cold-summary");
+	var hotSummary = get(sessionName, "hot-summary");
+	if(coldSummary) hotSummary = coldSummary + " " + hotSummary;
+	if (hotSummary) = messageArray.push({"role":"assistant", "content": "These are the events that have happened so far in the game: " + hotSummary});
+	
 	
 	// Pass in the last turn
 	if (lastTurnMessage) userMessage = userMessage + "\n\n" + lastTurnMessage
-		//messageArray.push({"role":"assistant", "content": lastTurnMessage});
+	//messageArray.push({"role":"assistant", "content": lastTurnMessage});
+	
+	
+	// Get the writing style otherwise use a default style
+	var writingStyle = get(sessionName, "writingStyle");
+	if (!writingStyle) {
+		writingStyle = "";
+	}
+	
+	var summaryStyle = get("", "summarystyle");
+	if (!summaryStyle) {
+		summaryStyle = "concise minimal third person";
+	}
+	
+	var mechanics = get(sessionName, "mechanics");
+	
+	var gamePrompt = "You are a game master running a game using the rules of " + mechanics + "\n\nThis is a JSON template for the game output:\n{\n\"turn_number\": <TURN>,\n\"roll\" <ROLL>,\"player\": <PLAYER>,\n\"location\":  <LOCATION>,\n\"story\": <STORY>,\n\"summary\": <SUMMARY>,\n\"location_interations\": <LOCATION_INTERACTIONS>,\n\"npc_interactions\": <NPC_INTERACIONS>,\n\"points_of_interest\": <POI>\n,\"game_state\": <GAME STATE>}\n\nIn the template above items in angles brackets represent tokens that will be replaced by text and should not be displayed. Match the token with the specifications below:\n• <TURN>\n		○ The current turn number. Increment it each turn.\n    • <ROLL>\n		○ The result of any dice rolls that were required to resolve an action, include the attribute or skill being rolled for. Return a null if no dice rolls were done\n	• <PLAYER>\n		○ A valid JSON object representing any changes made to the character sheet represented by the JSON object player-character-sheet, for example if the player had 10 health and lost 2 the object would be {\"hit points\": 8}. If there have been no changes return a null \n	• <LOCATION>\n		○ The current location as understood by the main character.\n	• <STORY>\n		○ The results of the actions taken from the last turn. Write it as a narrative, but stop before my character's next action. Include descriptions of locations and NPCs that are new since the last turn. Use a second person perspective, include a lot of dialogue.\n			  * <SUMMARY>\n    ○ A " + summaryStyle + " summary of <STORY>, the player character should be referred to by name.\n  * <LOCATION_INTERACIONS>\n    ○ A JSON array that looks like this\n [\"<A  " + summaryStyle + " summary string of the players interactions with the location>\"]\n  * <NPC_INTERACTIONS>\n    ○ A JSON array that looks like this\n[{\"name\": <The Name of the NPC>, \"health\": <The NPCs health>, \"state\": <The NPCs current state, such as stunned or paralyzed>, \"interaction\": [\"<A " + summaryStyle + " summary of the players interaction with the NPC>\"]}] \n  * <POI>\n    ○ A JSON array that contains the names of at least 3 nearby locations, looks like [\"location1\", \"location2\", \"location3\"] \n  * <GAME STATE>\n ○ A string that contains any game level status, such as game phase, count down clocks, etc. \n\nThere are some special commands I can issue. These result of the command will replace [story] in the game output. The special commands are issued with one of the words below and has the listed result.\n	• hint\n		○ You will replace <STORY> with a small hint to point me an interesting direction for the story.\n\nThe following rules are central to the game logic and must always be followed:\n	1. Use the rules for " + mechanics + "\n        2. After you output the template, that ends one turn. Wait for my response to start the next turn.  3. The output should always be valid JSON and nothing else. 4. If adventure-outline is defined, use adventure-outline as a guide on what situations and events to present to the player. 5. Do any event whose conditions have been met. \n\n\nSettings: " + setting + "\nPlayer:" + playerName;
+	
+	if (writingStyle) {
+		gamePrompt = gamePrompt + "\n\n" + writingStyle + "\n\n";	
+	}
+	
+	
+	// Create user message
+	var userMessage = gamePrompt + ", Action: " + message;
 	
 	// Pass in the game prompt
 	messageArray.push({"role":"user", "content": userMessage});
