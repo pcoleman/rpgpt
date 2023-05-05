@@ -9,8 +9,6 @@ $(document).ready(function() {
       }
     });
 	
-	
-    set("", "summarystyle", "concise minimal third person");
     // load session array
     var sessionArray = JSON.parse(get("", "sessions"));
     var sessionSelect = document.querySelector('#session-selection');
