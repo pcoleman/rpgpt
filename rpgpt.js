@@ -547,7 +547,7 @@ function craftMessage(sessionName, playerName, message) {
 	
 	// Pass in the last turn
 	if (lastTurnMessage) userMessage = userMessage + "\n\n" + lastTurnMessage
-	//messageArray.push({"role":"assistant", "content": lastTurnMessage});
+	messageArray.push({"role":"assistant", "content": lastTurnMessage});
 	
 	
 	// Get the writing style otherwise use a default style
