@@ -545,11 +545,6 @@ function craftMessage(sessionName, playerName, message) {
 	if (hotSummary) messageArray.push({"role":"assistant", "content": "These are the events that have happened so far in the game: " + hotSummary});
 	
 	
-	// Pass in the last turn
-	if (lastTurnMessage) userMessage = userMessage + "\n\n" + lastTurnMessage
-	messageArray.push({"role":"assistant", "content": lastTurnMessage});
-	
-	
 	// Get the writing style otherwise use a default style
 	var writingStyle = get(sessionName, "writingStyle");
 	if (!writingStyle) {
@@ -570,6 +565,10 @@ function craftMessage(sessionName, playerName, message) {
 	
 	// Create user message
 	var userMessage = gamePrompt + ", Action: " + message;
+	
+	// Pass in the last turn
+	if (lastTurnMessage) userMessage = userMessage + "\n\n" + lastTurnMessage
+	//messageArray.push({"role":"assistant", "content": lastTurnMessage});
 	
 	// Pass in the game prompt
 	messageArray.push({"role":"user", "content": userMessage});
