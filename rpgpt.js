@@ -1656,7 +1656,7 @@ function renderParty() {
 	var sessionName = get("", "currentSession");
 	console.log("rendering party");
 	
-	var party = JSON.parse(get(sessionName + ".group", party));
+	var party = JSON.parse(get(sessionName + ".group", "party"));
 console.log(party);
 	if (party) {
 		var partyNPCs = party["notable-npcs"];
