@@ -389,7 +389,7 @@ function craftMessage(sessionName, playerName, message) {
 			console.log(partyNPCs);
 			var partyObjects = [];
 			for (var i in partyNPCs) {
-				var partyNPC= get(sessionName + ".npc", partyNPCs[i]["name"]);
+				var partyNPC= get(sessionName + ".npc", partyNPCs[i]);
 				if (partyNPC) {
 					partyObjects.push(partyNPC);	
 					
