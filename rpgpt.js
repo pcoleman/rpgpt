@@ -1653,7 +1653,7 @@ function changePlayer(event) {
 }
 
 function renderParty() {
-	var sessionName = event.data.sessionName;
+	var sessionName = get("", "currentSession");
 	console.log("rendering party");
 	
 	var party = get(sessionName + ".group", party);
