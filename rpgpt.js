@@ -381,7 +381,7 @@ function craftMessage(sessionName, playerName, message) {
 	if (playerObject) messageArray.push({"role":"assistant", "content": "My player character is " + playerName + "." + playerObject.background + ". This is my character sheet, player-character-sheet=" + JSON.stringify(playerObject.json)});
 	
 	// Pass in party characters
-	var party = get(sessionName + ".group", "party");
+	var party = JSON.parse(get(sessionName + ".group", "party"));
 	if (party) {
 		var partyNPCs = party["notable-npcs"];
 		if (partyNPCs) {
@@ -1656,8 +1656,8 @@ function renderParty() {
 	var sessionName = get("", "currentSession");
 	console.log("rendering party");
 	
-	var party = get(sessionName + ".group", party);
-	
+	var party = JSON.parse(get(sessionName + ".group", party));
+
 	if (party) {
 		var partyNPCs = party["notable-npcs"];
 		if (partyNPCs) {
@@ -1667,7 +1667,7 @@ function renderParty() {
 			delete partyTrees["party"];
 			
 			for (var i in partyNPCs) {
-				var npcObject = get(sessionName + ".npc", partyNPCs[i]);
+				var npcObject = JSON.parse(get(sessionName + ".npc", partyNPCs[i]));
 
 				if (npcObject && partyTrees && partyTrees[partyNPCs[i]]) {
 					partyObject[partyNPCs[i]] = npcObject;
