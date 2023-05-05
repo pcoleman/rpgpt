@@ -1646,8 +1646,40 @@ function changePlayer(event) {
 	// render tree into dom element
 	jsonview.render(tree, document.querySelector('#player-tree'));
 	
+	// render the party tree
+	
 	// set the new tree as the current player tree
 	partyTrees["player"] = tree;
+}
+
+function renderParty() {
+	var sessionName = event.data.sessionName;
+	console.log("rendering party");
+	
+	var party = get(sessionName + ".group", party);
+	
+	if (party) {
+		var partyNPCs = party["notable-npcs"];
+		if (partyNPCs) {
+			var partyObject = {};
+			// remove the current character tree
+			jsonview.destroy(partyTrees["party"]);
+			delete partyTrees["party"];
+			
+			for (var i in partyNPCs) {
+				var npcObject = get(sessionName + ".npc", partyNPCs[i]);
+
+				if (npcObject && partyTrees && partyTrees[partyNPCs[i]]) {
+					partyObject[partyNPCs[i]] = npcObject;
+				}
+			}
+			
+			const tree = jsonview.create(partyObject);
+			jsonview.render(tree, document.querySelector('#player-tree'));
+			
+			partyTrees["party"] = tree;
+		}
+	}
 }
 
 function editPlayer(event) {
