@@ -372,7 +372,7 @@ function craftMessage(sessionName, playerName, message) {
 	
 	// Pass in the game state
 	var gameState = get(sessionName, "game-state");
-	if (gameState) messageArray.push({"role":"assistant", "content": "This is the current game state: " + gameState;});
+	if (gameState) messageArray.push({"role":"assistant", "content": "This is the current game state: " + gameState});
 	
 	
 	// Pass in the player character object
