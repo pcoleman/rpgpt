@@ -774,6 +774,32 @@ function processPOI(messageObject) {
 	});
 }
 
+function processTeam(messageObject) {
+	return new Promise(function(resolve, reject) {
+		var sessionName = get("","currentSession");
+		var teamMembers = messageObject.response["team"];
+		
+		if (teamMembers) {
+			var party = get(sessionName + ".group", "party");
+			var partyObject = {};
+			if (party) {
+				partyObject = JSON.parse(party);
+				partyObject["notable-npcs"] = teamMembers;
+			} else {
+				partyObject["name"] = "party";
+				partyObject["description"] = "The player's followers";
+				partyObject["notable-npcs"] = teamMembers;
+			}
+			
+			set(sessionName + ".group", "party", JSON.strngify(partyObject));
+			
+			renderParty();
+		}
+
+		resolve(messageObject);
+	});
+}
+
 function processSummary(messageObject) {
 	return new Promise(function(resolve, reject) {
 		var summary = messageObject.response["summary"];
@@ -840,7 +866,7 @@ function processStory(messageObject) {
 }
 
 function processResponse(message) {
-	return processInitialResponse(message).then(processGameState).then(processPlayer).then(processTurnNumber).then(processLocation).then(processNPC).then(processPOI).then(processSummary).then(processStory);
+	return processInitialResponse(message).then(processGameState).then(processPlayer).then(processTurnNumber).then(processLocation).then(processNPC).then(processPOI).then(processTeam).then(processSummary).then(processStory);
 }
 
 function compressObjectSummary(newObject) {
@@ -1648,6 +1674,7 @@ function changePlayer(event) {
 	jsonview.render(tree, document.querySelector('#player-tree'));
 	
 	// render the party tree
+	renderParty();
 	
 	// set the new tree as the current player tree
 	partyTrees["player"] = tree;
