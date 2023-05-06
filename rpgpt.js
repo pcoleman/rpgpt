@@ -791,7 +791,7 @@ function processTeam(messageObject) {
 				partyObject["notable-npcs"] = teamMembers;
 			}
 			
-			set(sessionName + ".group", "party", JSON.strngify(partyObject));
+			set(sessionName + ".group", "party", JSON.stringify(partyObject));
 			
 			renderParty();
 		}
